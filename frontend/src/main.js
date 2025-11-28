@@ -1,7 +1,7 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import "./style.css";
+import "./style.scss";
 import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
 
@@ -27,7 +27,7 @@ function addVehiclesToMap(layer, vehicles) {
     layer.clearLayers();
     vehicles.forEach((vehicle) => {
         let icon = L.divIcon({
-            html: getIcon(parseInt(vehicle.route_id) < 100 ? "tram" : "bus", vehicle.vehicle_label),
+            html: getIcon(parseInt(vehicle.route_id) < 100 ? "tram" : "bus", vehicle.route_id),
             className: "",
         });
         let marker = L.marker([vehicle.latitude, vehicle.longitude], {icon: icon}).addTo(layer);
