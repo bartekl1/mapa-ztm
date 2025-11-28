@@ -1,6 +1,18 @@
-import "./style.css";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+
+import "./style.css";
+import busIcon from "./img/bus.svg?raw";
+import tramIcon from "./img/tram.svg?raw";
+
+function getIcon(type, number) {
+    return `<div class="vehicle-label vehicle-${type}">
+                <div class="vehicle-label-icon">
+                    ${type === "bus" ? busIcon : tramIcon}
+                </div>
+                <div class="vehicle-label-text">${number}</div>
+            </div>`;
+}
 
 async function fetchVehiclePositions() {
     let r = await fetch("/api/positions");
@@ -14,9 +26,18 @@ async function fetchVehiclePositions() {
 function addVehiclesToMap(layer, vehicles) {
     layer.clearLayers();
     vehicles.forEach((vehicle) => {
-        let marker = L.marker([vehicle.latitude, vehicle.longitude]).addTo(layer);
+        let icon = L.divIcon({
+            html: getIcon(parseInt(vehicle.route_id) < 100 ? "tram" : "bus", vehicle.vehicle_label),
+            className: "",
+        });
+        let marker = L.marker([vehicle.latitude, vehicle.longitude], {icon: icon}).addTo(layer);
         marker.bindPopup(vehicle.vehicle_label);
     });
+}
+
+async function updateVehicles(layer) {
+    let vehicles = await fetchVehiclePositions();
+    addVehiclesToMap(layer, vehicles);
 }
 
 async function main() {
@@ -31,10 +52,8 @@ async function main() {
     var layer = L.layerGroup();
     map.addLayer(layer);
 
-    setInterval(async () => {
-        let vehicles = await fetchVehiclePositions();
-        addVehiclesToMap(layer, vehicles);
-    }, 1000);
+    await updateVehicles(layer);
+    setInterval(async () => updateVehicles(layer), 5000);
 }
 
 main();
