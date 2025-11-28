@@ -4,7 +4,6 @@ import cachetools.func
 
 @cachetools.func.ttl_cache(ttl=1)
 def get_current_positions() -> list[dict[str, str | int | float]]:
-    print("load")
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get("https://www.ztm.poznan.pl/pl/dla-deweloperow/getGtfsRtFile?file=vehicle_positions.pb")
     feed.ParseFromString(response.content)
