@@ -23,21 +23,44 @@ async function fetchVehiclePositions() {
     }
 }
 
-function addVehiclesToMap(layer, vehicles) {
-    layer.clearLayers();
+async function fetchTripShape(trip_id) {
+    let r = await fetch(`/api/shapes/${trip_id}`);
+    if (r.ok) return await r.json();
+    else {
+        console.error("Failed to fetch trip shape");
+        return [];
+    }
+}
+
+function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
+    vehiclesLayer.clearLayers();
     vehicles.forEach((vehicle) => {
         let icon = L.divIcon({
-            html: getIcon(parseInt(vehicle.route_id) < 100 ? "tram" : "bus", vehicle.route_id),
+            html: getIcon(parseInt(vehicle.route_id) < 100 ? "tram" : "bus", vehicle.vehicle_label.split("/")[0]),
             className: "",
         });
-        let marker = L.marker([vehicle.latitude, vehicle.longitude], {icon: icon}).addTo(layer);
-        marker.bindPopup(vehicle.vehicle_label);
+        let marker = L.marker([vehicle.latitude, vehicle.longitude], {
+            icon: icon,
+            vehicle_id: vehicle.vehicle_id,
+            trip_id: vehicle.trip_id,
+        });
+        marker.addTo(vehiclesLayer);
+        marker.on("click", async (e) => {
+            tripsLayer.clearLayers()
+            let shape = await fetchTripShape(e.target.options.trip_id);
+            L.geoJSON(shape, {
+                style: {
+                    "color": "#ff0000",
+                    "weight": 5,
+                },
+            }).addTo(tripsLayer);
+        });
     });
 }
 
-async function updateVehicles(layer) {
+async function updateVehicles(vehiclesLayer, tripsLayer) {
     let vehicles = await fetchVehiclePositions();
-    addVehiclesToMap(layer, vehicles);
+    addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer);
 }
 
 async function main() {
@@ -49,11 +72,14 @@ async function main() {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
-    var layer = L.layerGroup();
-    map.addLayer(layer);
+    let vehiclesLayer = L.layerGroup();
+    map.addLayer(vehiclesLayer);
 
-    await updateVehicles(layer);
-    setInterval(async () => updateVehicles(layer), 5000);
+    let tripsLayer = L.layerGroup();
+    map.addLayer(tripsLayer);
+
+    await updateVehicles(vehiclesLayer, tripsLayer);
+    // setInterval(async () => updateVehicles(vehiclesLayer), 5000);
 }
 
 main();
