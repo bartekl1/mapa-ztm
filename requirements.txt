@@ -1,6 +1,6 @@
 flask
 pyyaml
 requests
-gtfs-kit
 gtfs-realtime-bindings
 cachetools
+geojson

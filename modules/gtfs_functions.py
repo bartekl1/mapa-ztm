@@ -1,9 +1,10 @@
 from google.transit import gtfs_realtime_pb2
-import gtfs_kit
 import requests
 import cachetools.func
-import tempfile
+import io
+from geojson import LineString, Feature, FeatureCollection
 
+from .gtfs_schedule import Feed
 from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL
 
 @cachetools.func.ttl_cache(ttl=1)
@@ -20,17 +21,17 @@ def get_current_positions() -> list[dict[str, str | int | float]]:
         "longitude": entity.vehicle.position.longitude
     } for entity in feed.entity]
 
-@cachetools.func.ttl_cache(ttl=60 * 10)
+# @cachetools.func.ttl_cache(ttl=60 * 10)
 def download_gtfs():
-    with tempfile.NamedTemporaryFile(delete=False, delete_on_close=True) as file:
-        response = requests.get(GTFS_FEED_URL)
-        file.write(response.content)
-        file.seek(0)
-        feed = gtfs_kit.read_feed(file.name, dist_units="m")
-        file.close()
+    feed = Feed()
+    response = requests.get(GTFS_FEED_URL)
+    feed.load(io.BytesIO(response.content))
     return feed
 
 @cachetools.func.ttl_cache(ttl=60)
-def get_shape(trip_id: str):
+def get_shape(trip_id: str, geojson: bool = False):
     feed = download_gtfs()
-    return feed.trips_to_geojson([trip_id])
+    shape = feed.get_shape(trip_id, reversed=geojson)
+    if geojson:
+        return FeatureCollection([Feature(geometry=LineString(shape))])
+    return shape

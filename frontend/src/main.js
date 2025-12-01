@@ -24,7 +24,7 @@ async function fetchVehiclePositions() {
 }
 
 async function fetchTripShape(trip_id) {
-    let r = await fetch(`/api/shapes/${trip_id}`);
+    let r = await fetch(`/api/shapes/${trip_id}?geojson`);
     if (r.ok) return await r.json();
     else {
         console.error("Failed to fetch trip shape");
@@ -79,7 +79,7 @@ async function main() {
     map.addLayer(tripsLayer);
 
     await updateVehicles(vehiclesLayer, tripsLayer);
-    // setInterval(async () => updateVehicles(vehiclesLayer), 5000);
+    setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer), 5000);
 }
 
 main();
