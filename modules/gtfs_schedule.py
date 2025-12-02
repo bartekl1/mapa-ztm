@@ -6,9 +6,8 @@ import io
 import os
 
 class Feed:
-    def __init__(self) -> None:
+    def _create_db(self) -> None:
         self.db = sqlite3.connect(":memory:")
-        # self.db = sqlite3.connect("test.db")
         cur = self.db.cursor()
 
         cur.execute("""
@@ -113,9 +112,12 @@ class Feed:
             );
         """)
 
+        cur.execute("CREATE INDEX idx_shapes_shape_id ON shapes(shape_id);")
+
         self.db.commit()
     
-    def load(self, file: typing.BinaryIO) -> None:
+    def load_gtfs_data(self, file: typing.BinaryIO) -> None:
+        self._create_db()
         with zipfile.ZipFile(file) as file:
             cur = self.db.cursor()
             for name in file.namelist():
@@ -130,6 +132,17 @@ class Feed:
                         reader
                     )
             self.db.commit()
+    
+    def load_cache(self, path: str) -> None:
+        self.db = sqlite3.connect(path)
+    
+    def save_cache(self, path: str) -> None:
+        cache_db = sqlite3.connect(path)
+        try:
+            self.db.backup(cache_db)
+            cache_db.commit()
+        finally:
+            cache_db.close()
     
     def get_shape(self, trip_id: str, reversed: bool = False):
         cur = self.db.cursor()

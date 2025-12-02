@@ -1,6 +1,9 @@
 ## Project specific
 # Configuration
 config.yaml
+# Cache and temporary files
+*.db
+*.tmp
 
 ## Python
 # Byte-compiled / optimized / DLL files

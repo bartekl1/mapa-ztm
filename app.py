@@ -1,19 +1,31 @@
 from flask import Flask, request
+import os
 
 from modules.config import load_config
 from modules.gtfs_functions import get_current_positions, get_shape
+from save_cache import save_cache
 
-app = Flask(__name__)
+def create_app(config: dict) -> Flask:
+    app = Flask(__name__)
 
-@app.route("/api/positions")
-def current_positions():
-    return get_current_positions()
+    @app.route("/api/positions")
+    def current_positions():
+        return get_current_positions()
 
-@app.route("/api/shapes/<trip_id>")
-def trip_shape(trip_id):
-    geojson = request.args.get("geojson") is not None
-    return get_shape(trip_id, geojson=geojson)
+    @app.route("/api/shapes/<trip_id>")
+    def trip_shape(trip_id):
+        geojson = request.args.get("geojson") is not None
+        return get_shape(trip_id, geojson=geojson,
+                         cache_path=config.get("gtfs_cache_path", "gtfs_cache.db"))
+    
+    return app
+
+def run_app():
+    config = load_config()
+    if not os.path.exists(config.get("gtfs_cache_path", "gtfs_cache.db")):
+        save_cache(config)
+    app = create_app(config)
+    app.run(**config.get("flask", {}))
 
 if __name__ == "__main__":
-    config = load_config()
-    app.run(**config.get("flask", {}))
+    run_app()
