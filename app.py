@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_file
 import os
 
 from modules.config import load_config
@@ -6,7 +6,11 @@ from modules.gtfs_functions import get_current_positions, get_shape
 from save_cache import save_cache
 
 def create_app(config: dict) -> Flask:
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder="frontend/dist/assets", static_url_path="/assets")
+
+    @app.route("/")
+    def index():
+        return send_file("frontend/dist/index.html")
 
     @app.route("/api/positions")
     def current_positions():
