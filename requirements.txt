@@ -4,3 +4,4 @@ requests
 gtfs-realtime-bindings
 cachetools
 geojson
+beautifulsoup4

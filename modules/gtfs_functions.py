@@ -5,9 +5,11 @@ import io
 import os
 import tempfile
 from geojson import LineString, Feature, FeatureCollection
+from bs4 import BeautifulSoup
+import datetime
 
 from .gtfs_schedule import Feed
-from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL
+from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL, GTFS_FILES_LIST_URL
 
 @cachetools.func.ttl_cache(ttl=1)
 def get_current_positions() -> list[dict[str, str | int | float]]:
@@ -23,9 +25,36 @@ def get_current_positions() -> list[dict[str, str | int | float]]:
         "longitude": entity.vehicle.position.longitude
     } for entity in feed.entity]
 
+def get_gtfs_files_list() -> list[str]:
+    response = requests.get(GTFS_FILES_LIST_URL)
+    parser = BeautifulSoup(response.content, "html.parser")
+    rows = parser.find_all("table")[1].find("tbody").find_all("tr")
+    filenames = [row.find_all("td")[0].get_text(strip=True) for row in rows]
+    return filenames
+
+def get_current_gtfs_filename() -> str:
+    now = datetime.datetime.now()
+    for filename in get_gtfs_files_list():
+        try:
+            start_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d")
+            end_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d")
+            if start_date <= now <= end_date:
+                return filename
+        except Exception:
+            continue
+
+def get_current_gtfs_file_url() -> str:
+    try:
+        filename = get_current_gtfs_filename()
+        if filename is None:
+            raise
+        return GTFS_FEED_URL + "?file=" + filename
+    except Exception:
+        return GTFS_FEED_URL
+
 def download_gtfs_to_cache(cache_path: str) -> None:
     feed = Feed()
-    response = requests.get(GTFS_FEED_URL)
+    response = requests.get(get_current_gtfs_file_url())
     feed.load_gtfs_data(io.BytesIO(response.content))
     
     directory = os.path.dirname(cache_path) or "."
