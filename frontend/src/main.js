@@ -50,8 +50,9 @@ function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
             let shape = await fetchTripShape(e.target.options.trip_id);
             L.geoJSON(shape, {
                 style: {
-                    "color": "#ff0000",
-                    "weight": 5,
+                    color: "#ff0000",
+                    weight: 5,
+                    className: "route-path",
                 },
             }).addTo(tripsLayer);
         });
@@ -61,6 +62,10 @@ function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
 async function updateVehicles(vehiclesLayer, tripsLayer) {
     let vehicles = await fetchVehiclePositions();
     addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer);
+}
+
+function updateZoom(map) {
+    document.querySelector("#map").setAttribute("zoom", map.getZoom());
 }
 
 async function main() {
@@ -80,6 +85,9 @@ async function main() {
 
     await updateVehicles(vehiclesLayer, tripsLayer);
     setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer), 5000);
+
+    updateZoom(map);
+    map.on("zoomend", () => updateZoom(map));
 }
 
 main();

@@ -71,3 +71,22 @@ html, body {
         color: $bus-color;
     }
 }
+
+@mixin animate-route($dashSize: 50, $gapSize: 10) {
+    animation: move-route-#{ $dashSize }-#{ $gapSize } 2s linear infinite;
+    stroke-dasharray: $dashSize, $gapSize;
+    @keyframes move-route-#{ $dashSize }-#{ $gapSize } {
+        to { stroke-dashoffset: -($dashSize + $gapSize); }
+    }
+}
+
+#map[zoom="19"] .route-path { @include animate-route(100, 10); }
+#map[zoom="18"] .route-path { @include animate-route(75, 10); }
+#map[zoom="17"] .route-path { @include animate-route(50, 10); }
+#map[zoom="16"] .route-path { @include animate-route(50, 10); }
+#map[zoom="15"] .route-path { @include animate-route(25, 10); }
+#map[zoom="14"] .route-path { @include animate-route(20, 10); }
+#map[zoom="13"] .route-path { @include animate-route(15, 10); }
+#map[zoom="12"] .route-path { @include animate-route(10, 10); }
+#map[zoom="11"] .route-path { @include animate-route(10, 10); }
+#map[zoom="10"] .route-path { @include animate-route(5, 10); }
