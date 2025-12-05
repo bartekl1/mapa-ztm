@@ -77,6 +77,7 @@ async function main() {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         className: "map-tiles",
     }).addTo(map);
+    map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
 
     let vehiclesLayer = L.layerGroup();
     map.addLayer(vehiclesLayer);
