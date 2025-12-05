@@ -4,6 +4,7 @@ import "leaflet/dist/leaflet.css";
 import "./style.scss";
 import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
+import gpsIcon from "./img/crosshairs-gps.svg?raw";
 
 function getIcon(type, number) {
     return `<div class="vehicle-label vehicle-${type}">
@@ -82,6 +83,62 @@ async function main() {
 
     let tripsLayer = L.layerGroup();
     map.addLayer(tripsLayer);
+
+    let gpsLayer = L.layerGroup();
+    map.addLayer(gpsLayer);
+
+    if ("geolocation" in navigator) {
+        L.Control.TrackLocation = L.Control.extend({
+            options: {
+                position: "topleft",
+            },
+            onAdd: () => {
+                let container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+                let button = L.DomUtil.create("a", "leaflet-control-button", container);
+                button.innerHTML = gpsIcon;
+                button.querySelector("svg").style.margin = "4px";
+                L.DomEvent.disableClickPropagation(button);
+
+                let watchId = null;
+
+                L.DomEvent.on(button, "click", () => {
+                    if (watchId === null) {
+                        navigator.geolocation.getCurrentPosition((position) => {
+                            let zoom = map.getZoom();
+                            if (zoom < 15) zoom = 17;
+                            map.setView([position.coords.latitude, position.coords.longitude], zoom);
+                        });
+                        watchId = navigator.geolocation.watchPosition((position) => {
+                            gpsLayer.clearLayers();
+                            L.circle([position.coords.latitude, position.coords.longitude], {
+                                radius: position.coords.accuracy,
+                                weight: 1,
+                                opacity: 0.75,
+                            }).addTo(gpsLayer);
+                            L.circleMarker([position.coords.latitude, position.coords.longitude], {
+                                radius: 6,
+                                fillColor: "#4285f2",
+                                fillOpacity: 1,
+                                color: "#ffffff",
+                                weight: 1,
+                            }).addTo(gpsLayer);
+                        });
+                    } else {
+                        gpsLayer.clearLayers();
+                        navigator.geolocation.clearWatch(watchId);
+                        watchId = null;
+                    }
+                });
+
+                container.title = "Track location";
+
+                return container;
+            },
+            onRemove: () => {},
+        });
+        let trackControl = new L.Control.TrackLocation();
+        trackControl.addTo(map);
+    }
 
     await updateVehicles(vehiclesLayer, tripsLayer);
     setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer), 5000);
