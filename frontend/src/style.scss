@@ -36,6 +36,8 @@ html, body {
     padding: 1px;
     padding-right: 4px;
 
+    transform: translate(-50%, 50%);
+
     @media (prefers-color-scheme: light) { background-color: $vehicle-label-bg-light; }
     @media (prefers-color-scheme: dark) { background-color: $vehicle-label-bg-dark; }
     border-width: 1px;
