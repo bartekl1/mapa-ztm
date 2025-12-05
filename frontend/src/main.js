@@ -88,6 +88,10 @@ async function main() {
 
     updateZoom(map);
     map.on("zoomend", () => updateZoom(map));
+
+    document.addEventListener("keyup", (e) => {
+        if (e.key === "Escape") tripsLayer.clearLayers();
+    });
 }
 
 main();
