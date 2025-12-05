@@ -51,7 +51,6 @@ function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
             let shape = await fetchTripShape(e.target.options.trip_id);
             L.geoJSON(shape, {
                 style: {
-                    color: "#ff0000",
                     weight: 5,
                     className: "route-path",
                 },
@@ -76,6 +75,7 @@ async function main() {
         minZoom: 4,
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        className: "map-tiles",
     }).addTo(map);
 
     let vehiclesLayer = L.layerGroup();

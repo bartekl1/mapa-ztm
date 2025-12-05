@@ -1,5 +1,14 @@
-$tram-color: red;
-$bus-color: blue;
+$tram-color-light: red;
+$bus-color-light: blue;
+$vehicle-label-bg-light: white;
+$route-path-color-light: red;
+
+$tram-color-dark: darken(mix(red, white, 80%), 5%);
+$bus-color-dark: lighten(mix(blue, white, 80%), 5%);
+$vehicle-label-bg-dark: darken(mix(black, gray, 80%), 5%);
+$route-path-color-dark: yellow;
+
+$dark-mode-map-filters: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 
 html, body {
     height: 100%;
@@ -12,6 +21,12 @@ html, body {
     height: 100%;
 }
 
+@media (prefers-color-scheme: dark) {
+    .map-tiles {
+        filter: $dark-mode-map-filters;
+	}
+}
+
 .vehicle-label {
     display: inline-grid;
     grid-template-columns: auto 1fr; 
@@ -21,7 +36,8 @@ html, body {
     padding: 1px;
     padding-right: 4px;
 
-    background-color: white;
+    @media (prefers-color-scheme: light) { background-color: $vehicle-label-bg-light; }
+    @media (prefers-color-scheme: dark) { background-color: $vehicle-label-bg-dark; }
     border-width: 1px;
     border-style: solid;
     border-radius: 5px;
@@ -45,31 +61,42 @@ html, body {
 }
 
 .vehicle-label.vehicle-tram {
-    border-color: $tram-color;
+    @media (prefers-color-scheme: light) { border-color: $tram-color-light; }
+    @media (prefers-color-scheme: dark) { border-color: $tram-color-dark; }
 
     .vehicle-label-icon {
         svg {
-            fill: $tram-color;
+            @media (prefers-color-scheme: light) { fill: $tram-color-light; }
+            @media (prefers-color-scheme: dark) { fill: $tram-color-dark }
         }
     }
 
     .vehicle-label-text {
-        color: $tram-color;
+        @media (prefers-color-scheme: light) { color: $tram-color-light; }
+        @media (prefers-color-scheme: dark) { color: $tram-color-dark; }
     }
 }
 
 .vehicle-label.vehicle-bus {
-    border-color: $bus-color;
+    @media (prefers-color-scheme: light) { border-color: $bus-color-light; }
+    @media (prefers-color-scheme: dark) { border-color: $bus-color-dark; }
 
     .vehicle-label-icon {
         svg {
-            fill: $bus-color;
+            @media (prefers-color-scheme: light) { fill: $bus-color-light; }
+            @media (prefers-color-scheme: dark) { fill: $bus-color-dark }
         }
     }
 
     .vehicle-label-text {
-        color: $bus-color;
+        @media (prefers-color-scheme: light) { color: $bus-color-light; }
+        @media (prefers-color-scheme: dark) { color: $bus-color-dark; }
     }
+}
+
+.route-path {
+    @media (prefers-color-scheme: light) { stroke: $route-path-color-light; }
+    @media (prefers-color-scheme: dark) { stroke: $route-path-color-dark; }
 }
 
 @mixin animate-route($dashSize: 50, $gapSize: 10) {
