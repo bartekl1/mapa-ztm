@@ -1,11 +1,13 @@
+@use "sass:color";
+
 $tram-color-light: red;
 $bus-color-light: blue;
 $vehicle-label-bg-light: white;
 $route-path-color-light: red;
 
-$tram-color-dark: darken(mix(red, white, 80%), 5%);
-$bus-color-dark: lighten(mix(blue, white, 80%), 5%);
-$vehicle-label-bg-dark: darken(mix(black, gray, 80%), 5%);
+$tram-color-dark: color.adjust(color.mix(red, white, 80%), $lightness: -5%);
+$bus-color-dark: color.adjust(color.mix(blue, white, 80%), $lightness: 5%);
+$vehicle-label-bg-dark: color.adjust(color.mix(black, gray, 80%), $lightness: -5%);
 $route-path-color-dark: yellow;
 
 $dark-mode-map-filters: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
@@ -36,7 +38,7 @@ html, body {
     padding: 1px;
     padding-right: 4px;
 
-    transform: translate(-50%, 50%);
+    // transform: translate(-50%, 50%);
 
     @media (prefers-color-scheme: light) { background-color: $vehicle-label-bg-light; }
     @media (prefers-color-scheme: dark) { background-color: $vehicle-label-bg-dark; }
