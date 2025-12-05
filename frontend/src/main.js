@@ -1,6 +1,10 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+import 'leaflet.markercluster'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+
 import "./style.scss";
 import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
@@ -79,7 +83,15 @@ async function main() {
     }).addTo(map);
     map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
 
-    let vehiclesLayer = L.layerGroup();
+    let vehiclesLayer = L.markerClusterGroup({
+        maxClusterRadius: (zoom) => {
+            if (zoom === 19) return 0;
+            if (zoom === 18) return 10;
+            if (zoom === 17) return 20;
+            if (zoom === 16) return 40;
+            return 80;
+        },
+    });
     map.addLayer(vehiclesLayer);
 
     let tripsLayer = L.layerGroup();
