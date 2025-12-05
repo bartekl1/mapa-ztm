@@ -142,7 +142,12 @@ async function main() {
     }
 
     await updateVehicles(vehiclesLayer, tripsLayer);
-    setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer), 5000);
+    if (localStorage.getItem("disable-updates")) console.warn(
+        'Vehicle position updates are disabled.\nRun %clocalStorage.removeItem("disable-updates")%c in console and refresh to enable.',
+        "background-color: lightgray; color: black; padding: 2px; border-radius: 5px;",
+        "",
+    );
+    else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer), 5000);
 
     updateZoom(map);
     map.on("zoomend", () => updateZoom(map));
