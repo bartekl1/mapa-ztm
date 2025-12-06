@@ -1,14 +1,24 @@
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-import 'leaflet.markercluster'
-import 'leaflet.markercluster/dist/MarkerCluster.css'
-import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
+import iconUrl from "leaflet/dist/images/marker-icon.png";
+import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
+import shadowUrl from "leaflet/dist/images/marker-shadow.png";
+
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
 import "./style.scss";
 import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
 import gpsIcon from "./img/crosshairs-gps.svg?raw";
+
+L.Icon.Default.mergeOptions({
+    iconUrl,
+    iconRetinaUrl,
+    shadowUrl,
+});
 
 function getIcon(type, number) {
     return `<div class="vehicle-label vehicle-${type}">
