@@ -14,6 +14,7 @@ import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
 import gpsIcon from "./img/crosshairs-gps.svg?raw";
 
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconUrl,
     iconRetinaUrl,
