@@ -57,10 +57,10 @@ async function fetchTripStops(trip_id) {
     }
 }
 
-function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude) {
+function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, tracked = false) {
     let icon = L.divIcon({
         html: getVehicleIcon(route_type, route_id),
-        className: "",
+        className: "vehicle-icon" + (tracked ? " vehicle-icon-tracked": ""),
     });
     let marker = L.marker([latitude, longitude], {
         icon: icon,
@@ -83,7 +83,8 @@ function trackVehicle(vehicleMarker, vehiclesLayer, trackedVehicleLayer) {
         vehicleMarker.options.route_type,
         vehicleMarker.options.route_id,
         vehicleMarker.options.latitude,
-        vehicleMarker.options.longitude
+        vehicleMarker.options.longitude,
+        true
     );
     vehiclesLayer.removeLayer(vehiclesLayer.getLayer(vehicleMarker._leaflet_id));
     marker.addTo(trackedVehicleLayer);
@@ -99,7 +100,8 @@ function untrackVehicles(vehiclesLayer, trackedVehicleLayer) {
             m.options.route_type,
             m.options.route_id,
             m.options.latitude,
-            m.options.longitude
+            m.options.longitude,
+            false
         );
         marker.addTo(vehiclesLayer);
     });
@@ -117,7 +119,8 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
             vehicle.route.type,
             vehicle.route.id,
             vehicle.coords.latitude,
-            vehicle.coords.longitude
+            vehicle.coords.longitude,
+            trackedVehicleId === vehicle.vehicle.id
         );
         if (trackedVehicleId === vehicle.vehicle.id) {
             marker.addTo(trackedVehicleLayer);
@@ -133,7 +136,7 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
             L.geoJSON(shape, {
                 style: {
                     weight: 5,
-                    className: "route-path",
+                    className: "route-path route-" + e.target.options.route_type,
                 },
             }).addTo(tripsLayer);
             stops.forEach(stop => {
