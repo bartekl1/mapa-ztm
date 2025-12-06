@@ -74,6 +74,38 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
     return marker;
 }
 
+function trackVehicle(vehicleMarker, vehiclesLayer, trackedVehicleLayer) {
+    untrackVehicles(vehiclesLayer, trackedVehicleLayer);
+    document.querySelector("#map").setAttribute("tracked-vehicle-id", vehicleMarker.options.vehicle_id);
+    let marker = createVehicleMarker(
+        vehicleMarker.options.vehicle_id,
+        vehicleMarker.options.trip_id,
+        vehicleMarker.options.route_type,
+        vehicleMarker.options.route_id,
+        vehicleMarker.options.latitude,
+        vehicleMarker.options.longitude
+    );
+    vehiclesLayer.removeLayer(vehiclesLayer.getLayer(vehicleMarker._leaflet_id));
+    marker.addTo(trackedVehicleLayer);
+}
+
+function untrackVehicles(vehiclesLayer, trackedVehicleLayer) {
+    document.querySelector("#map").removeAttribute("tracked-vehicle-id");
+    let markers = trackedVehicleLayer.getLayers();
+    markers.forEach(m => {
+        let marker = createVehicleMarker(
+            m.options.vehicle_id,
+            m.options.trip_id,
+            m.options.route_type,
+            m.options.route_id,
+            m.options.latitude,
+            m.options.longitude
+        );
+        marker.addTo(vehiclesLayer);
+    });
+    trackedVehicleLayer.clearLayers();
+}
+
 function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicles) {
     vehiclesLayer.clearLayers();
     trackedVehicleLayer.clearLayers();
@@ -93,17 +125,7 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
         }
         marker.addTo(vehiclesLayer);
         marker.on("click", async (e) => {
-            document.querySelector("#map").setAttribute("tracked-vehicle-id", e.target.options.vehicle_id);
-            let marker = createVehicleMarker(
-                e.target.options.vehicle_id,
-                e.target.options.trip_id,
-                e.target.options.route_type,
-                e.target.options.route_id,
-                e.target.options.latitude,
-                e.target.options.longitude
-            );
-            vehiclesLayer.removeLayer(vehiclesLayer.getLayer(e.target._leaflet_id));
-            marker.addTo(trackedVehicleLayer);
+            trackVehicle(e.target, vehiclesLayer, trackedVehicleLayer);
 
             tripsLayer.clearLayers();
             let shape = await fetchTripShape(e.target.options.trip_id);
@@ -229,20 +251,7 @@ async function main() {
     document.addEventListener("keyup", (e) => {
         if (e.key === "Escape") {
             tripsLayer.clearLayers();
-            document.querySelector("#map").removeAttribute("tracked-vehicle-id");
-            let markers = trackedVehicleLayer.getLayers();
-            if (markers.length === 1) {
-                let marker = createVehicleMarker(
-                    markers[0].options.vehicle_id,
-                    markers[0].options.trip_id,
-                    markers[0].options.route_type,
-                    markers[0].options.route_id,
-                    markers[0].options.latitude,
-                    markers[0].options.longitude
-                );
-                marker.addTo(vehiclesLayer);
-                trackedVehicleLayer.clearLayers();
-            }
+            untrackVehicles(vehiclesLayer, trackedVehicleLayer);
         }
     });
 }
