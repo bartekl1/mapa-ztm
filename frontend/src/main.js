@@ -74,8 +74,8 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
     return marker;
 }
 
-function trackVehicle(vehicleMarker, vehiclesLayer, trackedVehicleLayer) {
-    untrackVehicles(vehiclesLayer, trackedVehicleLayer);
+function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLayer) {
+    untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
     document.querySelector("#map").setAttribute("tracked-vehicle-id", vehicleMarker.options.vehicle_id);
     let marker = createVehicleMarker(
         vehicleMarker.options.vehicle_id,
@@ -90,7 +90,7 @@ function trackVehicle(vehicleMarker, vehiclesLayer, trackedVehicleLayer) {
     marker.addTo(trackedVehicleLayer);
 }
 
-function untrackVehicles(vehiclesLayer, trackedVehicleLayer) {
+function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
     let markers = trackedVehicleLayer.getLayers();
     markers.forEach(m => {
@@ -104,8 +104,29 @@ function untrackVehicles(vehiclesLayer, trackedVehicleLayer) {
             false
         );
         marker.addTo(vehiclesLayer);
+        marker.on("click", async (e) => {
+            await onVehicleClick(e, tripsLayer, vehiclesLayer, trackedVehicleLayer);
+        });
     });
     trackedVehicleLayer.clearLayers();
+}
+
+async function onVehicleClick(event, tripsLayer, vehiclesLayer, trackedVehicleLayer) {
+    trackVehicle(event.target, tripsLayer, vehiclesLayer, trackedVehicleLayer);
+
+    tripsLayer.clearLayers();
+    let shape = await fetchTripShape(event.target.options.trip_id);
+    let stops = await fetchTripStops(event.target.options.trip_id);
+    L.geoJSON(shape, {
+        style: {
+            weight: 5,
+            className: "route-path route-" + event.target.options.route_type,
+        },
+    }).addTo(tripsLayer);
+    stops.forEach(stop => {
+        let marker = L.marker([stop.stop_lat, stop.stop_lon]);
+        marker.addTo(tripsLayer);
+    });
 }
 
 function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicles) {
@@ -128,21 +149,7 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
         }
         marker.addTo(vehiclesLayer);
         marker.on("click", async (e) => {
-            trackVehicle(e.target, vehiclesLayer, trackedVehicleLayer);
-
-            tripsLayer.clearLayers();
-            let shape = await fetchTripShape(e.target.options.trip_id);
-            let stops = await fetchTripStops(e.target.options.trip_id);
-            L.geoJSON(shape, {
-                style: {
-                    weight: 5,
-                    className: "route-path route-" + e.target.options.route_type,
-                },
-            }).addTo(tripsLayer);
-            stops.forEach(stop => {
-                let marker = L.marker([stop.stop_lat, stop.stop_lon]);
-                marker.addTo(tripsLayer);
-            });
+            await onVehicleClick(e, tripsLayer, vehiclesLayer, trackedVehicleLayer);
         });
     });
 }
@@ -254,7 +261,7 @@ async function main() {
     document.addEventListener("keyup", (e) => {
         if (e.key === "Escape") {
             tripsLayer.clearLayers();
-            untrackVehicles(vehiclesLayer, trackedVehicleLayer);
+            untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
         }
     });
 }
