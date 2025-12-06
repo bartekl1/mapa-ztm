@@ -160,7 +160,7 @@ class Feed:
     def get_route_info_by_trip(self, trip_id: str):
         cur = self.db.cursor()
         cur.execute("""
-            SELECT trip_id, routes.route_id, route_type
+            SELECT trips.trip_id, routes.route_id, routes.route_type
             FROM routes
             JOIN trips ON routes.route_id = trips.route_id
             WHERE trips.trip_id = ?
@@ -168,3 +168,14 @@ class Feed:
         """, (trip_id, ))
         res = cur.fetchall()
         return res[0] if len(res) > 0 else None
+    
+    def get_stops_on_trip(self, trip_id: str):
+        cur = self.db.cursor()
+        cur.execute("""
+            SELECT stops.stop_id, stop_times.departure_time, stops.stop_name, stops.stop_code, stops.stop_lat, stops.stop_lon, stops.zone_id, stop_times.stop_sequence, stop_times.pickup_type, stop_times.drop_off_type
+            FROM stop_times
+            JOIN stops ON stops.stop_id = stop_times.stop_id
+            WHERE stop_times.trip_id = ?
+            ORDER BY stop_times.stop_sequence ASC;
+        """, (trip_id, ))
+        return cur.fetchall()

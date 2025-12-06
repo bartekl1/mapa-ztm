@@ -2,7 +2,7 @@ from flask import Flask, request, send_file
 import os
 
 from modules.config import load_config
-from modules.gtfs_functions import get_current_positions, get_shape, get_route_info_by_trip
+from modules.gtfs_functions import get_current_positions, get_shape, get_route_info_by_trip, get_stops_on_trip
 from save_cache import save_cache
 
 def create_app(config: dict) -> Flask:
@@ -17,15 +17,21 @@ def create_app(config: dict) -> Flask:
     def current_positions():
         return get_current_positions(cache_path=cache_path)
 
-    @app.route("/api/shapes/<trip_id>")
+    @app.route("/api/trips/<trip_id>/shape")
     def trip_shape(trip_id):
         geojson = request.args.get("geojson") is not None
         return get_shape(trip_id, geojson=geojson, cache_path=cache_path)
 
-    @app.route("/api/routes/<trip_id>")
+    @app.route("/api/trips/<trip_id>/route")
     def route_info(trip_id):
         info = dict(get_route_info_by_trip(trip_id, cache_path=cache_path))
         return info
+
+    @app.route("/api/trips/<trip_id>/stops")
+    def stops_on_trip(trip_id):
+        stops = get_stops_on_trip(trip_id, cache_path=cache_path)
+        stops = [dict(stop) for stop in stops]
+        return stops
     
     return app
 

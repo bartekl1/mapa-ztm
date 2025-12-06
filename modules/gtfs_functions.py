@@ -109,3 +109,8 @@ def get_shape(trip_id: str, cache_path: str, geojson: bool = False):
 def get_route_info_by_trip(trip_id: str, cache_path: str):
     feed = get_feed_from_cache(cache_path, as_classes=True)
     return feed.get_route_info_by_trip(trip_id)
+
+@cachetools.func.ttl_cache(ttl=60)
+def get_stops_on_trip(trip_id: str, cache_path: str):
+    feed = get_feed_from_cache(cache_path, as_classes=True)
+    return feed.get_stops_on_trip(trip_id)
