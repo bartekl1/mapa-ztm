@@ -2,10 +2,11 @@ from flask import Flask, request, send_file
 import os
 
 from modules.config import load_config
-from modules.gtfs_functions import get_current_positions, get_shape
+from modules.gtfs_functions import get_current_positions, get_shape, get_route_info_by_trip
 from save_cache import save_cache
 
 def create_app(config: dict) -> Flask:
+    cache_path = config.get("gtfs_cache_path", "gtfs_cache.db")
     app = Flask(__name__, static_folder="frontend/dist/assets", static_url_path="/assets")
 
     @app.route("/")
@@ -14,13 +15,17 @@ def create_app(config: dict) -> Flask:
 
     @app.route("/api/positions")
     def current_positions():
-        return get_current_positions()
+        return get_current_positions(cache_path=cache_path)
 
     @app.route("/api/shapes/<trip_id>")
     def trip_shape(trip_id):
         geojson = request.args.get("geojson") is not None
-        return get_shape(trip_id, geojson=geojson,
-                         cache_path=config.get("gtfs_cache_path", "gtfs_cache.db"))
+        return get_shape(trip_id, geojson=geojson, cache_path=cache_path)
+
+    @app.route("/api/routes/<trip_id>")
+    def route_info(trip_id):
+        info = dict(get_route_info_by_trip(trip_id, cache_path=cache_path))
+        return info
     
     return app
 

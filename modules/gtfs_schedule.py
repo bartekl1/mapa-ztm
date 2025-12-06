@@ -133,8 +133,10 @@ class Feed:
                     )
             self.db.commit()
     
-    def load_cache(self, path: str) -> None:
+    def load_cache(self, path: str, as_classes: bool = False) -> None:
         self.db = sqlite3.connect(path)
+        if as_classes:
+            self.db.row_factory = sqlite3.Row
     
     def save_cache(self, path: str) -> None:
         cache_db = sqlite3.connect(path)
@@ -154,3 +156,15 @@ class Feed:
             ORDER BY shapes.shape_pt_sequence ASC;
         """, (trip_id, ))
         return cur.fetchall()
+    
+    def get_route_info_by_trip(self, trip_id: str):
+        cur = self.db.cursor()
+        cur.execute("""
+            SELECT trip_id, routes.route_id, route_type
+            FROM routes
+            JOIN trips ON routes.route_id = trips.route_id
+            WHERE trips.trip_id = ?
+            LIMIT 1;
+        """, (trip_id, ))
+        res = cur.fetchall()
+        return res[0] if len(res) > 0 else None

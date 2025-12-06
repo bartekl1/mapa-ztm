@@ -41,13 +41,13 @@ function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
     vehiclesLayer.clearLayers();
     vehicles.forEach((vehicle) => {
         let icon = L.divIcon({
-            html: getIcon(parseInt(vehicle.route_id) < 100 ? "tram" : "bus", vehicle.vehicle_label.split("/")[0]),
+            html: getIcon(vehicle.route.type, vehicle.route.id),
             className: "",
         });
-        let marker = L.marker([vehicle.latitude, vehicle.longitude], {
+        let marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], {
             icon: icon,
-            vehicle_id: vehicle.vehicle_id,
-            trip_id: vehicle.trip_id,
+            vehicle_id: vehicle.vehicle.id,
+            trip_id: vehicle.trip.id,
         });
         marker.addTo(vehiclesLayer);
         marker.on("click", async (e) => {

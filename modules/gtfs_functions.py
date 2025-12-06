@@ -11,19 +11,38 @@ import datetime
 from .gtfs_schedule import Feed
 from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL, GTFS_FILES_LIST_URL
 
+def get_route_type(type_enum: int):
+    types = {0: "tram", 3: "bus"}
+    return types[type_enum] if type_enum in types else "unknown"
+
 @cachetools.func.ttl_cache(ttl=1)
-def get_current_positions() -> list[dict[str, str | int | float]]:
+def get_current_positions(cache_path: str, routes_info: bool = True) -> list[dict[str, str | int | float]]:
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(GTFS_RT_FEED_URL)
     feed.ParseFromString(response.content)
-    return [{
-        "route_id": entity.vehicle.trip.route_id,
-        "trip_id": entity.vehicle.trip.trip_id,
-        "vehicle_id": entity.vehicle.vehicle.id,
-        "vehicle_label": entity.vehicle.vehicle.label,
-        "latitude": entity.vehicle.position.latitude,
-        "longitude": entity.vehicle.position.longitude
-    } for entity in feed.entity]
+    res = []
+    for entity in feed.entity:
+        row = {
+            "trip": {
+                "id": entity.vehicle.trip.trip_id,
+            },
+            "vehicle": {
+                "id": entity.vehicle.vehicle.id,
+                "label": entity.vehicle.vehicle.label,
+            },
+            "coords": {
+                "latitude": entity.vehicle.position.latitude,
+                "longitude": entity.vehicle.position.longitude,
+            },
+        }
+        if routes_info:
+            info = get_route_info_by_trip(entity.vehicle.trip.trip_id, cache_path=cache_path)
+            row["route"] = {
+                "id": info["route_id"],
+                "type": get_route_type(info["route_type"]),
+            }
+        res.append(row)
+    return res
 
 def get_gtfs_files_list() -> list[str]:
     response = requests.get(GTFS_FILES_LIST_URL)
@@ -73,9 +92,9 @@ def download_gtfs_to_cache(cache_path: str) -> None:
             os.remove(tmp_path)
         raise
 
-def get_feed_from_cache(cache_path: str) -> Feed:
+def get_feed_from_cache(cache_path: str, as_classes: bool = False) -> Feed:
     feed = Feed()
-    feed.load_cache(cache_path)
+    feed.load_cache(cache_path, as_classes=as_classes)
     return feed
 
 @cachetools.func.ttl_cache(ttl=60)
@@ -85,3 +104,8 @@ def get_shape(trip_id: str, cache_path: str, geojson: bool = False):
     if geojson:
         return FeatureCollection([Feature(geometry=LineString(shape))])
     return shape
+
+@cachetools.func.ttl_cache(ttl=60)
+def get_route_info_by_trip(trip_id: str, cache_path: str):
+    feed = get_feed_from_cache(cache_path, as_classes=True)
+    return feed.get_route_info_by_trip(trip_id)
