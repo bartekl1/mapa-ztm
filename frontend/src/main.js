@@ -21,7 +21,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl,
 });
 
-function getIcon(type, number) {
+function getVehicleIcon(type, number) {
     return `<div class="vehicle-label vehicle-${type}">
                 <div class="vehicle-label-icon">
                     ${type === "bus" ? busIcon : tramIcon}
@@ -57,21 +57,55 @@ async function fetchTripStops(trip_id) {
     }
 }
 
-function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
+function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude) {
+    let icon = L.divIcon({
+        html: getVehicleIcon(route_type, route_id),
+        className: "",
+    });
+    let marker = L.marker([latitude, longitude], {
+        icon: icon,
+        vehicle_id: vehicle_id,
+        trip_id: trip_id,
+        route_type: route_type,
+        route_id: route_id,
+        latitude: latitude,
+        longitude: longitude,
+    });
+    return marker;
+}
+
+function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicles) {
     vehiclesLayer.clearLayers();
+    trackedVehicleLayer.clearLayers();
+    let trackedVehicleId = document.querySelector("#map").getAttribute("tracked-vehicle-id");
     vehicles.forEach((vehicle) => {
-        let icon = L.divIcon({
-            html: getIcon(vehicle.route.type, vehicle.route.id),
-            className: "",
-        });
-        let marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], {
-            icon: icon,
-            vehicle_id: vehicle.vehicle.id,
-            trip_id: vehicle.trip.id,
-        });
+        let marker = createVehicleMarker(
+            vehicle.vehicle.id,
+            vehicle.trip.id,
+            vehicle.route.type,
+            vehicle.route.id,
+            vehicle.coords.latitude,
+            vehicle.coords.longitude
+        );
+        if (trackedVehicleId === vehicle.vehicle.id) {
+            marker.addTo(trackedVehicleLayer);
+            return;
+        }
         marker.addTo(vehiclesLayer);
         marker.on("click", async (e) => {
-            tripsLayer.clearLayers()
+            document.querySelector("#map").setAttribute("tracked-vehicle-id", e.target.options.vehicle_id);
+            let marker = createVehicleMarker(
+                e.target.options.vehicle_id,
+                e.target.options.trip_id,
+                e.target.options.route_type,
+                e.target.options.route_id,
+                e.target.options.latitude,
+                e.target.options.longitude
+            );
+            vehiclesLayer.removeLayer(vehiclesLayer.getLayer(e.target._leaflet_id));
+            marker.addTo(trackedVehicleLayer);
+
+            tripsLayer.clearLayers();
             let shape = await fetchTripShape(e.target.options.trip_id);
             let stops = await fetchTripStops(e.target.options.trip_id);
             L.geoJSON(shape, {
@@ -88,9 +122,9 @@ function addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer) {
     });
 }
 
-async function updateVehicles(vehiclesLayer, tripsLayer) {
+async function updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer) {
     let vehicles = await fetchVehiclePositions();
-    addVehiclesToMap(vehiclesLayer, vehicles, tripsLayer);
+    addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicles);
 }
 
 function updateZoom(map) {
@@ -124,6 +158,9 @@ async function main() {
 
     let gpsLayer = L.layerGroup();
     map.addLayer(gpsLayer);
+
+    let trackedVehicleLayer = L.layerGroup();
+    map.addLayer(trackedVehicleLayer);
 
     if ("geolocation" in navigator) {
         L.Control.TrackLocation = L.Control.extend({
@@ -178,19 +215,35 @@ async function main() {
         trackControl.addTo(map);
     }
 
-    await updateVehicles(vehiclesLayer, tripsLayer);
+    await updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer);
     if (localStorage.getItem("disable-updates")) console.warn(
         'Vehicle position updates are disabled.\nRun %clocalStorage.removeItem("disable-updates")%c in console and refresh to enable.',
         "background-color: lightgray; color: black; padding: 2px; border-radius: 5px;",
         "",
     );
-    else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer), 5000);
+    else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer), 5000);
 
     updateZoom(map);
     map.on("zoomend", () => updateZoom(map));
 
     document.addEventListener("keyup", (e) => {
-        if (e.key === "Escape") tripsLayer.clearLayers();
+        if (e.key === "Escape") {
+            tripsLayer.clearLayers();
+            document.querySelector("#map").removeAttribute("tracked-vehicle-id");
+            let markers = trackedVehicleLayer.getLayers();
+            if (markers.length === 1) {
+                let marker = createVehicleMarker(
+                    markers[0].options.vehicle_id,
+                    markers[0].options.trip_id,
+                    markers[0].options.route_type,
+                    markers[0].options.route_id,
+                    markers[0].options.latitude,
+                    markers[0].options.longitude
+                );
+                marker.addTo(vehiclesLayer);
+                trackedVehicleLayer.clearLayers();
+            }
+        }
     });
 }
 

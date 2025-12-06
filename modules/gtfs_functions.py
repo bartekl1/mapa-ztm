@@ -34,6 +34,7 @@ def get_current_positions(cache_path: str, routes_info: bool = True) -> list[dic
                 "latitude": entity.vehicle.position.latitude,
                 "longitude": entity.vehicle.position.longitude,
             },
+            "current_stop_sequence": entity.vehicle.current_stop_sequence,
         }
         if routes_info:
             info = get_route_info_by_trip(entity.vehicle.trip.trip_id, cache_path=cache_path)
