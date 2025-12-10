@@ -31,6 +31,7 @@ $tracked-vehicle-label-bg-dark: yellow;
 
 
 $dark-mode-map-filters: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+$loading-filters: brightness(50%);
 
 html, body {
     height: 100%;
@@ -58,7 +59,7 @@ html, body {
     padding: 1px;
     padding-right: 4px;
 
-    // transform: translate(-50%, 50%);
+    transform: translate(-40%, -30%);
 
     @media (prefers-color-scheme: light) { background-color: $vehicle-label-bg-light; }
     @media (prefers-color-scheme: dark) { background-color: $vehicle-label-bg-dark; }
@@ -226,3 +227,47 @@ html, body {
 #map[zoom="12"] .route-path { @include animate-route(10, 10); }
 #map[zoom="11"] .route-path { @include animate-route(10, 10); }
 #map[zoom="10"] .route-path { @include animate-route(5, 10); }
+
+.track-user-location-button {
+    svg {
+        margin: 4px;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.track-user-location-button.loading {
+    svg {
+        fill: #444444;
+        animation: rotate 1.75s linear infinite;
+    }
+}
+
+body {
+    .loading-overlay {
+        position: fixed;
+        top: 45%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+
+        svg.spinner {
+            fill: white;
+            animation: rotate 1.75s linear infinite;
+
+            width: 40px;
+            height: 40px;
+        }
+    }
+}
+
+#map.loading{
+    filter: $loading-filters;
+}

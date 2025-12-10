@@ -14,6 +14,7 @@ import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
 import gpsIcon from "./img/crosshairs-gps.svg?raw";
 import questionMarkIcon from "./img/help.svg?raw";
+import loadingIcon from "./img/loading.svg?raw";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -171,6 +172,14 @@ function updateZoom(map) {
     document.querySelector("#map").setAttribute("zoom", map.getZoom());
 }
 
+function createLoadingOverlay() {
+    let loading = document.createElement("div");
+    loading.classList.add("loading-overlay");
+    loading.innerHTML = loadingIcon;
+    loading.querySelector("svg").classList.add("spinner");
+    return loading
+}
+
 async function main() {
     const map = L.map("map").setView([52.40, 16.96], 13);
 
@@ -181,6 +190,10 @@ async function main() {
         className: "map-tiles",
     }).addTo(map);
     map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
+
+    document.querySelector("#map").classList.add("loading");
+    let loadingOverlay = createLoadingOverlay()
+    document.querySelector("body").appendChild(loadingOverlay);
 
     let vehiclesLayer = L.markerClusterGroup({
         maxClusterRadius: (zoom) => {
@@ -209,19 +222,27 @@ async function main() {
             },
             onAdd: () => {
                 let container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
-                let button = L.DomUtil.create("a", "leaflet-control-button", container);
+                let button = L.DomUtil.create("a", "leaflet-control-button track-user-location-button", container);
                 button.innerHTML = gpsIcon;
-                button.querySelector("svg").style.margin = "4px";
                 L.DomEvent.disableClickPropagation(button);
 
                 let watchId = null;
 
                 L.DomEvent.on(button, "click", () => {
                     if (watchId === null) {
+                        button.classList.add("loading");
+                        button.innerHTML = loadingIcon;
+
                         navigator.geolocation.getCurrentPosition((position) => {
                             let zoom = map.getZoom();
                             if (zoom < 15) zoom = 17;
                             map.setView([position.coords.latitude, position.coords.longitude], zoom);
+
+                            button.classList.remove("loading");
+                            button.innerHTML = gpsIcon;
+                        }, () => {
+                            button.classList.remove("loading");
+                            button.innerHTML = gpsIcon;
                         });
                         watchId = navigator.geolocation.watchPosition((position) => {
                             gpsLayer.clearLayers();
@@ -272,6 +293,9 @@ async function main() {
             untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
         }
     });
+
+    loadingOverlay.remove();
+    document.querySelector("#map").classList.remove("loading");
 }
 
 main();
