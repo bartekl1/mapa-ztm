@@ -2,25 +2,31 @@
 
 $tram-color-light: red;
 $bus-color-light: blue;
+$unknown-color-light: #444444;
 $vehicle-label-bg-light: white;
 
 $tram-route-color-light: red;
 $bus-route-color-light: blue;
+$unknown-route-color-light: black;
 
 $tracked-tram-color-light: red;
 $tracked-bus-color-light: blue;
+$tracked-unknown-color-light: #222222;
 $tracked-vehicle-label-bg-light: yellow;
 
 
 $tram-color-dark: color.adjust(color.mix(red, white, 80%), $lightness: -5%);
 $bus-color-dark: color.adjust(color.mix(blue, white, 80%), $lightness: 5%);
+$unknown-color-dark: #bbbbbb;
 $vehicle-label-bg-dark: color.adjust(color.mix(black, gray, 80%), $lightness: -5%);
 
 $tram-route-color-dark: red;
 $bus-route-color-dark: blue;
+$unknown-route-color-dark: white;
 
 $tracked-tram-color-dark: red;
 $tracked-bus-color-dark: blue;
+$tracked-unknown-color-dark: #555555;
 $tracked-vehicle-label-bg-dark: yellow;
 
 
@@ -112,6 +118,23 @@ html, body {
     }
 }
 
+.vehicle-label.vehicle-unknown {
+    @media (prefers-color-scheme: light) { border-color: $unknown-color-light; }
+    @media (prefers-color-scheme: dark) { border-color: $unknown-color-dark; }
+
+    .vehicle-label-icon {
+        svg {
+            @media (prefers-color-scheme: light) { fill: $unknown-color-light; }
+            @media (prefers-color-scheme: dark) { fill: $unknown-color-dark }
+        }
+    }
+
+    .vehicle-label-text {
+        @media (prefers-color-scheme: light) { color: $unknown-color-light; }
+        @media (prefers-color-scheme: dark) { color: $unknown-color-dark; }
+    }
+}
+
 .vehicle-icon-tracked {
     .vehicle-label {
         @media (prefers-color-scheme: light) { background-color: $tracked-vehicle-label-bg-light; }
@@ -151,6 +174,23 @@ html, body {
             @media (prefers-color-scheme: dark) { color: $tracked-bus-color-dark; }
         }
     }
+
+    .vehicle-label.vehicle-unknown {
+        @media (prefers-color-scheme: light) { border-color: $tracked-unknown-color-light; }
+        @media (prefers-color-scheme: dark) { border-color: $tracked-unknown-color-dark; }
+
+        .vehicle-label-icon {
+            svg {
+                @media (prefers-color-scheme: light) { fill: $tracked-unknown-color-light }
+                @media (prefers-color-scheme: dark) { fill: $tracked-unknown-color-dark }
+            }
+        }
+
+        .vehicle-label-text {
+            @media (prefers-color-scheme: light) { color: $tracked-unknown-color-light; }
+            @media (prefers-color-scheme: dark) { color: $tracked-unknown-color-dark; }
+        }
+    }
 }
 
 .route-path.route-bus {
@@ -161,6 +201,11 @@ html, body {
 .route-path.route-tram {
     @media (prefers-color-scheme: light) { stroke: $tram-route-color-light; }
     @media (prefers-color-scheme: dark) { stroke: $tram-route-color-dark; }
+}
+
+.route-path.route-unknown {
+    @media (prefers-color-scheme: light) { stroke: $unknown-route-color-light; }
+    @media (prefers-color-scheme: dark) { stroke: $unknown-route-color-dark; }
 }
 
 @mixin animate-route($dashSize: 50, $gapSize: 10) {

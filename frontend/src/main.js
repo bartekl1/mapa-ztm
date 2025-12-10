@@ -13,6 +13,7 @@ import "./style.scss";
 import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
 import gpsIcon from "./img/crosshairs-gps.svg?raw";
+import questionMarkIcon from "./img/help.svg?raw";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -22,9 +23,16 @@ L.Icon.Default.mergeOptions({
 });
 
 function getVehicleIcon(type, number) {
+    const icons = {
+        bus: busIcon,
+        tram: tramIcon,
+        unknown: questionMarkIcon,
+    }
+    if (type === null) type = "unknown";
+    if (number === null) number = "???";
     return `<div class="vehicle-label vehicle-${type}">
                 <div class="vehicle-label-icon">
-                    ${type === "bus" ? busIcon : tramIcon}
+                    ${icons[type]}
                 </div>
                 <div class="vehicle-label-text">${number}</div>
             </div>`;

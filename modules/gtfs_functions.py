@@ -38,10 +38,13 @@ def get_current_positions(cache_path: str, routes_info: bool = True) -> list[dic
         }
         if routes_info:
             info = get_route_info_by_trip(entity.vehicle.trip.trip_id, cache_path=cache_path)
-            row["route"] = {
-                "id": info["route_id"],
-                "type": get_route_type(info["route_type"]),
-            }
+            if info is not None:
+                row["route"] = {
+                    "id": info["route_id"],
+                    "type": get_route_type(info["route_type"]),
+                }
+            else:
+                row["route"] = {"id": None, "type": None}
         res.append(row)
     return res
 
