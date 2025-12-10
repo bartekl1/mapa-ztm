@@ -13,6 +13,10 @@ def create_app(config: dict) -> Flask:
     def index():
         return send_file("frontend/dist/index.html")
 
+    @app.route("/icon.svg")
+    def icon():
+        return send_file("frontend/dist/icon.svg")
+
     @app.route("/api/positions")
     def current_positions():
         return get_current_positions(cache_path=cache_path)
