@@ -146,6 +146,9 @@ class Feed:
         finally:
             cache_db.close()
     
+    def close(self) -> None:
+        self.db.close()
+    
     def get_shape(self, trip_id: str, reversed: bool = False):
         cur = self.db.cursor()
         cur.execute(f"""

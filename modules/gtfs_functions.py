@@ -105,6 +105,7 @@ def get_feed_from_cache(cache_path: str, as_classes: bool = False) -> Feed:
 def get_shape(trip_id: str, cache_path: str, geojson: bool = False):
     feed = get_feed_from_cache(cache_path)
     shape = feed.get_shape(trip_id, reversed=geojson)
+    feed.close()
     if geojson:
         return FeatureCollection([Feature(geometry=LineString(shape))])
     return shape
@@ -112,9 +113,13 @@ def get_shape(trip_id: str, cache_path: str, geojson: bool = False):
 @cachetools.func.ttl_cache(ttl=60)
 def get_route_info_by_trip(trip_id: str, cache_path: str):
     feed = get_feed_from_cache(cache_path, as_classes=True)
-    return feed.get_route_info_by_trip(trip_id)
+    info = feed.get_route_info_by_trip(trip_id)
+    feed.close()
+    return info
 
 @cachetools.func.ttl_cache(ttl=60)
 def get_stops_on_trip(trip_id: str, cache_path: str):
     feed = get_feed_from_cache(cache_path, as_classes=True)
-    return feed.get_stops_on_trip(trip_id)
+    stops = feed.get_stops_on_trip(trip_id)
+    feed.close()
+    return stops
