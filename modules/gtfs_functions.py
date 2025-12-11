@@ -123,3 +123,10 @@ def get_stops_on_trip(trip_id: str, cache_path: str):
     stops = feed.get_stops_on_trip(trip_id)
     feed.close()
     return stops
+
+@cachetools.func.ttl_cache(ttl=60)
+def get_stops(cache_path: str):
+    feed = get_feed_from_cache(cache_path, as_classes=True)
+    stops = feed.get_stops()
+    feed.close()
+    return stops 

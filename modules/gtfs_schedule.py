@@ -182,3 +182,8 @@ class Feed:
             ORDER BY stop_times.stop_sequence ASC;
         """, (trip_id, ))
         return cur.fetchall()
+    
+    def get_stops(self):
+        cur = self.db.cursor()
+        cur.execute("SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon, zone_id FROM stops;")
+        return cur.fetchall()

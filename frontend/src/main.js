@@ -66,6 +66,15 @@ async function fetchTripStops(trip_id) {
     }
 }
 
+async function fetchAllStops(trip_id) {
+    let r = await fetch("/api/stops");
+    if (r.ok) return await r.json();
+    else {
+        console.error("Failed to fetch stops");
+        return [];
+    }
+}
+
 function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, tracked = false) {
     let icon = L.divIcon({
         html: getVehicleIcon(route_type, route_id),
@@ -214,6 +223,24 @@ async function main() {
 
     let trackedVehicleLayer = L.layerGroup();
     map.addLayer(trackedVehicleLayer);
+
+    // let stopsLayer = L.markerClusterGroup({
+    //     maxClusterRadius: 0,
+    //     disableClusteringAtZoom: 16,
+    // });
+    // // map.addLayer(stopsLayer);
+    // let stops = await fetchAllStops();
+    // stops.forEach(stop => {
+    //     let marker = L.marker([stop.stop_lat, stop.stop_lon]);
+    //     marker.addTo(stopsLayer);
+    // });
+    // map.on("zoomend", () => {
+    //     if (map.getZoom() >= 16) {
+    //         if (!map.hasLayer(stopsLayer)) map.addLayer(stopsLayer);
+    //     } else {
+    //         if (map.hasLayer(stopsLayer)) map.removeLayer(stopsLayer);
+    //     }
+    // });
 
     if ("geolocation" in navigator) {
         L.Control.TrackLocation = L.Control.extend({
