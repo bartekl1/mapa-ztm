@@ -44,10 +44,114 @@ html, body {
     height: 100%;
 }
 
-@media (prefers-color-scheme: dark) {
+.map-dark-theme {
     .map-tiles {
         filter: $dark-mode-map-filters;
 	}
+
+    .vehicle-label { background-color: $vehicle-label-bg-dark; }
+
+    .vehicle-label.vehicle-tram {
+        border-color: $tram-color-dark;
+
+        .vehicle-label-icon {
+            svg {
+                fill: $tram-color-dark;
+            }
+        }
+
+        .vehicle-label-text {
+            color: $tram-color-dark;
+        }
+    }
+
+    .vehicle-label.vehicle-bus {
+        border-color: $bus-color-dark;
+
+        .vehicle-label-icon {
+            svg {
+                fill: $bus-color-dark;
+            }
+        }
+
+        .vehicle-label-text {
+            color: $bus-color-dark;
+        }
+    }
+
+    .vehicle-label.vehicle-unknown {
+        border-color: $unknown-color-dark;
+
+        .vehicle-label-icon {
+            svg {
+                fill: $unknown-color-dark;
+            }
+        }
+
+        .vehicle-label-text {
+            color: $unknown-color-dark;
+        }
+    }
+
+    .vehicle-icon-tracked {
+        .vehicle-label {
+            background-color: $tracked-vehicle-label-bg-dark;
+        }
+
+        .vehicle-label.vehicle-tram {
+            border-color: $tracked-tram-color-dark;
+
+            .vehicle-label-icon {
+                svg {
+                    fill: $tracked-tram-color-dark;
+                }
+            }
+
+            .vehicle-label-text {
+                color: $tracked-tram-color-dark;
+            }
+        }
+
+        .vehicle-label.vehicle-bus {
+            border-color: $tracked-bus-color-dark;
+
+            .vehicle-label-icon {
+                svg {
+                    fill: $tracked-bus-color-dark;
+                }
+            }
+
+            .vehicle-label-text {
+                color: $tracked-bus-color-dark;
+            }
+        }
+
+        .vehicle-label.vehicle-unknown {
+            border-color: $tracked-unknown-color-dark;
+
+            .vehicle-label-icon {
+                svg {
+                    fill: $tracked-unknown-color-dark;
+                }
+            }
+
+            .vehicle-label-text {
+                color: $tracked-unknown-color-dark;
+            }
+        }
+    }
+
+    .route-path.route-bus {
+        stroke: $bus-route-color-dark;
+    }
+
+    .route-path.route-tram {
+        stroke: $tram-route-color-dark;
+    }
+
+    .route-path.route-unknown {
+        stroke: $unknown-route-color-dark;
+    }
 }
 
 .vehicle-label {
@@ -61,8 +165,8 @@ html, body {
 
     transform: translate(-40%, -30%);
 
-    @media (prefers-color-scheme: light) { background-color: $vehicle-label-bg-light; }
-    @media (prefers-color-scheme: dark) { background-color: $vehicle-label-bg-dark; }
+    background-color: $vehicle-label-bg-light;
+    
     border-width: 1px;
     border-style: solid;
     border-radius: 5px;
@@ -86,127 +190,105 @@ html, body {
 }
 
 .vehicle-label.vehicle-tram {
-    @media (prefers-color-scheme: light) { border-color: $tram-color-light; }
-    @media (prefers-color-scheme: dark) { border-color: $tram-color-dark; }
+    border-color: $tram-color-light;
 
     .vehicle-label-icon {
         svg {
-            @media (prefers-color-scheme: light) { fill: $tram-color-light; }
-            @media (prefers-color-scheme: dark) { fill: $tram-color-dark }
+            fill: $tram-color-light;
         }
     }
 
     .vehicle-label-text {
-        @media (prefers-color-scheme: light) { color: $tram-color-light; }
-        @media (prefers-color-scheme: dark) { color: $tram-color-dark; }
+        color: $tram-color-light;
     }
 }
 
 .vehicle-label.vehicle-bus {
-    @media (prefers-color-scheme: light) { border-color: $bus-color-light; }
-    @media (prefers-color-scheme: dark) { border-color: $bus-color-dark; }
+    border-color: $bus-color-light;
 
     .vehicle-label-icon {
         svg {
-            @media (prefers-color-scheme: light) { fill: $bus-color-light; }
-            @media (prefers-color-scheme: dark) { fill: $bus-color-dark }
+            fill: $bus-color-light;
         }
     }
 
     .vehicle-label-text {
-        @media (prefers-color-scheme: light) { color: $bus-color-light; }
-        @media (prefers-color-scheme: dark) { color: $bus-color-dark; }
+        color: $bus-color-light;
     }
 }
 
 .vehicle-label.vehicle-unknown {
-    @media (prefers-color-scheme: light) { border-color: $unknown-color-light; }
-    @media (prefers-color-scheme: dark) { border-color: $unknown-color-dark; }
+    border-color: $unknown-color-light;
 
     .vehicle-label-icon {
         svg {
-            @media (prefers-color-scheme: light) { fill: $unknown-color-light; }
-            @media (prefers-color-scheme: dark) { fill: $unknown-color-dark }
+            fill: $unknown-color-light;
         }
     }
 
     .vehicle-label-text {
-        @media (prefers-color-scheme: light) { color: $unknown-color-light; }
-        @media (prefers-color-scheme: dark) { color: $unknown-color-dark; }
+        color: $unknown-color-light;
     }
 }
 
 .vehicle-icon-tracked {
     .vehicle-label {
-        @media (prefers-color-scheme: light) { background-color: $tracked-vehicle-label-bg-light; }
-        @media (prefers-color-scheme: dark) { background-color: $tracked-vehicle-label-bg-dark; }
+        background-color: $tracked-vehicle-label-bg-light;
     }
 
     .vehicle-label.vehicle-tram {
-        @media (prefers-color-scheme: light) { border-color: $tracked-tram-color-light; }
-        @media (prefers-color-scheme: dark) { border-color: $tracked-tram-color-dark; }
+        border-color: $tracked-tram-color-light;
 
         .vehicle-label-icon {
             svg {
-                @media (prefers-color-scheme: light) { fill: $tracked-tram-color-light }
-                @media (prefers-color-scheme: dark) { fill: $tracked-tram-color-dark }
+                fill: $tracked-tram-color-light;
             }
         }
 
         .vehicle-label-text {
-            @media (prefers-color-scheme: light) { color: $tracked-tram-color-light; }
-            @media (prefers-color-scheme: dark) { color: $tracked-tram-color-dark; }
+            color: $tracked-tram-color-light;
         }
     }
 
     .vehicle-label.vehicle-bus {
-        @media (prefers-color-scheme: light) { border-color: $tracked-bus-color-light; }
-        @media (prefers-color-scheme: dark) { border-color: $tracked-bus-color-dark; }
+        border-color: $tracked-bus-color-light;
 
         .vehicle-label-icon {
             svg {
-                @media (prefers-color-scheme: light) { fill: $tracked-bus-color-light }
-                @media (prefers-color-scheme: dark) { fill: $tracked-bus-color-dark }
+                fill: $tracked-bus-color-light;
             }
         }
 
         .vehicle-label-text {
-            @media (prefers-color-scheme: light) { color: $tracked-bus-color-light; }
-            @media (prefers-color-scheme: dark) { color: $tracked-bus-color-dark; }
+            color: $tracked-bus-color-light;
         }
     }
 
     .vehicle-label.vehicle-unknown {
-        @media (prefers-color-scheme: light) { border-color: $tracked-unknown-color-light; }
-        @media (prefers-color-scheme: dark) { border-color: $tracked-unknown-color-dark; }
+        border-color: $tracked-unknown-color-light;
 
         .vehicle-label-icon {
             svg {
-                @media (prefers-color-scheme: light) { fill: $tracked-unknown-color-light }
-                @media (prefers-color-scheme: dark) { fill: $tracked-unknown-color-dark }
+                fill: $tracked-unknown-color-light;
             }
         }
 
         .vehicle-label-text {
-            @media (prefers-color-scheme: light) { color: $tracked-unknown-color-light; }
-            @media (prefers-color-scheme: dark) { color: $tracked-unknown-color-dark; }
+            color: $tracked-unknown-color-light;
         }
     }
 }
 
 .route-path.route-bus {
-    @media (prefers-color-scheme: light) { stroke: $bus-route-color-light; }
-    @media (prefers-color-scheme: dark) { stroke: $bus-route-color-dark; }
+    stroke: $bus-route-color-light;
 }
 
 .route-path.route-tram {
-    @media (prefers-color-scheme: light) { stroke: $tram-route-color-light; }
-    @media (prefers-color-scheme: dark) { stroke: $tram-route-color-dark; }
+    stroke: $tram-route-color-light;
 }
 
 .route-path.route-unknown {
-    @media (prefers-color-scheme: light) { stroke: $unknown-route-color-light; }
-    @media (prefers-color-scheme: dark) { stroke: $unknown-route-color-dark; }
+    stroke: $unknown-route-color-light;
 }
 
 @mixin animate-route($dashSize: 50, $gapSize: 10) {
@@ -228,7 +310,7 @@ html, body {
 #map[zoom="11"] .route-path { @include animate-route(10, 10); }
 #map[zoom="10"] .route-path { @include animate-route(5, 10); }
 
-.track-user-location-button {
+.track-user-location-button, .open-settings-button {
     svg {
         margin: 4px;
     }
@@ -270,4 +352,43 @@ body {
 
 #map.loading{
     filter: $loading-filters;
+
+    pointer-events: none;
+    * {
+        pointer-events: none;
+    }
+}
+
+#settings-dialog {
+    --width: 100vw;
+    @media (min-width: 600px) {
+        --width: 90vw;
+    }
+    @media (min-width: 1000px) {
+        --width: 80vw;
+    }
+}
+
+#map {
+    z-index: 10;
+}
+
+sl-dialog::part(base) {
+    z-index: 20;
+}
+
+sl-dialog {
+    sl-tab-panel {
+        min-height: 500px;
+    }
+}
+
+.sl-theme-dark {
+    color: color.adjust(white, $lightness: -10%);
+}
+
+@for $i from 1 through 10 {
+    .spacing-#{$i*5} {
+        margin-bottom: #{$i*5}px;
+    }
 }

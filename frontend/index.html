@@ -8,6 +8,29 @@
     </head>
     <body>
         <div id="map"></div>
+
+        <sl-dialog id="settings-dialog">
+            <div>
+                <sl-tab-group placement="start">
+                    <sl-tab slot="nav" panel="general">Ogólne</sl-tab>
+                    <sl-tab slot="nav" panel="about">O aplikacji</sl-tab>
+
+                    <sl-tab-panel name="general">
+                        <sl-select id="theme-select" pill label="Motyw">
+                            <sl-option value="system">Systemowy</sl-option>
+                            <sl-option value="light">Jasny</sl-option>
+                            <sl-option value="dark">Ciemny</sl-option>
+                        </sl-select>
+                        <div class="spacing-10"></div>
+                        <sl-switch id="map-dark-theme-switch">Zastosuj ciemny motyw w mapie</sl-switch>
+                    </sl-tab-panel>
+                    <sl-tab-panel name="about">
+                        Tutaj będą informacje o aplikacji.
+                    </sl-tab-panel>
+                </sl-tab-group>
+            </div>
+        </sl-dialog>
+
         <script type="module" src="/src/main.js"></script>
     </body>
 </html>

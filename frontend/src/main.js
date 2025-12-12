@@ -9,9 +9,15 @@ import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 
+import "@shoelace-style/shoelace/dist/themes/light.css";
+import "@shoelace-style/shoelace/dist/themes/dark.css";
+import "@shoelace-style/shoelace/dist/shoelace.js";
+
 import "./style.scss";
+
 import busIcon from "./img/bus.svg?raw";
 import tramIcon from "./img/tram.svg?raw";
+import settingsIcon from "./img/cog.svg?raw";
 import gpsIcon from "./img/crosshairs-gps.svg?raw";
 import questionMarkIcon from "./img/help.svg?raw";
 import loadingIcon from "./img/loading.svg?raw";
@@ -189,7 +195,43 @@ function createLoadingOverlay() {
     return loading
 }
 
+function applyTheme() {
+    let darkTheme = (localStorage.getItem("theme") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) || localStorage.getItem("theme") === "dark";
+    let mapDarkTheme = darkTheme && localStorage.getItem("map-dark-theme") === null;
+    if (darkTheme) {
+        document.querySelector("#settings-dialog").classList.add("sl-theme-dark");
+    } else {
+        document.querySelector("#settings-dialog").classList.remove("sl-theme-dark");
+    }
+    if (mapDarkTheme) document.querySelector("#map").classList.add("map-dark-theme");
+    else document.querySelector("#map").classList.remove("map-dark-theme");
+}
+
+function initSettings() {
+    let currentTheme = localStorage.getItem("theme");
+    if (currentTheme === null) currentTheme = "system";
+    document.querySelector("#theme-select").value = currentTheme;
+
+    document.querySelector("#map-dark-theme-switch").checked = localStorage.getItem("map-dark-theme") === null;
+
+    document.querySelector("#theme-select").addEventListener("sl-change", e => {
+        let value = e.currentTarget.value;
+        if (value === "light" || value === "dark") localStorage.setItem("theme", value);
+        else localStorage.removeItem("theme");
+        applyTheme();
+    });
+    document.querySelector("#map-dark-theme-switch").addEventListener("sl-change", e => {
+        let checked = e.currentTarget.checked;
+        if (checked) localStorage.removeItem("map-dark-theme");
+        else localStorage.setItem("map-dark-theme", "false");
+        applyTheme();
+    });
+}
+
 async function main() {
+    applyTheme();
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+
     const map = L.map("map").setView([52.40, 16.96], 13);
 
     const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -241,6 +283,29 @@ async function main() {
     //         if (map.hasLayer(stopsLayer)) map.removeLayer(stopsLayer);
     //     }
     // });
+
+    L.Control.Settings = L.Control.extend({
+        options: {
+            position: "topleft",
+        },
+        onAdd: () => {
+            let container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
+            let button = L.DomUtil.create("a", "leaflet-control-button open-settings-button", container);
+            button.innerHTML = settingsIcon;
+            L.DomEvent.disableClickPropagation(button);
+
+            L.DomEvent.on(button, "click", () => {
+                document.querySelector("#settings-dialog").show();
+            });
+
+            container.title = "Settings";
+
+            return container;
+        },
+        onRemove: () => {},
+    });
+    let settingsControl = new L.Control.Settings();
+    settingsControl.addTo(map);
 
     if ("geolocation" in navigator) {
         L.Control.TrackLocation = L.Control.extend({
@@ -323,6 +388,8 @@ async function main() {
 
     loadingOverlay.remove();
     document.querySelector("#map").classList.remove("loading");
+
+    initSettings();
 }
 
 main();
