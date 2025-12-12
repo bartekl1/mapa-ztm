@@ -214,18 +214,25 @@ function initSettings() {
 
     document.querySelector("#map-dark-theme-switch").checked = localStorage.getItem("map-dark-theme") === null;
 
-    document.querySelector("#theme-select").addEventListener("sl-change", e => {
+    document.querySelector("#theme-select").addEventListener("sl-change", (e) => {
         let value = e.currentTarget.value;
         if (value === "light" || value === "dark") localStorage.setItem("theme", value);
         else localStorage.removeItem("theme");
         applyTheme();
     });
-    document.querySelector("#map-dark-theme-switch").addEventListener("sl-change", e => {
+    document.querySelector("#map-dark-theme-switch").addEventListener("sl-change", (e) => {
         let checked = e.currentTarget.checked;
         if (checked) localStorage.removeItem("map-dark-theme");
         else localStorage.setItem("map-dark-theme", "false");
         applyTheme();
     });
+
+    let resizeCallback = () => {
+        let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        document.querySelector("sl-tab-group").setAttribute("placement", vw >= 800 ? "start" : "top");
+    };
+    resizeCallback();
+    addEventListener("resize", resizeCallback);
 }
 
 async function main() {
