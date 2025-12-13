@@ -13,6 +13,7 @@
             <div>
                 <sl-tab-group>
                     <sl-tab slot="nav" panel="general">Ogólne</sl-tab>
+                    <sl-tab slot="nav" panel="debugging">Debugowanie</sl-tab>
                     <sl-tab slot="nav" panel="about">O aplikacji</sl-tab>
 
                     <sl-tab-panel name="general">
@@ -21,9 +22,33 @@
                             <sl-option value="light">Jasny</sl-option>
                             <sl-option value="dark">Ciemny</sl-option>
                         </sl-select>
+
                         <div class="spacing-10"></div>
+
                         <sl-switch id="map-dark-theme-switch">Zastosuj ciemny motyw w mapie</sl-switch>
                     </sl-tab-panel>
+
+                    <sl-tab-panel name="debugging">
+                        <sl-alert variant="warning" open>
+                            <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+                            <strong>Ustawienia przeznaczone do debugowania</strong><br />
+                            Te ustawienia są przeznaczone do debugowania, ich zmiana w produkcyjnej wersji aplikacji może spowodować, że niektóre funkcje przestaną działać lub będą działać nieprawidłowo.
+                        </sl-alert>
+
+                        <div class="spacing-10"></div>
+
+                        <sl-alert variant="warning" id="debug-options-changed">
+                            <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+                            <strong>Ustawienia przeznaczone do debugowania uległy zmianie</strong><br />
+                            Aby zastosować zmianę tych ustawień należy odświeżyć stronę.<br>
+                            <sl-button variant="primary" outline class="refresh-website">Odśwież</sl-button>
+                        </sl-alert>
+
+                        <div class="spacing-10"></div>
+
+                        <sl-switch id="disable-vehicle-position-updates-switch">Wyłącz aktualizację pozycji pojazdów</sl-switch>
+                    </sl-tab-panel>
+
                     <sl-tab-panel name="about">
                         Tutaj będą informacje o aplikacji.
                     </sl-tab-panel>

@@ -12,6 +12,8 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import "@shoelace-style/shoelace/dist/themes/dark.css";
 import "@shoelace-style/shoelace/dist/shoelace.js";
+import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
+setBasePath("/assets/shoelace");
 
 import "./style.scss";
 
@@ -37,12 +39,7 @@ function getVehicleIcon(type, number) {
     }
     if (type === null) type = "unknown";
     if (number === null) number = "???";
-    return `<div class="vehicle-label vehicle-${type}">
-                <div class="vehicle-label-icon">
-                    ${icons[type]}
-                </div>
-                <div class="vehicle-label-text">${number}</div>
-            </div>`;
+    return `<div class="vehicle-label vehicle-${type}"><div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
 }
 
 async function fetchVehiclePositions() {
@@ -197,7 +194,7 @@ function createLoadingOverlay() {
 
 function applyTheme() {
     let darkTheme = (localStorage.getItem("theme") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) || localStorage.getItem("theme") === "dark";
-    let mapDarkTheme = darkTheme && localStorage.getItem("map-dark-theme") === null;
+    let mapDarkTheme = darkTheme && !localStorage.getItem("map-dark-theme");
     if (darkTheme) {
         document.querySelector("#settings-dialog").classList.add("sl-theme-dark");
     } else {
@@ -212,7 +209,8 @@ function initSettings() {
     if (currentTheme === null) currentTheme = "system";
     document.querySelector("#theme-select").value = currentTheme;
 
-    document.querySelector("#map-dark-theme-switch").checked = localStorage.getItem("map-dark-theme") === null;
+    document.querySelector("#map-dark-theme-switch").checked = !localStorage.getItem("map-dark-theme");
+    document.querySelector("#disable-vehicle-position-updates-switch").checked = localStorage.getItem("disable-vehicle-position-updates");
 
     document.querySelector("#theme-select").addEventListener("sl-change", (e) => {
         let value = e.currentTarget.value;
@@ -225,6 +223,12 @@ function initSettings() {
         if (checked) localStorage.removeItem("map-dark-theme");
         else localStorage.setItem("map-dark-theme", "false");
         applyTheme();
+    });
+    document.querySelector("#disable-vehicle-position-updates-switch").addEventListener("sl-change", (e) => {
+        let checked = e.currentTarget.checked;
+        if (checked) localStorage.setItem("disable-vehicle-position-updates", "true");
+        else localStorage.removeItem("disable-vehicle-position-updates");
+        document.querySelector("#debug-options-changed").show();
     });
 
     let resizeCallback = () => {
@@ -376,9 +380,9 @@ async function main() {
     }
 
     await updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer);
-    if (localStorage.getItem("disable-updates")) console.warn(
-        'Vehicle position updates are disabled.\nRun %clocalStorage.removeItem("disable-updates")%c in console and refresh to enable.',
-        "background-color: lightgray; color: black; padding: 2px; border-radius: 5px;",
+    if (localStorage.getItem("disable-vehicle-position-updates")) console.warn(
+        "%cWarning! Debug option enabled.\n%cVehicle position updates are disabled.",
+        "font-weight: bold;",
         "",
     );
     else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer), 5000);
@@ -397,6 +401,7 @@ async function main() {
     document.querySelector("#map").classList.remove("loading");
 
     initSettings();
+    document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
 }
 
 main();
