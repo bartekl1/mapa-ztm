@@ -10,43 +10,59 @@
         <div id="map"></div>
 
         <sl-dialog id="settings-dialog">
+            <span slot="label">Ustawienia</span>
             <div>
                 <sl-tab-group>
-                    <sl-tab slot="nav" panel="general">Ogólne</sl-tab>
-                    <sl-tab slot="nav" panel="debugging">Debugowanie</sl-tab>
-                    <sl-tab slot="nav" panel="about">O aplikacji</sl-tab>
+                    <sl-tab slot="nav" panel="general">
+                        <sl-icon name="grid-3x3-gap-fill" class="mr-5"></sl-icon>
+                        Ogólne
+                    </sl-tab>
+                    <sl-tab slot="nav" panel="debugging">
+                        <sl-icon name="bug-fill" class="mr-5"></sl-icon>
+                        Debugowanie
+                    </sl-tab>
+                    <sl-tab slot="nav" panel="about">
+                        <sl-icon name="info-circle-fill" class="mr-5"></sl-icon>
+                        O aplikacji
+                    </sl-tab>
 
                     <sl-tab-panel name="general">
-                        <sl-select id="theme-select" pill label="Motyw">
+                        <sl-select id="theme-select" pill label="Motyw" class="mb-10">
                             <sl-option value="system">Systemowy</sl-option>
                             <sl-option value="light">Jasny</sl-option>
                             <sl-option value="dark">Ciemny</sl-option>
                         </sl-select>
 
-                        <div class="spacing-10"></div>
-
                         <sl-switch id="map-dark-theme-switch">Zastosuj ciemny motyw w mapie</sl-switch>
                     </sl-tab-panel>
 
                     <sl-tab-panel name="debugging">
-                        <sl-alert variant="warning" open>
+                        <sl-alert variant="warning" open class="mb-10">
                             <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
                             <strong>Ustawienia przeznaczone do debugowania</strong><br />
                             Te ustawienia są przeznaczone do debugowania, ich zmiana w produkcyjnej wersji aplikacji może spowodować, że niektóre funkcje przestaną działać lub będą działać nieprawidłowo.
                         </sl-alert>
 
-                        <div class="spacing-10"></div>
-
-                        <sl-alert variant="warning" id="debug-options-changed">
+                        <sl-alert variant="warning" id="debug-options-changed" class="mb-10">
                             <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
                             <strong>Ustawienia przeznaczone do debugowania uległy zmianie</strong><br />
                             Aby zastosować zmianę tych ustawień należy odświeżyć stronę.<br>
-                            <sl-button variant="primary" outline class="refresh-website">Odśwież</sl-button>
+                            <sl-button variant="primary" outline class="refresh-website mt-10">
+                                <sl-icon slot="prefix" name="arrow-clockwise"></sl-icon>
+                                Odśwież
+                            </sl-button>
                         </sl-alert>
 
-                        <div class="spacing-10"></div>
-
-                        <sl-switch id="disable-vehicle-position-updates-switch">Wyłącz aktualizację pozycji pojazdów</sl-switch>
+                        <div class="mb-10">
+                            <sl-switch id="disable-vehicle-position-updates-switch" class="debug-option">
+                                Wyłącz aktualizację pozycji pojazdów
+                            </sl-switch>
+                        </div>
+                        <div>
+                            <sl-switch id="do-not-block-map-when-loading-switch" class="debug-option">
+                                Nie blokuj mapy podczas ładowania aplikacji
+                            </sl-switch>
+                        </div>
                     </sl-tab-panel>
 
                     <sl-tab-panel name="about">

@@ -211,6 +211,7 @@ function initSettings() {
 
     document.querySelector("#map-dark-theme-switch").checked = !localStorage.getItem("map-dark-theme");
     document.querySelector("#disable-vehicle-position-updates-switch").checked = localStorage.getItem("disable-vehicle-position-updates");
+    document.querySelector("#do-not-block-map-when-loading-switch").checked = localStorage.getItem("do-not-block-map-when-loading");
 
     document.querySelector("#theme-select").addEventListener("sl-change", (e) => {
         let value = e.currentTarget.value;
@@ -224,12 +225,19 @@ function initSettings() {
         else localStorage.setItem("map-dark-theme", "false");
         applyTheme();
     });
+
     document.querySelector("#disable-vehicle-position-updates-switch").addEventListener("sl-change", (e) => {
         let checked = e.currentTarget.checked;
         if (checked) localStorage.setItem("disable-vehicle-position-updates", "true");
         else localStorage.removeItem("disable-vehicle-position-updates");
-        document.querySelector("#debug-options-changed").show();
     });
+    document.querySelector("#do-not-block-map-when-loading-switch").addEventListener("sl-change", (e) => {
+        let checked = e.currentTarget.checked;
+        if (checked) localStorage.setItem("do-not-block-map-when-loading", "true");
+        else localStorage.removeItem("do-not-block-map-when-loading");
+    });
+
+    document.querySelectorAll(".debug-option").forEach(e => e.addEventListener("sl-change", () => document.querySelector("#debug-options-changed").show()));
 
     let resizeCallback = () => {
         let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
@@ -242,6 +250,7 @@ function initSettings() {
 async function main() {
     applyTheme();
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
+    initSettings();
 
     const map = L.map("map").setView([52.40, 16.96], 13);
 
@@ -253,7 +262,7 @@ async function main() {
     }).addTo(map);
     map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
 
-    document.querySelector("#map").classList.add("loading");
+    if (!localStorage.getItem("do-not-block-map-when-loading")) document.querySelector("#map").classList.add("loading");
     let loadingOverlay = createLoadingOverlay()
     document.querySelector("body").appendChild(loadingOverlay);
 
@@ -400,7 +409,6 @@ async function main() {
     loadingOverlay.remove();
     document.querySelector("#map").classList.remove("loading");
 
-    initSettings();
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
 }
 

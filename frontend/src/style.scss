@@ -388,7 +388,16 @@ sl-dialog {
 }
 
 @for $i from 1 through 10 {
-    .spacing-#{$i*5} {
+    .ml-#{$i*5} {
+        margin-left: #{$i*5}px;
+    }
+    .mr-#{$i*5} {
+        margin-right: #{$i*5}px;
+    }
+    .mt-#{$i*5} {
+        margin-top: #{$i*5}px;
+    }
+    .mb-#{$i*5} {
         margin-bottom: #{$i*5}px;
     }
 }
