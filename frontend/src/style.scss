@@ -54,7 +54,7 @@ html, body {
     .vehicle-label.vehicle-tram {
         border-color: $tram-color-dark;
 
-        .vehicle-label-icon {
+        .vehicle-label-icon, .vehicle-label-arrow {
             svg {
                 fill: $tram-color-dark;
             }
@@ -68,7 +68,7 @@ html, body {
     .vehicle-label.vehicle-bus {
         border-color: $bus-color-dark;
 
-        .vehicle-label-icon {
+        .vehicle-label-icon, .vehicle-label-arrow {
             svg {
                 fill: $bus-color-dark;
             }
@@ -82,7 +82,7 @@ html, body {
     .vehicle-label.vehicle-unknown {
         border-color: $unknown-color-dark;
 
-        .vehicle-label-icon {
+        .vehicle-label-icon, .vehicle-label-arrow {
             svg {
                 fill: $unknown-color-dark;
             }
@@ -101,7 +101,7 @@ html, body {
         .vehicle-label.vehicle-tram {
             border-color: $tracked-tram-color-dark;
 
-            .vehicle-label-icon {
+            .vehicle-label-icon, .vehicle-label-arrow {
                 svg {
                     fill: $tracked-tram-color-dark;
                 }
@@ -115,7 +115,7 @@ html, body {
         .vehicle-label.vehicle-bus {
             border-color: $tracked-bus-color-dark;
 
-            .vehicle-label-icon {
+            .vehicle-label-icon, .vehicle-label-arrow {
                 svg {
                     fill: $tracked-bus-color-dark;
                 }
@@ -129,7 +129,7 @@ html, body {
         .vehicle-label.vehicle-unknown {
             border-color: $tracked-unknown-color-dark;
 
-            .vehicle-label-icon {
+            .vehicle-label-icon, .vehicle-label-arrow {
                 svg {
                     fill: $tracked-unknown-color-dark;
                 }
@@ -156,7 +156,7 @@ html, body {
 
 .vehicle-label {
     display: inline-grid;
-    grid-template-columns: auto 1fr; 
+    grid-template-columns: auto auto 1fr;
     height: 20px;
     align-items: center;
     gap: 2px;
@@ -171,7 +171,7 @@ html, body {
     border-style: solid;
     border-radius: 5px;
 
-    .vehicle-label-icon {
+    .vehicle-label-icon, .vehicle-label-arrow {
         height: 100%;
 
         svg {
@@ -192,7 +192,7 @@ html, body {
 .vehicle-label.vehicle-tram {
     border-color: $tram-color-light;
 
-    .vehicle-label-icon {
+    .vehicle-label-icon, .vehicle-label-arrow {
         svg {
             fill: $tram-color-light;
         }
@@ -206,7 +206,7 @@ html, body {
 .vehicle-label.vehicle-bus {
     border-color: $bus-color-light;
 
-    .vehicle-label-icon {
+    .vehicle-label-icon, .vehicle-label-arrow {
         svg {
             fill: $bus-color-light;
         }
@@ -220,7 +220,7 @@ html, body {
 .vehicle-label.vehicle-unknown {
     border-color: $unknown-color-light;
 
-    .vehicle-label-icon {
+    .vehicle-label-icon, .vehicle-label-arrow {
         svg {
             fill: $unknown-color-light;
         }
@@ -239,7 +239,7 @@ html, body {
     .vehicle-label.vehicle-tram {
         border-color: $tracked-tram-color-light;
 
-        .vehicle-label-icon {
+        .vehicle-label-icon, .vehicle-label-arrow {
             svg {
                 fill: $tracked-tram-color-light;
             }
@@ -253,7 +253,7 @@ html, body {
     .vehicle-label.vehicle-bus {
         border-color: $tracked-bus-color-light;
 
-        .vehicle-label-icon {
+        .vehicle-label-icon, .vehicle-label-arrow {
             svg {
                 fill: $tracked-bus-color-light;
             }
@@ -267,7 +267,7 @@ html, body {
     .vehicle-label.vehicle-unknown {
         border-color: $tracked-unknown-color-light;
 
-        .vehicle-label-icon {
+        .vehicle-label-icon, .vehicle-label-arrow {
             svg {
                 fill: $tracked-unknown-color-light;
             }
@@ -277,6 +277,10 @@ html, body {
             color: $tracked-unknown-color-light;
         }
     }
+}
+
+.vehicle-label-arrow[bearing] {
+    transform: rotate(attr(bearing deg));
 }
 
 .route-path.route-bus {

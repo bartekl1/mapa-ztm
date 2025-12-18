@@ -7,6 +7,7 @@ import tempfile
 from geojson import LineString, Feature, FeatureCollection
 from bs4 import BeautifulSoup
 import datetime
+import math
 
 from .gtfs_schedule import Feed
 from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL, GTFS_FILES_LIST_URL
@@ -16,12 +17,13 @@ def get_route_type(type_enum: int):
     return types[type_enum] if type_enum in types else "unknown"
 
 @cachetools.func.ttl_cache(ttl=1)
-def get_current_positions(cache_path: str, routes_info: bool = True) -> list[dict[str, str | int | float]]:
+def get_current_positions(cache_path: str, routes_info: bool = False, bearings: bool = False) -> list[dict[str, str | int | float]]:
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(GTFS_RT_FEED_URL)
     feed.ParseFromString(response.content)
     res = []
     for entity in feed.entity:
+        lat, lon = entity.vehicle.position.latitude, entity.vehicle.position.longitude
         row = {
             "trip": {
                 "id": entity.vehicle.trip.trip_id,
@@ -31,8 +33,8 @@ def get_current_positions(cache_path: str, routes_info: bool = True) -> list[dic
                 "label": entity.vehicle.vehicle.label,
             },
             "coords": {
-                "latitude": entity.vehicle.position.latitude,
-                "longitude": entity.vehicle.position.longitude,
+                "latitude": lat,
+                "longitude": lon,
             },
             "current_stop_sequence": entity.vehicle.current_stop_sequence,
         }
@@ -45,6 +47,23 @@ def get_current_positions(cache_path: str, routes_info: bool = True) -> list[dic
                 }
             else:
                 row["route"] = {"id": None, "type": None}
+        if bearings:
+            shape = get_shape(entity.vehicle.trip.trip_id, cache_path=cache_path)
+            if len(shape) > 1:
+                points = [(((plat - lat) ** 2 + (plon - lon) ** 2) ** (1/2), i, (plat, plon)) for i, (plat, plon) in enumerate(shape)]
+                points.sort()
+                points2 = [(points[0][1], points[0][2]), (points[1][1], points[1][2])]
+                points2.sort()
+                lat1, lon1 = points2[0][1]
+                lat2, lon2 = points2[1][1]
+                lat1, lon1, lat2, lon2 = math.radians(lat1), math.radians(lon1), math.radians(lat2), math.radians(lon2)
+                y = math.sin(lon2 - lon1) * math.cos(lat2)
+                x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(lon2 - lon1)
+                theta = math.atan2(y, x)
+                brng = (theta*180/math.pi + 360) % 360
+                row["bearing"] = brng
+            else:
+                row["bearing"] = None
         res.append(row)
     return res
 

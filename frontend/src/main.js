@@ -23,6 +23,7 @@ import settingsIcon from "./img/cog.svg?raw";
 import gpsIcon from "./img/crosshairs-gps.svg?raw";
 import questionMarkIcon from "./img/help.svg?raw";
 import loadingIcon from "./img/loading.svg?raw";
+import arrowIcon from "./img/arrow-up-thin.svg?raw";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -31,7 +32,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl,
 });
 
-function getVehicleIcon(type, number) {
+function getVehicleIcon(type, number, bearing) {
     const icons = {
         bus: busIcon,
         tram: tramIcon,
@@ -39,11 +40,12 @@ function getVehicleIcon(type, number) {
     }
     if (type === null) type = "unknown";
     if (number === null) number = "???";
-    return `<div class="vehicle-label vehicle-${type}"><div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
+    const bearingArrow = (bearing !== null && bearing !== undefined) ? `<div class="vehicle-label-arrow" bearing="${Math.round(bearing)}">${arrowIcon}</div>` : ""
+    return `<div class="vehicle-label vehicle-${type}">${bearingArrow}<div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
 }
 
 async function fetchVehiclePositions() {
-    let r = await fetch("/api/positions");
+    let r = await fetch("/api/positions?routes_info&bearings");
     if (r.ok) return await r.json();
     else {
         console.error("Failed to fetch vehicle positions");
@@ -78,9 +80,9 @@ async function fetchAllStops(trip_id) {
     }
 }
 
-function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, tracked = false) {
+function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, bearing, tracked = false) {
     let icon = L.divIcon({
-        html: getVehicleIcon(route_type, route_id),
+        html: getVehicleIcon(route_type, route_id, bearing),
         className: "vehicle-icon" + (tracked ? " vehicle-icon-tracked": ""),
     });
     let marker = L.marker([latitude, longitude], {
@@ -91,6 +93,7 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
         route_id: route_id,
         latitude: latitude,
         longitude: longitude,
+        bearing: bearing,
     });
     return marker;
 }
@@ -105,6 +108,7 @@ function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLa
         vehicleMarker.options.route_id,
         vehicleMarker.options.latitude,
         vehicleMarker.options.longitude,
+        vehicleMarker.options.bearing,
         true
     );
     vehiclesLayer.removeLayer(vehiclesLayer.getLayer(vehicleMarker._leaflet_id));
@@ -122,6 +126,7 @@ function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
             m.options.route_id,
             m.options.latitude,
             m.options.longitude,
+            m.options.bearing,
             false
         );
         marker.addTo(vehiclesLayer);
@@ -162,6 +167,7 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
             vehicle.route.id,
             vehicle.coords.latitude,
             vehicle.coords.longitude,
+            vehicle.bearing,
             trackedVehicleId === vehicle.vehicle.id
         );
         if (trackedVehicleId === vehicle.vehicle.id) {

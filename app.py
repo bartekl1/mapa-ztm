@@ -19,7 +19,9 @@ def create_app(config: dict) -> Flask:
 
     @app.route("/api/positions")
     def current_positions():
-        return get_current_positions(cache_path=cache_path)
+        routes_info = request.args.get("routes_info") is not None
+        bearings = request.args.get("bearings") is not None
+        return get_current_positions(cache_path=cache_path, routes_info=routes_info, bearings=bearings)
 
     @app.route("/api/trips/<trip_id>/shape")
     def trip_shape(trip_id):
