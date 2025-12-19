@@ -26,7 +26,6 @@ import loadingIcon from "./img/loading.svg?raw";
 import arrowIcon from "./img/arrow-up-thin.svg?raw";
 
 import appInfo from "./appInfo";
-console.log(appInfo);
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -256,10 +255,23 @@ function initSettings() {
     addEventListener("resize", resizeCallback);
 }
 
+function applyAppInfo() {
+    document.querySelector("#app-name-placeholder").innerHTML = appInfo.name;
+    document.querySelector("#app-description-placeholder").innerHTML = appInfo.description;
+    document.querySelector("#app-author-placeholder").innerHTML = appInfo.author;
+    document.querySelector("#app-version-placeholder").innerHTML = appInfo.version;
+    document.querySelector("#app-commit-placeholder").innerHTML = appInfo.hash;
+    document.querySelector("#app-modified-placeholder").innerHTML = appInfo.modified ? "(zmodyfikowano)" : "";
+    document.querySelector("#app-license-placeholder").innerHTML = appInfo.license;
+    document.querySelector("#app-repo-link").innerHTML = appInfo.repo;
+    document.querySelector("#app-repo-link").href = appInfo.repo;
+}
+
 async function main() {
     applyTheme();
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
     initSettings();
+    applyAppInfo();
 
     const map = L.map("map").setView([52.40, 16.96], 13);
 
