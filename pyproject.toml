@@ -1,0 +1,29 @@
+[project]
+name = "mapa-ztm"
+version = "1.0.0-alpha.3"
+description = "Mapa pojazdów ZTM Poznań"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [
+    {name = "bartekl1"},
+]
+dependencies = [
+    "flask>=3.0.0",
+    "PyYAML>=6.0.0",
+    "requests>=2.0.0",
+    "gtfs-realtime-bindings>=1.0.0",
+    "cachetools>=6.0.0",
+    "geojson>=3.0.0",
+    "beautifulsoup4>=4.0.0",
+]
+
+[project.urls]
+homepage = "https://github.com/bartekl1/mapa-ztm"
+source = "https://github.com/bartekl1/mapa-ztm"
+documentation = "https://github.com/bartekl1/mapa-ztm/blob/main/README.md"
+issues = "https://github.com/bartekl1/mapa-ztm/issues"
+
+[tool.poetry]
+package-mode = false
