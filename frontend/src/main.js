@@ -25,6 +25,9 @@ import questionMarkIcon from "./img/help.svg?raw";
 import loadingIcon from "./img/loading.svg?raw";
 import arrowIcon from "./img/arrow-up-thin.svg?raw";
 
+import appInfo from "./appInfo";
+console.log(appInfo);
+
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconUrl,

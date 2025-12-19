@@ -1,3 +1,8 @@
+## Project specific
+# Application information
+src/appInfo.js
+
+## Node.js
 # Logs
 logs
 *.log
