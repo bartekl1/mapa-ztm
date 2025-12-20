@@ -6,7 +6,7 @@ async function getGitInfo() {
     const git = simpleGit();
     
     const log = await git.log();
-    const hash = log.latest.hash;
+    const hash = log.latest.hash.substring(0, 7);
 
     const status = await git.status();
     const modified = status.files.length > 0;
