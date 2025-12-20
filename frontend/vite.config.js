@@ -29,6 +29,7 @@ export default defineConfig({
                 short_name: "Mapa ZTM",
                 description: "Mapa pojazdów ZTM Poznań",
                 theme_color: "#004400",
+                background_color: "#004400",
                 icons: [
                     {
                         src: "/icons/icon_x48.png",
