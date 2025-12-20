@@ -383,7 +383,7 @@ sl-dialog::part(base) {
 
 sl-dialog {
     sl-tab-panel {
-        min-height: 500px;
+        height: calc(100vh - 150px);
     }
 }
 
@@ -406,23 +406,25 @@ sl-dialog {
     }
 }
 
+@for $i from 1 through 5 {
+    .t-#{$i*10} {
+        font-size: #{$i*10}px;
+        font-weight: bold;
+    }
+}
+
 sl-tab-panel[name="about"] {
     > div {
         margin-bottom: 5px;
     }
 
-    #app-name {
-        font-size: 30px;
-        font-weight: bold;
-    }
-
-    #app-author, #app-version, #app-commit, #app-license, #app-repo {
+    #app-author, #app-version, #app-commit, #app-license {
         :nth-child(1) {
             font-weight: bold;
         }
     }
 
-    #app-description {
+    #app-description, #app-license {
         margin-bottom: 20px;
     }
 

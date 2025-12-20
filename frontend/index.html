@@ -30,6 +30,10 @@
                         <sl-icon name="info-circle-fill" class="mr-5"></sl-icon>
                         O aplikacji
                     </sl-tab>
+                    <sl-tab slot="nav" panel="acknowledgements">
+                        <sl-icon name="gift-fill" class="mr-5"></sl-icon>
+                        Podziękowania
+                    </sl-tab>
 
                     <sl-tab-panel name="general">
                         <sl-select id="theme-select" pill label="Motyw" class="mb-10">
@@ -71,13 +75,39 @@
                     </sl-tab-panel>
 
                     <sl-tab-panel name="about">
-                        <div id="app-name"><span id="app-name-placeholder"></span></div>
+                        <div id="app-name" class="t-30"><span id="app-name-placeholder"></span></div>
                         <div id="app-description"><span id="app-description-placeholder"></span></div>
                         <div id="app-author"><span>Autor:</span> <span id="app-author-placeholder"></span></div>
                         <div id="app-version"><span>Wersja:</span> <span id="app-version-placeholder"></span></div>
                         <div id="app-commit"><span>Commit hash:</span> <span id="app-commit-placeholder"></span> <span id="app-modified-placeholder"></span></div>
                         <div id="app-license"><span>Licencja:</span> <a id="app-license-link" target="_blank" rel="noopener"></a></div>
-                        <div id="app-repo"><span>Repozytorium GitHub:</span> <a id="app-repo-link" target="_blank" rel="noopener"></a></div>
+
+                        <sl-button id="app-repo-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="github"></sl-icon>
+                            Repozytorium GitHub
+                        </sl-button>
+                        <sl-button id="app-issues-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="bug-fill"></sl-icon>
+                            Problemy i sugestie
+                        </sl-button>
+                        <sl-button id="app-changelog-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="clock"></sl-icon>
+                            Rejestr zmian
+                        </sl-button>
+                    </sl-tab-panel>
+
+                    <sl-tab-panel name="acknowledgements">
+                        <div class="t-30">API i źródła danych</div>
+                        <ul>
+                            <li><a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/" target="_blank" rel="noopener">ZTM Poznań</a> - GTFS Realtime i GTFS Schedule</li>
+                            <li><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></li>
+                        </ul>
+
+                        <div class="t-30">Biblioteki (zależności)</div>
+                        <div class="t-20">Python (pip)</div>
+                        <ul id="python-dependencies"></ul>
+                        <div class="t-20">Node.js (npm)</div>
+                        <ul id="node-dependencies"></ul>
                     </sl-tab-panel>
                 </sl-tab-group>
             </div>

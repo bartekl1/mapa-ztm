@@ -264,8 +264,11 @@ function applyAppInfo() {
     document.querySelector("#app-modified-placeholder").innerHTML = appInfo.modified ? "(zmodyfikowano)" : "";
     document.querySelector("#app-license-link").innerHTML = appInfo.license;
     document.querySelector("#app-license-link").href = `https://spdx.org/licenses/${appInfo.license}.html`;
-    document.querySelector("#app-repo-link").innerHTML = appInfo.repo;
     document.querySelector("#app-repo-link").href = appInfo.repo;
+    document.querySelector("#app-issues-link").href = appInfo.issues;
+    document.querySelector("#app-changelog-link").href = appInfo.changelog;
+    document.querySelector("#python-dependencies").innerHTML = appInfo.pythonDependencies.map(dep => `<li><a href="https://pypi.org/project/${dep}/" target="_blank" rel="noopener">${dep}</a></li>`).join("");
+    document.querySelector("#node-dependencies").innerHTML = appInfo.nodeDependencies.map(dep => `<li><a href="https://www.npmjs.com/package/${dep}" target="_blank" rel="noopener">${dep}</a></li>`).join("");
 }
 
 async function main() {
