@@ -262,7 +262,8 @@ function applyAppInfo() {
     document.querySelector("#app-version-placeholder").innerHTML = appInfo.version;
     document.querySelector("#app-commit-placeholder").innerHTML = appInfo.hash;
     document.querySelector("#app-modified-placeholder").innerHTML = appInfo.modified ? "(zmodyfikowano)" : "";
-    document.querySelector("#app-license-placeholder").innerHTML = appInfo.license;
+    document.querySelector("#app-license-link").innerHTML = appInfo.license;
+    document.querySelector("#app-license-link").href = `https://spdx.org/licenses/${appInfo.license}.html`;
     document.querySelector("#app-repo-link").innerHTML = appInfo.repo;
     document.querySelector("#app-repo-link").href = appInfo.repo;
 }

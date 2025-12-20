@@ -22,6 +22,7 @@ dependencies = [
 [project.urls]
 homepage = "https://github.com/bartekl1/mapa-ztm"
 source = "https://github.com/bartekl1/mapa-ztm"
+changelog = "https://github.com/bartekl1/mapa-ztm/releases"
 documentation = "https://github.com/bartekl1/mapa-ztm/blob/main/README.md"
 issues = "https://github.com/bartekl1/mapa-ztm/issues"
 
