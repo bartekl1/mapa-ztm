@@ -5,7 +5,9 @@ from modules.config import load_config
 from modules.gtfs_functions import get_current_positions, get_shape, get_route_info_by_trip, get_stops_on_trip, get_stops
 from save_cache import save_cache
 
-def create_app(config: dict) -> Flask:
+def create_app(config: dict | None = None) -> Flask:
+    if config is None:
+        config = load_config()
     cache_path = config.get("gtfs_cache_path", "gtfs_cache.db")
     app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 

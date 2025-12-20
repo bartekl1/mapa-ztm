@@ -27,7 +27,7 @@ function getPyprojectInfo() {
         repo: tomlFile.project.urls.source,
         issues: tomlFile.project.urls.issues,
         changelog: tomlFile.project.urls.changelog,
-        pythonDependencies: tomlFile.project.dependencies.map(dep => dep.match(/(.*)(?:(?:==)|(?:>=)|(?:<=)).*/)[1]),
+        pythonDependencies: tomlFile.project.dependencies.map(dep => dep.match(/([\w\-]*)(?: \(){0,1}(?:(?:==)|(?:>=)|(?:<=)|<|>)\d+\.\d+\.\d+(?:,(?:(?:==)|(?:>=)|(?:<=)|<|>)\d+\.\d+\.\d+\)){0,1}\){0,1}/)[1]),
     };
 }
 
