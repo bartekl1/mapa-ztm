@@ -7,15 +7,11 @@ from save_cache import save_cache
 
 def create_app(config: dict) -> Flask:
     cache_path = config.get("gtfs_cache_path", "gtfs_cache.db")
-    app = Flask(__name__, static_folder="frontend/dist/assets", static_url_path="/assets")
+    app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 
     @app.route("/")
     def index():
         return send_file("frontend/dist/index.html")
-
-    @app.route("/icon.svg")
-    def icon():
-        return send_file("frontend/dist/icon.svg")
 
     @app.route("/api/positions")
     def current_positions():

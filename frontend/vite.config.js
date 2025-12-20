@@ -19,6 +19,11 @@ export default defineConfig({
         }),
         VitePWA({
             registerType: "autoUpdate",
+            workbox: {
+                navigateFallbackDenylist: [
+                    /^\/api\//
+                ],
+            },
             manifest: {
                 name: "Mapa pojazdów ZTM Poznań",
                 short_name: "Mapa ZTM",
