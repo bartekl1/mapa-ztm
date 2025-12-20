@@ -279,8 +279,8 @@ html, body {
     }
 }
 
-.vehicle-label-arrow[bearing] {
-    transform: rotate(attr(bearing deg));
+.vehicle-label-arrow {
+    transform: rotate(calc(var(--bearing) * 1deg));
 }
 
 .route-path.route-bus {

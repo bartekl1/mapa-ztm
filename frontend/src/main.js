@@ -42,7 +42,7 @@ function getVehicleIcon(type, number, bearing) {
     }
     if (type === null) type = "unknown";
     if (number === null) number = "???";
-    const bearingArrow = (bearing !== null && bearing !== undefined) ? `<div class="vehicle-label-arrow" bearing="${Math.round(bearing)}">${arrowIcon}</div>` : ""
+    const bearingArrow = (bearing !== null && bearing !== undefined) ? `<div class="vehicle-label-arrow" style="--bearing: ${Math.round(bearing)};">${arrowIcon}</div>` : ""
     return `<div class="vehicle-label vehicle-${type}">${bearingArrow}<div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
 }
 
