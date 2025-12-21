@@ -121,7 +121,7 @@ function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLa
 
 function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
     tripsLayer.clearLayers();
-    document.querySelector("#trip-drawer").hide();
+    // document.querySelector("#trip-drawer").hide();
 
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
     let markers = trackedVehicleLayer.getLayers();
@@ -156,28 +156,30 @@ async function prepareTripDrawer(vehicleDetails) {
     drawer.querySelector("#vehicle-type-placeholder").innerHTML = Object.keys(vehicleTypes).includes(vehicleDetails.route_type) ? vehicleTypes[vehicleDetails.route_type] : "Nieznany";
 
     const stops = await fetchTripStops(vehicleDetails.trip_id);
-    drawer.label += " - " + stops[stops.length - 1].stop_name;
     drawer.querySelector("#trip-stops").innerHTML = "";
-    stops.forEach(stop => {
-        let stopDiv = document.createElement("div");
-        stopDiv.innerHTML = document.querySelector("#stop-template").innerHTML;
-        stopDiv.querySelector(".stop-sequence").innerHTML = stop.stop_sequence;
-        stopDiv.querySelector(".stop-name").innerHTML = stop.stop_name;
-        if (stop.drop_off_type === 1 && stop.pickup_type === 0) {
-            stopDiv.querySelector(".starting-stop").classList.remove("d-none");
-            stopDiv.querySelector(".stop-type").classList.remove("d-none");
-        } else if (stop.drop_off_type === 0 && stop.pickup_type === 1) {
-            stopDiv.querySelector(".final-stop").classList.remove("d-none");
-            stopDiv.querySelector(".stop-type").classList.remove("d-none");
-        } else if (stop.drop_off_type === 3 && stop.pickup_type === 3) {
-            stopDiv.querySelector(".request-stop").classList.remove("d-none");
-            stopDiv.querySelector(".stop-type").classList.remove("d-none");
-        }
-        stopDiv.querySelector(".stop-zone").innerHTML = stop.zone_id;
-        stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
-        stopDiv.querySelector(".stop-departure-time").innerHTML = stop.departure_time.split(":").slice(0, 2).join(":");
-        drawer.querySelector("#trip-stops").append(stopDiv);
-    });
+    if (stops.length > 0) {
+        drawer.label += " - " + stops[stops.length - 1].stop_name;
+        stops.forEach(stop => {
+            let stopDiv = document.createElement("div");
+            stopDiv.innerHTML = document.querySelector("#stop-template").innerHTML;
+            stopDiv.querySelector(".stop-sequence").innerHTML = stop.stop_sequence;
+            stopDiv.querySelector(".stop-name").innerHTML = stop.stop_name;
+            if (stop.drop_off_type === 1 && stop.pickup_type === 0) {
+                stopDiv.querySelector(".starting-stop").classList.remove("d-none");
+                stopDiv.querySelector(".stop-type").classList.remove("d-none");
+            } else if (stop.drop_off_type === 0 && stop.pickup_type === 1) {
+                stopDiv.querySelector(".final-stop").classList.remove("d-none");
+                stopDiv.querySelector(".stop-type").classList.remove("d-none");
+            } else if (stop.drop_off_type === 3 && stop.pickup_type === 3) {
+                stopDiv.querySelector(".request-stop").classList.remove("d-none");
+                stopDiv.querySelector(".stop-type").classList.remove("d-none");
+            }
+            stopDiv.querySelector(".stop-zone").innerHTML = stop.zone_id;
+            stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
+            stopDiv.querySelector(".stop-departure-time").innerHTML = stop.departure_time.split(":").slice(0, 2).join(":");
+            drawer.querySelector("#trip-stops").append(stopDiv);
+        });
+    }
 
     drawer.show();
 }
@@ -296,6 +298,7 @@ function initSettings() {
     let resizeCallback = () => {
         let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
         document.querySelector("sl-tab-group").setAttribute("placement", vw >= 800 ? "start" : "top");
+        document.querySelector("#trip-drawer").setAttribute("placement", vw >= 800 ? "end" : "bottom");
     };
     resizeCallback();
     addEventListener("resize", resizeCallback);
@@ -471,7 +474,10 @@ async function main() {
     map.on("zoomend", () => updateZoom(map));
 
     document.addEventListener("keyup", (e) => {
-        if (e.key === "Escape") untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
+        if (e.key === "Escape") {
+            document.querySelector("#trip-drawer").hide();
+            untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
+        }
     });
 
     loadingOverlay.remove();
@@ -479,7 +485,7 @@ async function main() {
 
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
 
-    document.querySelector("#trip-drawer").addEventListener("sl-hide", () => untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer));
+    document.querySelector("#trip-drawer").addEventListener("sl-request-close", () => untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer));
 }
 
 main();
