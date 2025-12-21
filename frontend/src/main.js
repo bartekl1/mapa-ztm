@@ -34,14 +34,14 @@ L.Icon.Default.mergeOptions({
     shadowUrl,
 });
 
-function getVehicleIcon(type, number, bearing) {
+function getVehicleIcon(type, number, label, bearing) {
     const icons = {
         bus: busIcon,
         tram: tramIcon,
         unknown: questionMarkIcon,
     }
     if (type === null) type = "unknown";
-    if (number === null) number = "???";
+    if (number === null) number = (label !== null && label !== undefined) ? label.split("/")[0] : "???";
     const bearingArrow = (bearing !== null && bearing !== undefined) ? `<div class="vehicle-label-arrow" style="--bearing: ${Math.round(bearing)};">${arrowIcon}</div>` : ""
     return `<div class="vehicle-label vehicle-${type}">${bearingArrow}<div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
 }
@@ -82,9 +82,9 @@ async function fetchAllStops(trip_id) {
     }
 }
 
-function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, bearing, tracked = false) {
+function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, label, bearing, tracked = false) {
     let icon = L.divIcon({
-        html: getVehicleIcon(route_type, route_id, bearing),
+        html: getVehicleIcon(route_type, route_id, label, bearing),
         className: "vehicle-icon" + (tracked ? " vehicle-icon-tracked": ""),
     });
     let marker = L.marker([latitude, longitude], {
@@ -95,6 +95,7 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
         route_id: route_id,
         latitude: latitude,
         longitude: longitude,
+        label: label,
         bearing: bearing,
     });
     return marker;
@@ -110,6 +111,7 @@ function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLa
         vehicleMarker.options.route_id,
         vehicleMarker.options.latitude,
         vehicleMarker.options.longitude,
+        vehicleMarker.options.label,
         vehicleMarker.options.bearing,
         true
     );
@@ -128,6 +130,7 @@ function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
             m.options.route_id,
             m.options.latitude,
             m.options.longitude,
+            m.options.label,
             m.options.bearing,
             false
         );
@@ -169,6 +172,7 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
             vehicle.route.id,
             vehicle.coords.latitude,
             vehicle.coords.longitude,
+            vehicle.vehicle.label,
             vehicle.bearing,
             trackedVehicleId === vehicle.vehicle.id
         );
