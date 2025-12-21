@@ -78,8 +78,8 @@ def get_current_gtfs_filename() -> str:
     today = datetime.date.today()
     for filename in get_gtfs_files_list():
         try:
-            start_date = datetime.date.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d")
-            end_date = datetime.date.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d")
+            start_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d").date()
+            end_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d").date()
             if start_date <= today <= end_date:
                 return filename
         except Exception:
