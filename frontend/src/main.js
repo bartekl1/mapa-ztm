@@ -121,7 +121,6 @@ function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLa
 
 function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
     tripsLayer.clearLayers();
-    // document.querySelector("#trip-drawer").hide();
 
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
     let markers = trackedVehicleLayer.getLayers();

@@ -434,6 +434,8 @@ sl-tab-panel[name="about"] {
 }
 
 sl-drawer#trip-drawer {
+    --header-spacing: 1rem;
+
     #vehicle-id, #vehicle-label, #vehicle-trip, #vehicle-type {
         font-size: 14px;
     }
