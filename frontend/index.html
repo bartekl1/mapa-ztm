@@ -14,6 +14,36 @@
     <body>
         <div id="map"></div>
 
+        <sl-drawer id="trip-drawer" contained>
+            <div id="vehicle-id"><span>Numer taborowy: </span> <span id="vehicle-id-placeholder"></span></div>
+            <div id="vehicle-label"><span>Linia/brygada: </span> <span id="vehicle-label-placeholder"></span></div>
+            <div id="vehicle-trip"><span>Identyfikator kursu: </span> <span id="vehicle-trip-placeholder"></span></div>
+            <div id="vehicle-type"><span>Typ pojazdu: </span> <span id="vehicle-type-placeholder"></span></div>
+
+            <div id="stop-template" class="d-none">
+                <div class="stop-template">
+                    <div class="stop-sequence"></div>
+                    <div class="stop-details">
+                        <div class="stop-name"></div>
+                        <div class="stop-more-details">
+                            <div class="stop-code"></div>
+                            <sl-icon name="dot"></sl-icon>
+                            <div class="stop-zone"></div>
+                            <div class="stop-type d-none">
+                                <sl-icon name="dot"></sl-icon>
+                                <sl-icon class="request-stop d-none" name="exclamation-square"></sl-icon>
+                                <sl-icon class="starting-stop d-none" name="box-arrow-in-right"></sl-icon>
+                                <sl-icon class="final-stop d-none" name="box-arrow-right"></sl-icon>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stop-departure-time"></div>
+                </div>
+            </div>
+
+            <div id="trip-stops"></div>
+        </sl-drawer>
+
         <sl-dialog id="settings-dialog">
             <span slot="label">Ustawienia</span>
             <div>

@@ -120,6 +120,9 @@ function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLa
 }
 
 function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
+    tripsLayer.clearLayers();
+    document.querySelector("#trip-drawer").hide();
+
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
     let markers = trackedVehicleLayer.getLayers();
     markers.forEach(m => {
@@ -142,8 +145,47 @@ function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
     trackedVehicleLayer.clearLayers();
 }
 
+async function prepareTripDrawer(vehicleDetails) {
+    let drawer = document.querySelector("#trip-drawer");
+
+    drawer.label = vehicleDetails.route_id;
+    drawer.querySelector("#vehicle-id-placeholder").innerHTML = vehicleDetails.vehicle_id;
+    drawer.querySelector("#vehicle-label-placeholder").innerHTML = vehicleDetails.label;
+    drawer.querySelector("#vehicle-trip-placeholder").innerHTML = vehicleDetails.trip_id;
+    const vehicleTypes = {"tram": "Tramwaj", "bus": "Autobus"};
+    drawer.querySelector("#vehicle-type-placeholder").innerHTML = Object.keys(vehicleTypes).includes(vehicleDetails.route_type) ? vehicleTypes[vehicleDetails.route_type] : "Nieznany";
+
+    const stops = await fetchTripStops(vehicleDetails.trip_id);
+    drawer.label += " - " + stops[stops.length - 1].stop_name;
+    drawer.querySelector("#trip-stops").innerHTML = "";
+    stops.forEach(stop => {
+        let stopDiv = document.createElement("div");
+        stopDiv.innerHTML = document.querySelector("#stop-template").innerHTML;
+        stopDiv.querySelector(".stop-sequence").innerHTML = stop.stop_sequence;
+        stopDiv.querySelector(".stop-name").innerHTML = stop.stop_name;
+        if (stop.drop_off_type === 1 && stop.pickup_type === 0) {
+            stopDiv.querySelector(".starting-stop").classList.remove("d-none");
+            stopDiv.querySelector(".stop-type").classList.remove("d-none");
+        } else if (stop.drop_off_type === 0 && stop.pickup_type === 1) {
+            stopDiv.querySelector(".final-stop").classList.remove("d-none");
+            stopDiv.querySelector(".stop-type").classList.remove("d-none");
+        } else if (stop.drop_off_type === 3 && stop.pickup_type === 3) {
+            stopDiv.querySelector(".request-stop").classList.remove("d-none");
+            stopDiv.querySelector(".stop-type").classList.remove("d-none");
+        }
+        stopDiv.querySelector(".stop-zone").innerHTML = stop.zone_id;
+        stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
+        stopDiv.querySelector(".stop-departure-time").innerHTML = stop.departure_time.split(":").slice(0, 2).join(":");
+        drawer.querySelector("#trip-stops").append(stopDiv);
+    });
+
+    drawer.show();
+}
+
 async function onVehicleClick(event, tripsLayer, vehiclesLayer, trackedVehicleLayer) {
     trackVehicle(event.target, tripsLayer, vehiclesLayer, trackedVehicleLayer);
+
+    await prepareTripDrawer(event.target.options);
 
     tripsLayer.clearLayers();
     let shape = await fetchTripShape(event.target.options.trip_id);
@@ -208,9 +250,9 @@ function applyTheme() {
     let darkTheme = (localStorage.getItem("theme") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) || localStorage.getItem("theme") === "dark";
     let mapDarkTheme = darkTheme && !localStorage.getItem("map-dark-theme");
     if (darkTheme) {
-        document.querySelector("#settings-dialog").classList.add("sl-theme-dark");
+        document.querySelectorAll(["#settings-dialog", "#trip-drawer"]).forEach(e => e.classList.add("sl-theme-dark"));
     } else {
-        document.querySelector("#settings-dialog").classList.remove("sl-theme-dark");
+        document.querySelectorAll(["#settings-dialog", "#trip-drawer"]).forEach(e => e.classList.remove("sl-theme-dark"));
     }
     if (mapDarkTheme) document.querySelector("#map").classList.add("map-dark-theme");
     else document.querySelector("#map").classList.remove("map-dark-theme");
@@ -429,16 +471,15 @@ async function main() {
     map.on("zoomend", () => updateZoom(map));
 
     document.addEventListener("keyup", (e) => {
-        if (e.key === "Escape") {
-            tripsLayer.clearLayers();
-            untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
-        }
+        if (e.key === "Escape") untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
     });
 
     loadingOverlay.remove();
     document.querySelector("#map").classList.remove("loading");
 
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
+
+    document.querySelector("#trip-drawer").addEventListener("sl-hide", () => untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer));
 }
 
 main();

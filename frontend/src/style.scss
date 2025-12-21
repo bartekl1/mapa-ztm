@@ -381,6 +381,10 @@ sl-dialog::part(base) {
     z-index: 20;
 }
 
+sl-drawer::part(base) {
+    z-index: 20;
+}
+
 sl-dialog {
     sl-tab-panel {
         height: calc(100vh - 150px);
@@ -426,5 +430,68 @@ sl-tab-panel[name="about"] {
 
     #app-description, #app-license {
         margin-bottom: 20px;
+    }
+}
+
+sl-drawer#trip-drawer {
+    #vehicle-id, #vehicle-label, #vehicle-trip, #vehicle-type {
+        font-size: 14px;
+    }
+
+    #vehicle-id, #vehicle-label, #vehicle-trip, #vehicle-type {
+        :nth-child(1) {
+            font-weight: bold;
+        }
+    }
+}
+
+.d-none {
+    display: none;
+}
+
+#trip-stops {
+    margin-top: 20px;
+
+    .stop-template {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        margin-bottom: 5px;
+        align-items: center;
+
+        .stop-sequence {
+            font-size: 20px;
+            border-radius: 50%;
+            background-color: var(--sl-color-neutral-400);
+            color: var(--sl-color-neutral-1000);
+            font-weight: bold;
+            aspect-ratio: 1;
+            // height: 80%;
+            height: 36px;
+            margin-top: 4px;
+            margin-right: 10px;
+            align-content: center;
+            text-align: center;
+        }
+
+        .stop-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .stop-more-details {
+            font-size: 14px;
+            color: var(--sl-color-neutral-800);
+            display: flex;
+            align-items: center;
+
+            .stop-type {
+                font-size: 12px;
+            }
+        }
+
+        .stop-departure-time {
+            font-weight: 500;
+            font-size: 18px;
+        }
     }
 }
