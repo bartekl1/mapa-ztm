@@ -75,12 +75,12 @@ def get_gtfs_files_list() -> list[str]:
     return filenames
 
 def get_current_gtfs_filename() -> str:
-    now = datetime.datetime.now()
+    today = datetime.date.today()
     for filename in get_gtfs_files_list():
         try:
-            start_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d")
-            end_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d")
-            if start_date <= now <= end_date:
+            start_date = datetime.date.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d")
+            end_date = datetime.date.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d")
+            if start_date <= today <= end_date:
                 return filename
         except Exception:
             continue
