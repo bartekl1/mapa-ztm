@@ -508,15 +508,18 @@ sl-drawer {
         }
     }
 
-    > .drawer-resizer[name=grip-vertical] {
+    > .drawer-resizer {
         position: absolute;
+        touch-action: none;
+    }
+
+    > .drawer-resizer[name=grip-vertical] {
         left: -10px;
         top: 50%;
         transform: translate(0, -50%);
     }
 
     > .drawer-resizer[name=grip-horizontal] {
-        position: absolute;
         top: -8px;
         left: 50%;
         transform: translate(-50%, 0);
