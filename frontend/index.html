@@ -15,33 +15,51 @@
         <div id="map"></div>
 
         <sl-drawer id="trip-drawer" contained>
-            <div id="vehicle-id"><span>Numer taborowy: </span> <span id="vehicle-id-placeholder"></span></div>
-            <div id="vehicle-label"><span>Linia/brygada: </span> <span id="vehicle-label-placeholder"></span></div>
-            <div id="vehicle-trip"><span>Identyfikator kursu: </span> <span id="vehicle-trip-placeholder"></span></div>
-            <div id="vehicle-type"><span>Typ pojazdu: </span> <span id="vehicle-type-placeholder"></span></div>
+            <span class="drawer-content d-none">
+                <div id="vehicle-id"><span>Numer taborowy:</span> <span id="vehicle-id-placeholder"></span></div>
+                <div id="vehicle-label"><span>Linia/brygada:</span> <span id="vehicle-label-placeholder"></span></div>
+                <div id="vehicle-trip"><span>Identyfikator kursu:</span> <span id="vehicle-trip-placeholder"></span></div>
+                <div id="vehicle-type"><span>Typ pojazdu:</span> <span id="vehicle-type-placeholder"></span></div>
+                <div id="vehicle-agency"><span>Przewoźnik:</span> <a id="vehicle-agency-link" target="_blank" rel="noopener"></a></div>
 
-            <div id="stop-template" class="d-none">
-                <div class="stop-template">
-                    <div class="stop-sequence"></div>
-                    <div class="stop-details">
-                        <div class="stop-name"></div>
-                        <div class="stop-more-details">
-                            <div class="stop-code"></div>
-                            <sl-icon name="dot"></sl-icon>
-                            <div class="stop-zone"></div>
-                            <div class="stop-type d-none">
+                <sl-alert id="vehicle-not-ztm-tariff" class="mt-10" variant="warning">
+                    <sl-icon slot="icon" name="ticket-perforated"></sl-icon>
+                    <span>Na linii nie obowiązuje taryfa ZTM</span>
+                </sl-alert>
+
+                <div id="stop-template" class="d-none">
+                    <div class="stop-template">
+                        <div class="stop-sequence"></div>
+                        <div class="stop-details">
+                            <div class="stop-name"></div>
+                            <div class="stop-more-details">
+                                <div class="stop-code"></div>
                                 <sl-icon name="dot"></sl-icon>
-                                <sl-icon class="request-stop d-none" name="exclamation-square"></sl-icon>
-                                <sl-icon class="starting-stop d-none" name="box-arrow-in-right"></sl-icon>
-                                <sl-icon class="final-stop d-none" name="box-arrow-right"></sl-icon>
+                                <div class="stop-zone"></div>
+                                <div class="stop-type d-none">
+                                    <sl-icon name="dot"></sl-icon>
+                                    <sl-icon class="request-stop d-none" name="exclamation-square"></sl-icon>
+                                    <sl-icon class="starting-stop d-none" name="box-arrow-in-right"></sl-icon>
+                                    <sl-icon class="final-stop d-none" name="box-arrow-right"></sl-icon>
+                                </div>
                             </div>
                         </div>
+                        <div class="stop-departure-time"></div>
                     </div>
-                    <div class="stop-departure-time"></div>
                 </div>
-            </div>
 
-            <div id="trip-stops"></div>
+                <div id="trip-stops"></div>
+            </span>
+            <span class="drawer-error d-none">
+                <sl-alert variant="danger" open>
+                    <sl-icon slot="icon" name="x-circle"></sl-icon>
+                    <strong>Wystąpił błąd!</strong><br />
+                    Nie można wczytać szczegółów tego kursu
+                </sl-alert>
+            </span>
+            <span class="drawer-loading">
+                <sl-spinner></sl-spinner>
+            </span>
         </sl-drawer>
 
         <sl-dialog id="settings-dialog">

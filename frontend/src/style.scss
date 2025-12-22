@@ -436,11 +436,9 @@ sl-tab-panel[name="about"] {
 sl-drawer#trip-drawer {
     --header-spacing: 1rem;
 
-    #vehicle-id, #vehicle-label, #vehicle-trip, #vehicle-type {
+    #vehicle-id, #vehicle-label, #vehicle-trip, #vehicle-type, #vehicle-agency {
         font-size: 14px;
-    }
 
-    #vehicle-id, #vehicle-label, #vehicle-trip, #vehicle-type {
         :nth-child(1) {
             font-weight: bold;
         }
@@ -494,6 +492,19 @@ sl-drawer#trip-drawer {
         .stop-departure-time {
             font-weight: 500;
             font-size: 18px;
+        }
+    }
+}
+
+sl-drawer {
+    > .drawer-loading {
+        > sl-spinner {
+            font-size: 3rem;
+            --track-width: 5px;
+            position: relative;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 }

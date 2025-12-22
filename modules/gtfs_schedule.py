@@ -187,3 +187,18 @@ class Feed:
         cur = self.db.cursor()
         cur.execute("SELECT stop_id, stop_code, stop_name, stop_lat, stop_lon, zone_id FROM stops;")
         return cur.fetchall()
+    
+    def get_full_trip_info(self, trip_id: str):
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM trips WHERE trip_id = ? LIMIT 1;", (trip_id, ))
+        return cur.fetchone()
+    
+    def get_full_route_info(self, route_id: str):
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM routes WHERE route_id = ? LIMIT 1;", (route_id, ))
+        return cur.fetchone()
+
+    def get_full_agency_info(self, agency_id: str):
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM agency WHERE agency_id = ? LIMIT 1;", (agency_id, ))
+        return cur.fetchone()

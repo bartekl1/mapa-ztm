@@ -149,3 +149,17 @@ def get_stops(cache_path: str):
     stops = feed.get_stops()
     feed.close()
     return stops 
+
+@cachetools.func.ttl_cache(ttl=60)
+def get_trip_details(trip_id: str, cache_path: str):
+    feed = get_feed_from_cache(cache_path, as_classes=True)
+    trip = feed.get_full_trip_info(trip_id)
+    if trip is None:
+        return None
+    trip = dict(trip)
+    route = feed.get_full_route_info(trip["route_id"])
+    trip["route"] = dict(route) if route is not None else None
+    agency = feed.get_full_agency_info(trip["route"]["agency_id"])
+    trip["route"]["agency"] = dict(agency) if agency is not None else None
+    feed.close()
+    return trip

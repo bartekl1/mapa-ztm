@@ -73,12 +73,21 @@ async function fetchTripStops(trip_id) {
     }
 }
 
-async function fetchAllStops(trip_id) {
+async function fetchAllStops() {
     let r = await fetch("/api/stops");
     if (r.ok) return await r.json();
     else {
         console.error("Failed to fetch stops");
         return [];
+    }
+}
+
+async function fetchTripDetails(trip_id) {
+    let r = await fetch(`/api/trips/${trip_id}`);
+    if (r.ok) return await r.json();
+    else {
+        console.error("Failed to fetch trip details");
+        return null;
     }
 }
 
@@ -146,41 +155,57 @@ function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
 
 async function prepareTripDrawer(vehicleDetails) {
     let drawer = document.querySelector("#trip-drawer");
-
-    drawer.label = vehicleDetails.route_id;
-    drawer.querySelector("#vehicle-id-placeholder").innerHTML = vehicleDetails.vehicle_id;
-    drawer.querySelector("#vehicle-label-placeholder").innerHTML = vehicleDetails.label;
-    drawer.querySelector("#vehicle-trip-placeholder").innerHTML = vehicleDetails.trip_id;
-    const vehicleTypes = {"tram": "Tramwaj", "bus": "Autobus"};
-    drawer.querySelector("#vehicle-type-placeholder").innerHTML = Object.keys(vehicleTypes).includes(vehicleDetails.route_type) ? vehicleTypes[vehicleDetails.route_type] : "Nieznany";
-
-    const stops = await fetchTripStops(vehicleDetails.trip_id);
-    drawer.querySelector("#trip-stops").innerHTML = "";
-    if (stops.length > 0) {
-        drawer.label += " - " + stops[stops.length - 1].stop_name;
-        stops.forEach(stop => {
-            let stopDiv = document.createElement("div");
-            stopDiv.innerHTML = document.querySelector("#stop-template").innerHTML;
-            stopDiv.querySelector(".stop-sequence").innerHTML = stop.stop_sequence;
-            stopDiv.querySelector(".stop-name").innerHTML = stop.stop_name;
-            if (stop.drop_off_type === 1 && stop.pickup_type === 0) {
-                stopDiv.querySelector(".starting-stop").classList.remove("d-none");
-                stopDiv.querySelector(".stop-type").classList.remove("d-none");
-            } else if (stop.drop_off_type === 0 && stop.pickup_type === 1) {
-                stopDiv.querySelector(".final-stop").classList.remove("d-none");
-                stopDiv.querySelector(".stop-type").classList.remove("d-none");
-            } else if (stop.drop_off_type === 3 && stop.pickup_type === 3) {
-                stopDiv.querySelector(".request-stop").classList.remove("d-none");
-                stopDiv.querySelector(".stop-type").classList.remove("d-none");
-            }
-            stopDiv.querySelector(".stop-zone").innerHTML = stop.zone_id;
-            stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
-            stopDiv.querySelector(".stop-departure-time").innerHTML = stop.departure_time.split(":").slice(0, 2).join(":");
-            drawer.querySelector("#trip-stops").append(stopDiv);
-        });
-    }
-
+    drawer.querySelector(".drawer-content").classList.add("d-none");
+    drawer.querySelector(".drawer-error").classList.add("d-none");
+    drawer.querySelector(".drawer-loading").classList.remove("d-none");
     drawer.show();
+
+    try {
+        drawer.label = vehicleDetails.route_id;
+        drawer.querySelector("#vehicle-id-placeholder").innerHTML = vehicleDetails.vehicle_id;
+        drawer.querySelector("#vehicle-label-placeholder").innerHTML = vehicleDetails.label;
+        drawer.querySelector("#vehicle-trip-placeholder").innerHTML = vehicleDetails.trip_id;
+        const vehicleTypes = {"tram": "Tramwaj", "bus": "Autobus"};
+        drawer.querySelector("#vehicle-type-placeholder").innerHTML = Object.keys(vehicleTypes).includes(vehicleDetails.route_type) ? vehicleTypes[vehicleDetails.route_type] : "Nieznany";
+        const details = await fetchTripDetails(vehicleDetails.trip_id);
+        drawer.querySelector("#vehicle-agency-link").innerHTML = details.route.agency.agency_name;
+        drawer.querySelector("#vehicle-agency-link").href = details.route.agency.agency_url;
+        if (details.route.route_desc.toUpperCase().includes("NA LINII NIE OBOWIĄZUJE TARYFA ZTM")) drawer.querySelector("#vehicle-not-ztm-tariff").show();
+        else drawer.querySelector("#vehicle-not-ztm-tariff").hide();
+
+        const stops = await fetchTripStops(vehicleDetails.trip_id);
+        drawer.querySelector("#trip-stops").innerHTML = "";
+        if (stops.length > 0) {
+            stops.forEach(stop => {
+                let stopDiv = document.createElement("div");
+                stopDiv.innerHTML = document.querySelector("#stop-template").innerHTML;
+                stopDiv.querySelector(".stop-sequence").innerHTML = stop.stop_sequence;
+                stopDiv.querySelector(".stop-name").innerHTML = stop.stop_name;
+                if (stop.drop_off_type === 1 && stop.pickup_type === 0) {
+                    stopDiv.querySelector(".starting-stop").classList.remove("d-none");
+                    stopDiv.querySelector(".stop-type").classList.remove("d-none");
+                } else if (stop.drop_off_type === 0 && stop.pickup_type === 1) {
+                    stopDiv.querySelector(".final-stop").classList.remove("d-none");
+                    stopDiv.querySelector(".stop-type").classList.remove("d-none");
+                } else if (stop.drop_off_type === 3 && stop.pickup_type === 3) {
+                    stopDiv.querySelector(".request-stop").classList.remove("d-none");
+                    stopDiv.querySelector(".stop-type").classList.remove("d-none");
+                }
+                stopDiv.querySelector(".stop-zone").innerHTML = stop.zone_id;
+                stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
+                stopDiv.querySelector(".stop-departure-time").innerHTML = stop.departure_time.split(":").slice(0, 2).join(":");
+                drawer.querySelector("#trip-stops").append(stopDiv);
+            });
+        }
+        drawer.label += " - " + details.trip_headsign;
+
+        drawer.querySelector(".drawer-loading").classList.add("d-none");
+        drawer.querySelector(".drawer-content").classList.remove("d-none");
+    } catch (exception) {
+        drawer.querySelector(".drawer-loading").classList.add("d-none");
+        drawer.querySelector(".drawer-error").classList.remove("d-none");
+        throw exception;
+    }
 }
 
 async function onVehicleClick(event, tripsLayer, vehiclesLayer, trackedVehicleLayer) {
