@@ -46,8 +46,8 @@ function getVehicleIcon(type, number, label, bearing) {
     return `<div class="vehicle-label vehicle-${type}">${bearingArrow}<div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
 }
 
-function getStopIcon(sequence, type, zone) {
-    return `<div class="stop-icon"><span class="stop-label-sequence">${sequence}</span></div>`;
+function getStopIcon(sequence, type, zone, status) {
+    return `<div class="stop-icon stop-status-${status}"><span class="stop-label-sequence">${sequence}</span></div>`;
 }
 
 function getStopType(dropOffType, pickupType) {
@@ -102,7 +102,7 @@ async function fetchTripDetails(trip_id) {
     }
 }
 
-function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, label, bearing, tracked = false) {
+function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, label, bearing, current_stop_sequence, tracked = false) {
     let icon = L.divIcon({
         html: getVehicleIcon(route_type, route_id, label, bearing),
         className: "vehicle-icon" + (tracked ? " vehicle-icon-tracked": ""),
@@ -117,12 +117,13 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
         longitude: longitude,
         label: label,
         bearing: bearing,
+        current_stop_sequence: current_stop_sequence,
     });
     return marker;
 }
 
-function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLayer) {
-    untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
+function trackVehicle(vehicleMarker, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer) {
+    untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
     document.querySelector("#map").setAttribute("tracked-vehicle-id", vehicleMarker.options.vehicle_id);
     let marker = createVehicleMarker(
         vehicleMarker.options.vehicle_id,
@@ -133,13 +134,14 @@ function trackVehicle(vehicleMarker, tripsLayer, vehiclesLayer, trackedVehicleLa
         vehicleMarker.options.longitude,
         vehicleMarker.options.label,
         vehicleMarker.options.bearing,
+        vehicleMarker.options.current_stop_sequence,
         true
     );
     vehiclesLayer.removeLayer(vehiclesLayer.getLayer(vehicleMarker._leaflet_id));
     marker.addTo(trackedVehicleLayer);
 }
 
-function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
+function untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer) {
     tripsLayer.clearLayers();
 
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
@@ -154,11 +156,12 @@ function untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer) {
             m.options.longitude,
             m.options.label,
             m.options.bearing,
+            m.options.current_stop_sequence,
             false
         );
         marker.addTo(vehiclesLayer);
         marker.on("click", async (e) => {
-            await onVehicleClick(e, tripsLayer, vehiclesLayer, trackedVehicleLayer);
+            await onVehicleClick(e, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
         });
     });
     trackedVehicleLayer.clearLayers();
@@ -220,9 +223,9 @@ async function prepareTripDrawer(vehicleDetails) {
     }
 }
 
-async function onVehicleClick(event, tripsLayer, vehiclesLayer, trackedVehicleLayer) {
-    trackVehicle(event.target, tripsLayer, vehiclesLayer, trackedVehicleLayer);
-
+async function onVehicleClick(event, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer) {
+    trackVehicle(event.target, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
+    const currentStopSequence = event.target.options.current_stop_sequence;
     await prepareTripDrawer(event.target.options);
 
     tripsLayer.clearLayers();
@@ -235,19 +238,30 @@ async function onVehicleClick(event, tripsLayer, vehiclesLayer, trackedVehicleLa
         },
     }).addTo(tripsLayer);
     stops.forEach(stop => {
+        let status;
+        if (stop.stop_sequence === currentStopSequence) status = "current";
+        else if (stop.stop_sequence > currentStopSequence) status = "next";
+        else status = "past";
+        const stopType = getStopType(stop.drop_off_type, stop.pickup_type);
         let icon = L.divIcon({
-            html: getStopIcon(stop.stop_sequence, getStopType(stop.drop_off_type, stop.pickup_type), stop.zone_id),
+            html: getStopIcon(stop.stop_sequence, stopType, stop.zone_id, status),
             className: "stop-icon",
         });
-        let marker = L.marker([stop.stop_lat, stop.stop_lon], {icon: icon});
-        marker.addTo(tripsLayer);
+        let marker = L.marker([stop.stop_lat, stop.stop_lon], {
+            icon: icon,
+            sequence: stop.stop_sequence,
+            type: stopType,
+            zone: stop.zone_id,
+        });
+        marker.addTo(tripStopsLayer);
     });
 }
 
-function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicles) {
+function addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer, vehicles) {
     vehiclesLayer.clearLayers();
     trackedVehicleLayer.clearLayers();
     let trackedVehicleId = document.querySelector("#map").getAttribute("tracked-vehicle-id");
+    let currentStopSequence;
     vehicles.forEach((vehicle) => {
         let marker = createVehicleMarker(
             vehicle.vehicle.id,
@@ -258,22 +272,35 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicl
             vehicle.coords.longitude,
             vehicle.vehicle.label,
             vehicle.bearing,
+            vehicle.current_stop_sequence,
             trackedVehicleId === vehicle.vehicle.id
         );
         if (trackedVehicleId === vehicle.vehicle.id) {
             marker.addTo(trackedVehicleLayer);
+            currentStopSequence = vehicle.current_stop_sequence;
             return;
         }
         marker.addTo(vehiclesLayer);
         marker.on("click", async (e) => {
-            await onVehicleClick(e, tripsLayer, vehiclesLayer, trackedVehicleLayer);
+            await onVehicleClick(e, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
         });
+    });
+    tripStopsLayer.getLayers().forEach(marker => {
+        let status;
+        if (marker.options.sequence === currentStopSequence) status = "current";
+        else if (marker.options.sequence > currentStopSequence) status = "next";
+        else status = "past";
+        let icon = L.divIcon({
+            html: getStopIcon(marker.options.sequence, marker.options.type, marker.options.zone, status),
+            className: "stop-icon",
+        });
+        marker.setIcon(icon);
     });
 }
 
-async function updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer) {
+async function updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer) {
     let vehicles = await fetchVehiclePositions();
-    addVehiclesToMap(vehiclesLayer, tripsLayer, trackedVehicleLayer, vehicles);
+    addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer, vehicles);
 }
 
 function updateZoom(map) {
@@ -395,6 +422,9 @@ async function main() {
     let tripsLayer = L.layerGroup();
     map.addLayer(tripsLayer);
 
+    let tripStopsLayer = L.layerGroup();
+    map.addLayer(tripStopsLayer);
+
     let gpsLayer = L.layerGroup();
     map.addLayer(gpsLayer);
 
@@ -503,13 +533,13 @@ async function main() {
         trackControl.addTo(map);
     }
 
-    await updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer);
+    await updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer);
     if (localStorage.getItem("disable-vehicle-position-updates")) console.warn(
         "%cWarning! Debug option enabled.\n%cVehicle position updates are disabled.",
         "font-weight: bold;",
         "",
     );
-    else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer, trackedVehicleLayer), 5000);
+    else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer), 5000);
 
     updateZoom(map);
     map.on("zoomend", () => updateZoom(map));
@@ -517,7 +547,7 @@ async function main() {
     document.addEventListener("keyup", (e) => {
         if (e.key === "Escape") {
             document.querySelector("#trip-drawer").hide();
-            untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer);
+            untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
         }
     });
 
@@ -526,7 +556,7 @@ async function main() {
 
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
 
-    document.querySelector("#trip-drawer").addEventListener("sl-request-close", () => untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer));
+    document.querySelector("#trip-drawer").addEventListener("sl-request-close", () => untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer));
 
     document.querySelectorAll(".drawer-resizer").forEach(e => e.addEventListener("pointerdown", (evt) => {
         let drawer = evt.currentTarget.parentElement;
