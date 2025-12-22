@@ -295,6 +295,25 @@ html, body {
     stroke: $unknown-route-color-light;
 }
 
+.stop-icon {
+    .stop-label-sequence {
+        font-size: 18px;
+        border-radius: 50%;
+        background-color: var(--sl-color-neutral-400);
+        color: var(--sl-color-neutral-1000);
+        border-color: var(--sl-color-neutral-1000);
+        border-width: 1px;
+        border-style: solid;
+        font-weight: bold;
+        aspect-ratio: 1;
+        height: 24px;
+        align-content: center;
+        text-align: center;
+        position: absolute;
+        transform: translate(-20%, -40%);
+    }
+}
+
 @mixin animate-route($dashSize: 50, $gapSize: 10) {
     animation: move-route-#{ $dashSize }-#{ $gapSize } 2s linear infinite;
     stroke-dasharray: $dashSize, $gapSize;

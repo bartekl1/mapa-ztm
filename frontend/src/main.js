@@ -46,6 +46,17 @@ function getVehicleIcon(type, number, label, bearing) {
     return `<div class="vehicle-label vehicle-${type}">${bearingArrow}<div class="vehicle-label-icon">${icons[type]}</div><div class="vehicle-label-text">${number}</div></div>`;
 }
 
+function getStopIcon(sequence, type, zone) {
+    return `<div class="stop-icon"><span class="stop-label-sequence">${sequence}</span></div>`;
+}
+
+function getStopType(dropOffType, pickupType) {
+    if (dropOffType === 1 && pickupType === 0) return "starting";
+    else if (dropOffType === 0 && pickupType === 1) return "final";
+    else if (dropOffType === 3 && pickupType === 3) return "request";
+    else return "normal";
+}
+
 async function fetchVehiclePositions() {
     let r = await fetch("/api/positions?routes_info&bearings");
     if (r.ok) return await r.json();
@@ -181,13 +192,14 @@ async function prepareTripDrawer(vehicleDetails) {
                 stopDiv.innerHTML = document.querySelector("#stop-template").innerHTML;
                 stopDiv.querySelector(".stop-sequence").innerHTML = stop.stop_sequence;
                 stopDiv.querySelector(".stop-name").innerHTML = stop.stop_name;
-                if (stop.drop_off_type === 1 && stop.pickup_type === 0) {
+                const stopType = getStopType(stop.drop_off_type, stop.pickup_type);
+                if (stopType === "starting") {
                     stopDiv.querySelector(".starting-stop").classList.remove("d-none");
                     stopDiv.querySelector(".stop-type").classList.remove("d-none");
-                } else if (stop.drop_off_type === 0 && stop.pickup_type === 1) {
+                } else if (stopType === "final") {
                     stopDiv.querySelector(".final-stop").classList.remove("d-none");
                     stopDiv.querySelector(".stop-type").classList.remove("d-none");
-                } else if (stop.drop_off_type === 3 && stop.pickup_type === 3) {
+                } else if (stopType === "request") {
                     stopDiv.querySelector(".request-stop").classList.remove("d-none");
                     stopDiv.querySelector(".stop-type").classList.remove("d-none");
                 }
@@ -223,7 +235,11 @@ async function onVehicleClick(event, tripsLayer, vehiclesLayer, trackedVehicleLa
         },
     }).addTo(tripsLayer);
     stops.forEach(stop => {
-        let marker = L.marker([stop.stop_lat, stop.stop_lon]);
+        let icon = L.divIcon({
+            html: getStopIcon(stop.stop_sequence, getStopType(stop.drop_off_type, stop.pickup_type), stop.zone_id),
+            className: "stop-icon",
+        });
+        let marker = L.marker([stop.stop_lat, stop.stop_lon], {icon: icon});
         marker.addTo(tripsLayer);
     });
 }
