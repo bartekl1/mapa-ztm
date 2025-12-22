@@ -321,8 +321,9 @@ function initSettings() {
 
     let resizeCallback = () => {
         let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-        document.querySelector("sl-tab-group").setAttribute("placement", vw >= 800 ? "start" : "top");
-        document.querySelector("#trip-drawer").setAttribute("placement", vw >= 800 ? "end" : "bottom");
+        document.querySelector("#settings-tabs").setAttribute("placement", vw >= 800 ? "start" : "top");
+        document.querySelectorAll("sl-drawer").forEach(e => e.setAttribute("placement", vw >= 800 ? "end" : "bottom"));
+        document.querySelectorAll(".drawer-resizer").forEach(e => e.setAttribute("name", vw >= 800 ? "grip-vertical" : "grip-horizontal"));
     };
     resizeCallback();
     addEventListener("resize", resizeCallback);
@@ -510,6 +511,26 @@ async function main() {
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
 
     document.querySelector("#trip-drawer").addEventListener("sl-request-close", () => untrackVehicles(tripsLayer, vehiclesLayer, trackedVehicleLayer));
+
+    document.querySelectorAll(".drawer-resizer").forEach(e => e.addEventListener("pointerdown", (evt) => {
+        let drawer = evt.currentTarget.parentElement;
+        let placement = drawer.getAttribute("placement");
+        let moveCallback = (evt2) => {
+            let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            let vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            let newSize;
+            if (placement === "end") newSize = vw - evt2.clientX;
+            else if (placement === "bottom") newSize = vh - evt2.clientY;
+            if (newSize < 50) newSize = 50;
+            drawer.style.setProperty("--size", `${newSize}px`);
+        };
+        let upCallback = () => {
+            document.removeEventListener("pointermove", moveCallback);
+            document.removeEventListener("pointerup", upCallback);
+        };
+        document.addEventListener("pointermove", moveCallback);
+        document.addEventListener("pointerup", upCallback);
+    }));
 }
 
 main();

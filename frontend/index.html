@@ -60,12 +60,13 @@
             <span class="drawer-loading">
                 <sl-spinner></sl-spinner>
             </span>
+            <sl-icon-button class="drawer-resizer" name="grip-vertical"></sl-icon-button>
         </sl-drawer>
 
         <sl-dialog id="settings-dialog">
             <span slot="label">Ustawienia</span>
             <div>
-                <sl-tab-group>
+                <sl-tab-group id="settings-tabs">
                     <sl-tab slot="nav" panel="general">
                         <sl-icon name="grid-3x3-gap-fill" class="mr-5"></sl-icon>
                         Ogólne
