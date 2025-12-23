@@ -60,10 +60,7 @@ function getStopType(dropOffType, pickupType) {
 async function fetchVehiclePositions() {
     let r = await fetch("/api/positions?routes_info&bearings");
     if (r.ok) return await r.json();
-    else {
-        console.error("Failed to fetch vehicle positions");
-        return [];
-    }
+    else throw new Error("Failed to fetch vehicle positions");
 }
 
 async function fetchTripShape(trip_id) {
@@ -100,6 +97,21 @@ async function fetchTripDetails(trip_id) {
         console.error("Failed to fetch trip details");
         return null;
     }
+}
+
+function showToast(message, title = "", variant = "primary", icon = "info-circle", duration = 5000, countdown = "rtl") {
+    const darkTheme = (localStorage.getItem("theme") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) || localStorage.getItem("theme") === "dark";
+    const alert = Object.assign(document.createElement('sl-alert'), {
+      variant,
+      closable: true,
+      duration: duration,
+      countdown: countdown,
+      innerHTML: `<sl-icon name="${icon}" slot="icon"></sl-icon>` + ((title !== "" && title !== null && title !== undefined) ? `<strong>${title}</strong><br />` : "") + message,
+      classList: darkTheme ? "sl-theme-dark" : "",
+    });
+
+    document.body.append(alert);
+    alert.toast();
 }
 
 function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude, longitude, label, bearing, current_stop_sequence, tracked = false) {
@@ -300,7 +312,13 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehi
 }
 
 async function updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer) {
-    let vehicles = await fetchVehiclePositions();
+    let vehicles;
+    try {
+        vehicles = await fetchVehiclePositions();
+    } catch (exception) {
+        showToast("Wystąpił błąd podczas wczytywania lokalizacji pojazdów", "", "danger", "x-circle");
+        // throw exception;
+    }
     addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer, vehicles);
 }
 
@@ -320,9 +338,9 @@ function applyTheme() {
     let darkTheme = (localStorage.getItem("theme") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) || localStorage.getItem("theme") === "dark";
     let mapDarkTheme = darkTheme && !localStorage.getItem("map-dark-theme");
     if (darkTheme) {
-        document.querySelectorAll(["#settings-dialog", "#trip-drawer"]).forEach(e => e.classList.add("sl-theme-dark"));
+        document.querySelectorAll(["sl-dialog", "sl-drawer", "sl-alert"]).forEach(e => e.classList.add("sl-theme-dark"));
     } else {
-        document.querySelectorAll(["#settings-dialog", "#trip-drawer"]).forEach(e => e.classList.remove("sl-theme-dark"));
+        document.querySelectorAll(["sl-dialog", "sl-drawer", "sl-alert"]).forEach(e => e.classList.remove("sl-theme-dark"));
     }
     if (mapDarkTheme) document.querySelector("#map").classList.add("map-dark-theme");
     else document.querySelector("#map").classList.remove("map-dark-theme");
@@ -534,30 +552,35 @@ async function main() {
         trackControl.addTo(map);
     }
 
-    await updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer);
-    if (localStorage.getItem("disable-vehicle-position-updates")) console.warn(
-        "%cWarning! Debug option enabled.\n%cVehicle position updates are disabled.",
-        "font-weight: bold;",
-        "",
-    );
-    else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer), 5000);
+    if (navigator.onLine) {
+        await updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer);
+        if (localStorage.getItem("disable-vehicle-position-updates")) console.warn(
+            "%cWarning! Debug option enabled.\n%cVehicle position updates are disabled.",
+            "font-weight: bold;",
+            "",
+        );
+        else setInterval(async () => updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer), 5000);
 
-    updateZoom(map);
-    map.on("zoomend", () => updateZoom(map));
+        updateZoom(map);
+        map.on("zoomend", () => updateZoom(map));
 
-    document.addEventListener("keyup", (e) => {
-        if (e.key === "Escape") {
-            document.querySelector("#trip-drawer").hide();
-            untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
-        }
-    });
+        document.addEventListener("keyup", (e) => {
+            if (e.key === "Escape") {
+                document.querySelector("#trip-drawer").hide();
+                untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
+            }
+        });
 
-    loadingOverlay.remove();
-    document.querySelector("#map").classList.remove("loading");
+        document.querySelector("#trip-drawer").addEventListener("sl-request-close", () => untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer));
+
+        addEventListener("offline", () => showToast("Jesteś offline", "", "danger", "wifi-off"));
+        addEventListener("online", () => showToast("Jesteś znowu online", "", "success", "wifi"));
+    } else {
+        showToast("Jesteś offline", "", "danger", "wifi-off")
+        addEventListener("online", () => showToast("Jesteś znowu online" + `<br /><sl-button class="mt-5" variant="primary" outline onclick="location.reload()"><sl-icon slot="prefix" name="arrow-clockwise"></sl-icon>Odśwież</sl-button>`, "", "success", "wifi"));
+    }
 
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
-
-    document.querySelector("#trip-drawer").addEventListener("sl-request-close", () => untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer));
 
     document.querySelectorAll(".drawer-resizer").forEach(e => e.addEventListener("pointerdown", (evt) => {
         let drawer = evt.currentTarget.parentElement;
@@ -578,6 +601,9 @@ async function main() {
         document.addEventListener("pointermove", moveCallback);
         document.addEventListener("pointerup", upCallback);
     }));
+
+    loadingOverlay.remove();
+    document.querySelector("#map").classList.remove("loading");
 }
 
 main();
