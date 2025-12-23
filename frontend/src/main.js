@@ -576,8 +576,8 @@ async function main() {
         addEventListener("offline", () => showToast("Jesteś offline", "", "danger", "wifi-off"));
         addEventListener("online", () => showToast("Jesteś znowu online", "", "success", "wifi"));
     } else {
-        showToast("Jesteś offline", "", "danger", "wifi-off")
-        addEventListener("online", () => showToast("Jesteś znowu online" + `<br /><sl-button class="mt-5" variant="primary" outline onclick="location.reload()"><sl-icon slot="prefix" name="arrow-clockwise"></sl-icon>Odśwież</sl-button>`, "", "success", "wifi"));
+        showToast("Jesteś offline", "", "danger", "wifi-off", Infinity, undefined);
+        addEventListener("online", () => showToast("Jesteś znowu online" + `<br /><sl-button class="mt-5" variant="primary" outline onclick="location.reload()"><sl-icon slot="prefix" name="arrow-clockwise"></sl-icon>Odśwież</sl-button>`, "", "success", "wifi", Infinity, undefined));
     }
 
     document.querySelectorAll(["sl-button.refresh-website", "button.refresh-website"]).forEach(e => e.addEventListener("click", () => location.reload()));
