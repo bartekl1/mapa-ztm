@@ -11,6 +11,7 @@ import math
 
 from .gtfs_schedule import Feed
 from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL, GTFS_FILES_LIST_URL
+from .utils import get_request_headers
 
 def get_route_type(type_enum: int):
     types = {0: "tram", 3: "bus"}
@@ -19,7 +20,7 @@ def get_route_type(type_enum: int):
 @cachetools.func.ttl_cache(ttl=1)
 def get_current_positions(cache_path: str, routes_info: bool = False, bearings: bool = False) -> list[dict[str, str | int | float]]:
     feed = gtfs_realtime_pb2.FeedMessage()
-    response = requests.get(GTFS_RT_FEED_URL)
+    response = requests.get(GTFS_RT_FEED_URL, headers=get_request_headers())
     feed.ParseFromString(response.content)
     res = []
     for entity in feed.entity:
@@ -68,7 +69,7 @@ def get_current_positions(cache_path: str, routes_info: bool = False, bearings: 
     return res
 
 def get_gtfs_files_list() -> list[str]:
-    response = requests.get(GTFS_FILES_LIST_URL)
+    response = requests.get(GTFS_FILES_LIST_URL, headers=get_request_headers())
     parser = BeautifulSoup(response.content, "html.parser")
     rows = parser.find_all("table")[1].find("tbody").find_all("tr")
     filenames = [row.find_all("td")[0].get_text(strip=True) for row in rows]
@@ -96,7 +97,7 @@ def get_current_gtfs_file_url() -> str:
 
 def download_gtfs_to_cache(cache_path: str) -> None:
     feed = Feed()
-    response = requests.get(get_current_gtfs_file_url())
+    response = requests.get(get_current_gtfs_file_url(), headers=get_request_headers())
     feed.load_gtfs_data(io.BytesIO(response.content))
     
     directory = os.path.dirname(cache_path) or "."
