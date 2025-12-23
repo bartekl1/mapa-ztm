@@ -30,6 +30,12 @@ $tracked-unknown-color-dark: #555555;
 $tracked-vehicle-label-bg-dark: yellow;
 
 
+$stop-color: var(--sl-color-neutral-1000);
+$next-stop-background: var(--sl-color-neutral-200);
+$current-stop-background: #26ff26;
+$past-stop-background: var(--sl-color-neutral-500);
+
+
 $dark-mode-map-filters: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 $loading-filters: brightness(50%);
 
@@ -313,25 +319,25 @@ html, body {
 
 .stop-icon.stop-status-next {
     .stop-label-sequence {
-        background-color: var(--sl-color-neutral-300);
-        color: var(--sl-color-neutral-1000);
-        border-color: var(--sl-color-neutral-1000);
+        background-color: $next-stop-background;
+        color: $stop-color;
+        border-color: $stop-color;
     }
 }
 
 .stop-icon.stop-status-current {
     .stop-label-sequence {
-        background-color: forestgreen;
-        color: var(--sl-color-neutral-1000);
-        border-color: var(--sl-color-neutral-1000);
+        background-color: $current-stop-background;
+        color: $stop-color;
+        border-color: $stop-color;
     }
 }
 
 .stop-icon.stop-status-past {
     .stop-label-sequence {
-        background-color: var(--sl-color-neutral-600);
-        color: var(--sl-color-neutral-1000);
-        border-color: var(--sl-color-neutral-1000);
+        background-color: $past-stop-background;
+        color: $stop-color;
+        border-color: $stop-color;
     }
 }
 
@@ -505,7 +511,6 @@ sl-drawer#trip-drawer {
             color: var(--sl-color-neutral-1000);
             font-weight: bold;
             aspect-ratio: 1;
-            // height: 80%;
             height: 36px;
             margin-top: 4px;
             margin-right: 10px;
