@@ -1,0 +1,9 @@
+services:
+  mapaztm:
+    image: ghcr.io/bartekl1/mapa-ztm:latest
+    container_name: mapa-ztm
+    restart: unless-stopped
+    environment:
+      GUNICORN_WORKERS: 4
+    ports:
+      - 127.0.0.1:8000:8080
