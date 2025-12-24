@@ -456,9 +456,9 @@ sl-dialog {
     }
 }
 
-@for $i from 1 through 5 {
-    .t-#{$i*10} {
-        font-size: #{$i*10}px;
+@for $i from 1 through 25 {
+    .t-#{$i*2} {
+        font-size: #{$i*2}px;
         font-weight: bold;
     }
 }
@@ -568,5 +568,14 @@ sl-drawer {
         top: -8px;
         left: 50%;
         transform: translate(-50%, 0);
+    }
+}
+
+#map-start-position-coords-settings {
+    display: flex;
+
+    > sl-input {
+        width: 33%;
+        margin-right: 5px;
     }
 }

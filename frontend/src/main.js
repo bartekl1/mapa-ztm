@@ -346,7 +346,7 @@ function applyTheme() {
     else document.querySelector("#map").classList.remove("map-dark-theme");
 }
 
-function initSettings() {
+function initSettings(map) {
     let currentTheme = localStorage.getItem("theme");
     if (currentTheme === null) currentTheme = "system";
     document.querySelector("#theme-select").value = currentTheme;
@@ -366,6 +366,37 @@ function initSettings() {
         if (checked) localStorage.removeItem("map-dark-theme");
         else localStorage.setItem("map-dark-theme", "false");
         applyTheme();
+    });
+
+    const lsLatitude = parseFloat(localStorage.getItem("map-start-latitude"))
+    const lsLongitude = parseFloat(localStorage.getItem("map-start-longitude"))
+    const lsZoom = parseInt(localStorage.getItem("map-start-zoom"))
+    if (!isNaN(lsLatitude)) document.querySelector("#map-start-latitude").value = lsLatitude;
+    if (!isNaN(lsLongitude)) document.querySelector("#map-start-longitude").value = lsLongitude;
+    if (!isNaN(lsZoom)) document.querySelector("#map-start-zoom").value = lsZoom;
+
+    document.querySelector("#map-start-latitude").addEventListener("sl-change", (evt) => { if (!isNaN(parseFloat(evt.currentTarget.value))) localStorage.setItem(evt.currentTarget.id, evt.currentTarget.value); });
+    document.querySelector("#map-start-longitude").addEventListener("sl-change", (evt) => { if (!isNaN(parseFloat(evt.currentTarget.value))) localStorage.setItem(evt.currentTarget.id, evt.currentTarget.value); });
+    document.querySelector("#map-start-zoom").addEventListener("sl-change", (evt) => { if (!isNaN(parseInt(evt.currentTarget.value))) localStorage.setItem(evt.currentTarget.id, evt.currentTarget.value); });
+    document.querySelector("#load-location-from-map").addEventListener("click", () => {
+        const center = map.getCenter();
+        const lat = center.lat;
+        const lon = center.lng;
+        const zoom = map.getZoom();
+        document.querySelector("#map-start-latitude").value = lat;
+        document.querySelector("#map-start-longitude").value = lon;
+        document.querySelector("#map-start-zoom").value = zoom;
+        localStorage.setItem("map-start-latitude", lat);
+        localStorage.setItem("map-start-longitude", lon);
+        localStorage.setItem("map-start-zoom", zoom);
+    });
+    document.querySelector("#reset-map-start-location").addEventListener("click", () => {
+        document.querySelector("#map-start-latitude").value = "";
+        document.querySelector("#map-start-longitude").value = "";
+        document.querySelector("#map-start-zoom").value = "";
+        localStorage.removeItem("map-start-latitude");
+        localStorage.removeItem("map-start-longitude");
+        localStorage.removeItem("map-start-zoom");
     });
 
     document.querySelector("#disable-vehicle-position-updates-switch").addEventListener("sl-change", (e) => {
@@ -410,10 +441,16 @@ function applyAppInfo() {
 async function main() {
     applyTheme();
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
-    initSettings();
     applyAppInfo();
 
-    const map = L.map("map").setView([52.40, 16.96], 13);
+    const map = L.map("map");
+
+    initSettings(map);
+
+    const startLat = parseFloat(localStorage.getItem("map-start-latitude")) || 52.40;
+    const startLon = parseFloat(localStorage.getItem("map-start-longitude")) || 16.96;
+    const startZoom = parseInt(localStorage.getItem("map-start-zoom")) || 13;
+    map.setView([startLat, startLon], startZoom);
 
     const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         minZoom: 4,

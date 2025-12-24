@@ -85,13 +85,37 @@
                     </sl-tab>
 
                     <sl-tab-panel name="general">
-                        <sl-select id="theme-select" pill label="Motyw" class="mb-10">
-                            <sl-option value="system">Systemowy</sl-option>
-                            <sl-option value="light">Jasny</sl-option>
-                            <sl-option value="dark">Ciemny</sl-option>
-                        </sl-select>
-
-                        <sl-switch id="map-dark-theme-switch">Zastosuj ciemny motyw w mapie</sl-switch>
+                        <div class="mb-20">
+                            <div class="t-24">Motyw</div>
+                            <sl-select id="theme-select" label="Motyw" class="mb-10">
+                                <sl-option value="system">Systemowy</sl-option>
+                                <sl-option value="light">Jasny</sl-option>
+                                <sl-option value="dark">Ciemny</sl-option>
+                            </sl-select>
+                            
+                            <sl-switch id="map-dark-theme-switch">Zastosuj ciemny motyw w mapie</sl-switch>
+                        </div>
+                        <div class="mb-20">
+                            <div class="t-24">Lokalizacja startowa mapy</div>
+                            <div id="map-start-position-coords-settings" class="mb-10">
+                                <sl-input id="map-start-latitude" label="Szerokość" placeholder="Szerokość"></sl-input>
+                                <sl-input id="map-start-longitude" label="Długość" placeholder="Długość"></sl-input>
+                                <sl-input id="map-start-zoom" label="Powiększenie" placeholder="Powiększenie"></sl-input>
+                            </div>
+                            <div class="mb-10">
+                                <sl-button id="load-location-from-map" variant="primary" outline>
+                                    <sl-icon slot="prefix" name="map"></sl-icon>
+                                    Pobierz z mapy
+                                </sl-button>
+                                <sl-button id="reset-map-start-location" variant="danger" outline>
+                                    <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                                    Resetuj
+                                </sl-button>
+                            </div>
+                            <div>
+                                <sl-switch id="map-start-location-tracking">Używaj bieżącej lokalizacji użytkownika, gdy to możliwe</sl-switch>
+                            </div>
+                        </div>
                     </sl-tab-panel>
 
                     <sl-tab-panel name="debugging">
