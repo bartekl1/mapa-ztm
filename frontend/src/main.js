@@ -374,6 +374,7 @@ function initSettings(map) {
     if (!isNaN(lsLatitude)) document.querySelector("#map-start-latitude").value = lsLatitude;
     if (!isNaN(lsLongitude)) document.querySelector("#map-start-longitude").value = lsLongitude;
     if (!isNaN(lsZoom)) document.querySelector("#map-start-zoom").value = lsZoom;
+    document.querySelector("#map-start-location-tracking").checked = localStorage.getItem("map-start-location-tracking");
 
     document.querySelector("#map-start-latitude").addEventListener("sl-change", (evt) => { if (!isNaN(parseFloat(evt.currentTarget.value))) localStorage.setItem(evt.currentTarget.id, evt.currentTarget.value); });
     document.querySelector("#map-start-longitude").addEventListener("sl-change", (evt) => { if (!isNaN(parseFloat(evt.currentTarget.value))) localStorage.setItem(evt.currentTarget.id, evt.currentTarget.value); });
@@ -397,6 +398,11 @@ function initSettings(map) {
         localStorage.removeItem("map-start-latitude");
         localStorage.removeItem("map-start-longitude");
         localStorage.removeItem("map-start-zoom");
+    });
+    document.querySelector("#map-start-location-tracking").addEventListener("sl-change", (e) => {
+        let checked = e.currentTarget.checked;
+        if (checked) localStorage.setItem("map-start-location-tracking", "true");
+        else localStorage.removeItem("map-start-location-tracking");
     });
 
     document.querySelector("#disable-vehicle-position-updates-switch").addEventListener("sl-change", (e) => {
@@ -587,6 +593,7 @@ async function main() {
         });
         let trackControl = new L.Control.TrackLocation();
         trackControl.addTo(map);
+        if (localStorage.getItem("map-start-location-tracking")) document.querySelector(".leaflet-control-button.track-user-location-button").click();
     }
 
     if (navigator.onLine) {
