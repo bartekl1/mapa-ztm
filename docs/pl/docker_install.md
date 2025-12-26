@@ -2,7 +2,9 @@
 
 ## Wymagania
 
-- [Docker](https://docs.docker.com/get-docker/) (w tym Docker Compose)
+- [Docker](https://docs.docker.com/engine/install/) (w tym Docker Compose)
+- `cron` (do automatycznej aktualizacji danych GTFS)
+- `wget` lub podobne narzędzie (np. `curl`) do pobrania pliku `docker-compose.yml`
 
 ## Instrukcje instalacji
 

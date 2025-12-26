@@ -56,6 +56,7 @@ Aplikacja korzysta wyłącznie z **publicznie dostępnych, otwartych danych** i 
     - [Python 3.9+](https://www.python.org/downloads/)
     - [Node.js 20.19+](https://nodejs.org/en/download/)
     - [Poetry](https://python-poetry.org/docs/#installation)
+    - [Git](https://git-scm.com/)
 
 2. Sklonuj repozytorium
 ```bash
