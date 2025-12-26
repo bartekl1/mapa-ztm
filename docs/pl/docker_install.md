@@ -69,7 +69,9 @@ docker compose up -d
 docker compose down
 ```
 
-3. (Opcjonalnie) Usuń obraz
+3. Usuń wpis `cron`
+
+4. Usuń obraz
 ```bash
 docker rmi ghcr.io/bartekl1/mapa-ztm
 ```
@@ -77,4 +79,4 @@ docker rmi ghcr.io/bartekl1/mapa-ztm
 > [!WARNING]
 > Jeśli aplikacja była aktualizowana możliwe jest, że pobranych jest kilka wersji obrazów. Należy je usunąć ręcznie za pomocą `docker rmi <image_id>`.
 
-4. (Opcjonalnie) Usuń katalog z plikami kontenera
+5. Usuń katalog z plikami kontenera
