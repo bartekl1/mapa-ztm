@@ -52,40 +52,47 @@ Aplikacja korzysta wyłącznie z **publicznie dostępnych, otwartych danych** i 
 > Poniższe instrukcje są przeznaczone tylko do uruchomienia w celach testowych i deweloperskich. \
 > Do uruchomienia produkcyjnego należy użyć odpowiedniego serwera i narzędzi. Szczegóły w dokumentacji.
 
-1. Wymagania:
+1. Wymagania
     - [Python 3.9+](https://www.python.org/downloads/)
     - [Node.js 20.19+](https://nodejs.org/en/download/)
     - [Poetry](https://python-poetry.org/docs/#installation)
-2. Sklonuj repozytorium:
+
+2. Sklonuj repozytorium
 ```bash
 git clone https://github.com/bartekl1/mapa-ztm.git
 cd mapa-ztm
 ```
-3. Zainstaluj zależności backendu:
+
+3. Zainstaluj zależności backendu
 ```bash
 poetry install
 ```
-4. Uruchom serwer backendu (Flask w trybie deweloperskim):
+
+4. Uruchom serwer backendu (Flask w trybie deweloperskim)
 ```bash
 poetry run python app.py
 ```
+
 5. W osobnym terminalu przejdź do plików frontendu
 ```bash
 cd frontend
 ```
-6. Zainstaluj zależności frontendu:
+
+6. Zainstaluj zależności frontendu
 ```bash
 npm install
 ```
-7. Uruchom serwer frontendu (Vite w trybie deweloperskim):
+
+7. Uruchom serwer frontendu (Vite w trybie deweloperskim)
 ```bash
 npm run dev
 ```
+
 8. Otwórz przeglądarkę i przejdź pod [http://localhost:5173](http://localhost:5173)
 
 ## 🏭 Uruchomienie produkcyjne
 
-[🐳 Uruchomienie na Dockerze](docs/pl/docker_running.md) \
+[🐳 Instalacja na Dockerze](docs/pl/docker_install.md) \
 [🏗️ Ręczne budowanie obrazu Docker](docs/pl/docker_building.md) \
 [📦 Instalacja natywna (bez Dockera)](docs/pl/native_install.md)
 
