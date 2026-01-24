@@ -1,6 +1,6 @@
 [project]
 name = "mapa-ztm"
-version = "1.0.0"
+version = "1.0.1"
 description = "Mapa pojazdów ZTM Poznań"
 readme = "README.md"
 requires-python = ">=3.9"
