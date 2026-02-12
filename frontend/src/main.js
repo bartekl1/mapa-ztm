@@ -137,6 +137,7 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
 function trackVehicle(vehicleMarker, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer) {
     untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
     document.querySelector("#map").setAttribute("tracked-vehicle-id", vehicleMarker.options.vehicle_id);
+    document.querySelector("#map").setAttribute("tracked-trip-id", vehicleMarker.options.trip_id);
     let marker = createVehicleMarker(
         vehicleMarker.options.vehicle_id,
         vehicleMarker.options.trip_id,
@@ -158,6 +159,7 @@ function untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehic
     tripStopsLayer.clearLayers();
 
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
+    document.querySelector("#map").removeAttribute("tracked-trip-id");
     let markers = trackedVehicleLayer.getLayers();
     markers.forEach(m => {
         let marker = createVehicleMarker(
@@ -244,30 +246,32 @@ async function onVehicleClick(event, tripsLayer, tripStopsLayer, vehiclesLayer, 
     tripsLayer.clearLayers();
     let shape = await fetchTripShape(event.target.options.trip_id);
     let stops = await fetchTripStops(event.target.options.trip_id);
-    L.geoJSON(shape, {
-        style: {
-            weight: 5,
-            className: "route-path route-" + event.target.options.route_type,
-        },
-    }).addTo(tripsLayer);
-    stops.forEach(stop => {
-        let status;
-        if (stop.stop_sequence === currentStopSequence) status = "current";
-        else if (stop.stop_sequence > currentStopSequence) status = "next";
-        else status = "past";
-        const stopType = getStopType(stop.drop_off_type, stop.pickup_type);
-        let icon = L.divIcon({
-            html: getStopIcon(stop.stop_sequence, stopType, stop.zone_id, status),
-            className: "stop-icon",
+    if (document.querySelector("#map").getAttribute("tracked-trip-id") === event.target.options.trip_id) {
+        L.geoJSON(shape, {
+            style: {
+                weight: 5,
+                className: "route-path route-" + event.target.options.route_type,
+            },
+        }).addTo(tripsLayer);
+        stops.forEach(stop => {
+            let status;
+            if (stop.stop_sequence === currentStopSequence) status = "current";
+            else if (stop.stop_sequence > currentStopSequence) status = "next";
+            else status = "past";
+            const stopType = getStopType(stop.drop_off_type, stop.pickup_type);
+            let icon = L.divIcon({
+                html: getStopIcon(stop.stop_sequence, stopType, stop.zone_id, status),
+                className: "stop-icon",
+            });
+            let marker = L.marker([stop.stop_lat, stop.stop_lon], {
+                icon: icon,
+                sequence: stop.stop_sequence,
+                type: stopType,
+                zone: stop.zone_id,
+            });
+            marker.addTo(tripStopsLayer);
         });
-        let marker = L.marker([stop.stop_lat, stop.stop_lon], {
-            icon: icon,
-            sequence: stop.stop_sequence,
-            type: stopType,
-            zone: stop.zone_id,
-        });
-        marker.addTo(tripStopsLayer);
-    });
+    }
 }
 
 function addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer, vehicles) {
