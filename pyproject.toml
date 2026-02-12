@@ -26,5 +26,8 @@ changelog = "https://github.com/bartekl1/mapa-ztm/releases"
 documentation = "https://github.com/bartekl1/mapa-ztm/blob/main/README.md"
 issues = "https://github.com/bartekl1/mapa-ztm/issues"
 
+[project.optional-dependencies]
+gunicorn = ["gunicorn (>=25.0.3,<26.0.0)"]
+
 [tool.poetry]
 package-mode = false
