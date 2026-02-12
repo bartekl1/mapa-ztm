@@ -571,6 +571,10 @@ sl-drawer {
     }
 }
 
+sl-drawer[placement=bottom] {
+    --size: 40vh;
+}
+
 #map-start-position-coords-settings {
     display: flex;
 
