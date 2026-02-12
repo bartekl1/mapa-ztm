@@ -433,19 +433,19 @@ function initSettings(map) {
 }
 
 function applyAppInfo() {
-    document.querySelector("#app-name-placeholder").innerHTML = appInfo.name;
-    document.querySelector("#app-description-placeholder").innerHTML = appInfo.description;
-    document.querySelector("#app-author-placeholder").innerHTML = appInfo.author;
-    document.querySelector("#app-version-placeholder").innerHTML = appInfo.version;
-    document.querySelector("#app-commit-placeholder").innerHTML = appInfo.hash;
-    document.querySelector("#app-modified-placeholder").innerHTML = appInfo.modified ? "(zmodyfikowano)" : "";
-    document.querySelector("#app-license-link").innerHTML = appInfo.license;
+    document.querySelector("#app-name-placeholder").textContent = appInfo.name;
+    document.querySelector("#app-description-placeholder").textContent = appInfo.description;
+    document.querySelector("#app-author-link").textContent = appInfo.author;
+    document.querySelector("#app-author-link").href = `https://github.com/${appInfo.author}`;
+    document.querySelector("#app-version-placeholder").textContent = appInfo.version;
+    document.querySelector("#app-commit-placeholder").textContent = appInfo.hash;
+    document.querySelector("#app-modified-placeholder").textContent = appInfo.modified ? "(zmodyfikowano)" : "";
+    document.querySelector("#app-license-link").textContent = appInfo.license;
     document.querySelector("#app-license-link").href = `https://spdx.org/licenses/${appInfo.license}.html`;
     document.querySelector("#app-repo-link").href = appInfo.repo;
     document.querySelector("#app-issues-link").href = appInfo.issues;
     document.querySelector("#app-changelog-link").href = appInfo.changelog;
-    document.querySelector("#python-dependencies").innerHTML = appInfo.pythonDependencies.map(dep => `<li><a href="https://pypi.org/project/${dep}/" target="_blank" rel="noopener">${dep}</a></li>`).join("");
-    document.querySelector("#node-dependencies").innerHTML = appInfo.nodeDependencies.map(dep => `<li><a href="https://www.npmjs.com/package/${dep}" target="_blank" rel="noopener">${dep}</a></li>`).join("");
+    document.querySelector("#app-dependency-graph-link").href = appInfo.repo + "/network/dependencies";
 }
 
 async function main() {
