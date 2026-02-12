@@ -470,6 +470,10 @@ async function main() {
     }).addTo(map);
     map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
 
+    window.addEventListener("wheel", function (e) {
+        if (e.ctrlKey) e.preventDefault();
+    }, { passive: false });
+
     if (!localStorage.getItem("do-not-block-map-when-loading")) document.querySelector("#map").classList.add("loading");
     let loadingOverlay = createLoadingOverlay()
     document.querySelector("body").appendChild(loadingOverlay);
