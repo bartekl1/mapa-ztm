@@ -64,7 +64,7 @@ async function fetchVehiclePositions() {
 }
 
 async function fetchTripShape(trip_id) {
-    let r = await fetch(`/api/trips/${trip_id}/shape?geojson`);
+    let r = await fetch(`/api/trips/${encodeURIComponent(trip_id)}/shape?geojson`);
     if (r.ok) return await r.json();
     else {
         console.error("Failed to fetch trip shape");
@@ -73,7 +73,7 @@ async function fetchTripShape(trip_id) {
 }
 
 async function fetchTripStops(trip_id) {
-    let r = await fetch(`/api/trips/${trip_id}/stops`);
+    let r = await fetch(`/api/trips/${encodeURIComponent(trip_id)}/stops`);
     if (r.ok) return await r.json();
     else {
         console.error("Failed to fetch trip stops");
@@ -91,7 +91,7 @@ async function fetchAllStops() {
 }
 
 async function fetchTripDetails(trip_id) {
-    let r = await fetch(`/api/trips/${trip_id}`);
+    let r = await fetch(`/api/trips/${encodeURIComponent(trip_id)}`);
     if (r.ok) return await r.json();
     else {
         console.error("Failed to fetch trip details");
