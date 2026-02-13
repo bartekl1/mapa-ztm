@@ -223,7 +223,9 @@ async function prepareTripDrawer(vehicleDetails) {
                 }
                 stopDiv.querySelector(".stop-zone").innerHTML = stop.zone_id;
                 stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
-                stopDiv.querySelector(".stop-departure-time").innerHTML = stop.departure_time.split(":").slice(0, 2).join(":");
+                let departureTime = stop.departure_time.split(":").slice(0, 2);
+                departureTime[0] = (parseInt(departureTime[0]) % 24).toString();
+                stopDiv.querySelector(".stop-departure-time").innerHTML = departureTime.join(":");
                 drawer.querySelector("#trip-stops").append(stopDiv);
             });
         }
