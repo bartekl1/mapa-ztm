@@ -99,6 +99,18 @@ async function fetchTripDetails(trip_id) {
     }
 }
 
+async function fetchServerVersion() {
+    let r = await fetch("/api/version");
+    if (r.ok) return await r.json();
+    else throw new Error("Failed to fetch server version");
+}
+
+async function appUpdateAvailable() {
+    let serverVersion = await fetchServerVersion();
+    console.log(serverVersion.version, appInfo.version, serverVersion.version !== appInfo.version, serverVersion.version !== null && serverVersion.version !== undefined && serverVersion.version !== appInfo.version)
+    return serverVersion.version !== null && serverVersion.version !== undefined && serverVersion.version !== appInfo.version;
+}
+
 function showToast(message, title = "", variant = "primary", icon = "info-circle", duration = 5000, countdown = "rtl") {
     const darkTheme = (localStorage.getItem("theme") === null && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) || localStorage.getItem("theme") === "dark";
     const alert = Object.assign(document.createElement('sl-alert'), {
@@ -480,6 +492,11 @@ async function main() {
     if (!localStorage.getItem("do-not-block-map-when-loading")) document.querySelector("#map").classList.add("loading");
     let loadingOverlay = createLoadingOverlay()
     document.querySelector("body").appendChild(loadingOverlay);
+
+    if (await appUpdateAvailable()) showToast(
+        "Odśwież, aby zaktualizować" + `<br /><sl-button class="mt-5" variant="primary" outline onclick="location.reload()"><sl-icon slot="prefix" name="arrow-clockwise"></sl-icon>Odśwież</sl-button>`,
+        "Dostępna jest nowa wersja aplikacji", "primary", "patch-check-fill", 10_000
+    );
 
     let vehiclesLayer = L.markerClusterGroup({
         maxClusterRadius: (zoom) => {

@@ -4,6 +4,7 @@ import os
 from modules.config import load_config
 from modules.gtfs_functions import get_current_positions, get_shape, get_route_info_by_trip, get_stops_on_trip, get_stops, get_trip_details
 from download_cache import download_cache
+from modules.utils import get_version
 
 def create_app(config: dict | None = None) -> Flask:
     if config is None:
@@ -53,6 +54,10 @@ def create_app(config: dict | None = None) -> Flask:
         stops = get_stops(cache_path=cache_path)
         stops = [dict(stop) for stop in stops]
         return stops
+    
+    @app.route("/api/version")
+    def version():
+        return get_version()
     
     return app
 
