@@ -225,6 +225,7 @@ async function prepareTripDrawer(vehicleDetails) {
                 stopDiv.querySelector(".stop-code").innerHTML = stop.stop_code;
                 let departureTime = stop.departure_time.split(":").slice(0, 2);
                 departureTime[0] = (parseInt(departureTime[0]) % 24).toString();
+                if (departureTime[0].length < 2) departureTime[0] = "0" + departureTime[0];
                 stopDiv.querySelector(".stop-departure-time").innerHTML = departureTime.join(":");
                 drawer.querySelector("#trip-stops").append(stopDiv);
             });
