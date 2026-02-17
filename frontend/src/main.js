@@ -107,7 +107,6 @@ async function fetchServerVersion() {
 
 async function appUpdateAvailable() {
     let serverVersion = await fetchServerVersion();
-    console.log(serverVersion.version, appInfo.version, serverVersion.version !== appInfo.version, serverVersion.version !== null && serverVersion.version !== undefined && serverVersion.version !== appInfo.version)
     return serverVersion.version !== null && serverVersion.version !== undefined && serverVersion.version !== appInfo.version;
 }
 
@@ -463,6 +462,20 @@ function applyAppInfo() {
     document.querySelector("#app-dependency-graph-link").href = appInfo.repo + "/network/dependencies";
 }
 
+function getAllUrlParameters() {
+    let hash = window.location.hash;
+    if (hash.startsWith("#")) hash = hash.substring(1);
+    const params = new URLSearchParams(hash);
+    return Object.fromEntries(params.entries());
+}
+
+function setUrlParameter(key, value) {
+    let params = getAllUrlParameters();
+    params[key] = value;
+    const searchParams = new URLSearchParams(params);
+    window.location.hash = "?" + searchParams.toString();
+}
+
 async function main() {
     applyTheme();
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
@@ -476,6 +489,9 @@ async function main() {
     const startLon = parseFloat(localStorage.getItem("map-start-longitude")) || 16.96;
     const startZoom = parseInt(localStorage.getItem("map-start-zoom")) || 13;
     map.setView([startLat, startLon], startZoom);
+
+    const urlParams = getAllUrlParameters();
+    if (urlParams.hasOwnProperty("lat") && urlParams.hasOwnProperty("lon") && urlParams.hasOwnProperty("zoom")) map.setView([urlParams.lat, urlParams.lon], urlParams.zoom, {animate: false});
 
     const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         minZoom: 4,
@@ -673,6 +689,18 @@ async function main() {
         document.addEventListener("pointermove", moveCallback);
         document.addEventListener("pointerup", upCallback);
     }));
+
+    const updateUrlAfterMapMoveCallback = () => {
+        const center = map.getCenter();
+        const lat = center.lat;
+        const lon = center.lng;
+        const zoom = map.getZoom();
+        setUrlParameter("lat", lat);
+        setUrlParameter("lon", lon);
+        setUrlParameter("zoom", zoom);
+    };
+    map.on("moveend", updateUrlAfterMapMoveCallback);
+    updateUrlAfterMapMoveCallback();
 
     loadingOverlay.remove();
     document.querySelector("#map").classList.remove("loading");
