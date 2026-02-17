@@ -507,7 +507,7 @@ sl-drawer#trip-drawer {
         .stop-sequence {
             font-size: 20px;
             border-radius: 50%;
-            color: white;
+            color: black;
             font-weight: bold;
             aspect-ratio: 1;
             height: 36px;
@@ -517,17 +517,16 @@ sl-drawer#trip-drawer {
             text-align: center;
         }
 
-        .stop-sequence[stop-sequence-status=next] {
-            background-color: $next-stop-background;
+        .stop-sequence[stop-sequence-status=past] {
+            background-color: #71717a;
         }
 
         .stop-sequence[stop-sequence-status=current] {
-            background-color: $current-stop-background;
-            color: black;
+            background-color: #26ff26;
         }
 
-        .stop-sequence[stop-sequence-status=past] {
-            background-color: $past-stop-background;
+        .stop-sequence[stop-sequence-status=next] {
+            background-color: #e4e4e7;
         }
 
         .stop-name {
