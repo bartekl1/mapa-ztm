@@ -147,6 +147,7 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
 
 function trackVehicle(vehicleMarker, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer) {
     untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
+    setUrlParameter("tracking", vehicleMarker.options.vehicle_id);
     document.querySelector("#map").setAttribute("tracked-vehicle-id", vehicleMarker.options.vehicle_id);
     document.querySelector("#map").setAttribute("tracked-trip-id", vehicleMarker.options.trip_id);
     let marker = createVehicleMarker(
@@ -169,6 +170,7 @@ function untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehic
     tripsLayer.clearLayers();
     tripStopsLayer.clearLayers();
 
+    removeUrlParameter("tracking");
     document.querySelector("#map").removeAttribute("tracked-vehicle-id");
     document.querySelector("#map").removeAttribute("tracked-trip-id");
     let markers = trackedVehicleLayer.getLayers();
@@ -476,6 +478,13 @@ function setUrlParameter(key, value) {
     window.location.hash = "?" + searchParams.toString();
 }
 
+function removeUrlParameter(key) {
+    let params = getAllUrlParameters();
+    delete params[key];
+    const searchParams = new URLSearchParams(params);
+    window.location.hash = "?" + searchParams.toString();
+}
+
 async function main() {
     applyTheme();
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
@@ -642,6 +651,13 @@ async function main() {
 
     if (navigator.onLine) {
         await updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer);
+        if (urlParams.hasOwnProperty("tracking")) {
+            const vehicleIdToTrack = urlParams.tracking;
+            vehiclesLayer.getLayers().forEach(m => {
+                if (m.options.vehicle_id === vehicleIdToTrack) m.fire("click");
+            });
+        }
+
         if (localStorage.getItem("disable-vehicle-position-updates")) console.warn(
             "%cWarning! Debug option enabled.\n%cVehicle position updates are disabled.",
             "font-weight: bold;",
