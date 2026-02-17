@@ -2,7 +2,12 @@ FROM python:3.14-slim
 ENV GUNICORN_WORKERS=1
 RUN pip install poetry
 WORKDIR /app
-COPY . .
+COPY pyproject.toml .
+COPY poetry.lock .
+COPY app.py .
+COPY download_cache.py .
+COPY modules modules
+COPY frontend/dist frontend/dist
 RUN poetry install
 RUN poetry add gunicorn
 EXPOSE 8080
