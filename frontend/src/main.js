@@ -287,6 +287,13 @@ async function onVehicleClick(event, tripsLayer, tripStopsLayer, vehiclesLayer, 
             });
             marker.addTo(tripStopsLayer);
         });
+        document.querySelector("#trip-stops").querySelectorAll(".stop-sequence").forEach(el => {
+            let status;
+            if (el.textContent == currentStopSequence) status = "current";
+            else if (el.textContent > currentStopSequence) status = "next";
+            else status = "past";
+            el.setAttribute("stop-sequence-status", status);
+        });
     }
 }
 
@@ -318,17 +325,26 @@ function addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehi
             await onVehicleClick(e, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
         });
     });
-    tripStopsLayer.getLayers().forEach(marker => {
-        let status;
-        if (marker.options.sequence === currentStopSequence) status = "current";
-        else if (marker.options.sequence > currentStopSequence) status = "next";
-        else status = "past";
-        let icon = L.divIcon({
-            html: getStopIcon(marker.options.sequence, marker.options.type, marker.options.zone, status),
-            className: "stop-icon",
+    if (document.querySelector("#map").getAttribute("tracked-vehicle-id") !== null) {
+        tripStopsLayer.getLayers().forEach(marker => {
+            let status;
+            if (marker.options.sequence === currentStopSequence) status = "current";
+            else if (marker.options.sequence > currentStopSequence) status = "next";
+            else status = "past";
+            let icon = L.divIcon({
+                html: getStopIcon(marker.options.sequence, marker.options.type, marker.options.zone, status),
+                className: "stop-icon",
+            });
+            marker.setIcon(icon);
         });
-        marker.setIcon(icon);
-    });
+        document.querySelector("#trip-stops").querySelectorAll(".stop-sequence").forEach(el => {
+            let status;
+            if (el.textContent == currentStopSequence) status = "current";
+            else if (el.textContent > currentStopSequence) status = "next";
+            else status = "past";
+            el.setAttribute("stop-sequence-status", status);
+        });
+    }
 }
 
 async function updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer) {
