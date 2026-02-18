@@ -1,5 +1,6 @@
 FROM python:3.14-slim
 ENV GUNICORN_WORKERS=1
+ENV TZ="Europe/Warsaw"
 RUN pip install poetry
 WORKDIR /app
 COPY pyproject.toml .
