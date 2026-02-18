@@ -1,6 +1,6 @@
 services:
   mapaztm:
-    image: ghcr.io/bartekl1/mapa-ztm:latest
+    image: ghcr.io/bartekl1/mapa-ztm:slim
     container_name: mapa-ztm
     restart: unless-stopped
     ports:
