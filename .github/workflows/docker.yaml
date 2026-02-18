@@ -47,9 +47,11 @@ jobs:
       matrix:
         include:
           - base: python:3.14
-            tag_suffix: latest
+            flavor: ""
+            latest: true
           - base: python:3.14-slim
-            tag_suffix: slim
+            flavor: slim
+            latest: false
 
     permissions:
       contents: read
@@ -74,13 +76,22 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=${{ matrix.latest }}
           tags: |
-            type=raw,value=${{ matrix.tag_suffix }}
+            # full semver
+            type=semver,pattern={{version}},suffix=${{ matrix.flavor && format('-{0}', matrix.flavor) || '' }}
+            # major.minor
+            type=semver,pattern={{major}}.{{minor}},suffix=${{ matrix.flavor && format('-{0}', matrix.flavor) || '' }}
+            # major
+            type=semver,pattern={{major}},suffix=${{ matrix.flavor && format('-{0}', matrix.flavor) || '' }}
+            # tag only
+            type=raw,value=${{ matrix.flavor }},enable=${{ matrix.flavor != '' }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
