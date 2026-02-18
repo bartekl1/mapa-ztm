@@ -13,6 +13,7 @@ COPY app.py .
 COPY download_cache.py .
 COPY modules modules
 COPY frontend/dist frontend/dist
+RUN mkdir cache
 RUN poetry config virtualenvs.in-project true
 RUN poetry install --extras="gunicorn"
 RUN chown -R appuser:appgroup /app

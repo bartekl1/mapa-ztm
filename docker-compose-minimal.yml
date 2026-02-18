@@ -1,0 +1,7 @@
+services:
+  mapaztm:
+    image: ghcr.io/bartekl1/mapa-ztm:latest
+    container_name: mapa-ztm
+    restart: unless-stopped
+    ports:
+      - 8080:8080

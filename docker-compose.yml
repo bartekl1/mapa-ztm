@@ -7,3 +7,9 @@ services:
       GUNICORN_WORKERS: 4
     ports:
       - 127.0.0.1:8000:8080
+    volumes:
+      - cache:/app/cache
+      # - ./cache:/app/cache
+
+volumes:
+  cache:
