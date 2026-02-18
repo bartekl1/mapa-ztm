@@ -13,6 +13,13 @@ from .gtfs_schedule import Feed
 from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL, GTFS_FILES_LIST_URL
 from .utils import get_request_headers
 
+def get_cache_path(config: dict) -> str:
+    path = config.get("gtfs_cache_path", "cache/gtfs_cache.db")
+    directory = os.path.split(path)[0]
+    if directory != "" and not os.path.isdir(directory):
+        os.makedirs(directory)
+    return path
+
 def get_route_type(type_enum: int):
     types = {0: "tram", 3: "bus"}
     return types[type_enum] if type_enum in types else "unknown"

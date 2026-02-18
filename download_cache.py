@@ -1,8 +1,8 @@
 from modules.config import load_config
-from modules.gtfs_functions import download_gtfs_to_cache
+from modules.gtfs_functions import download_gtfs_to_cache, get_cache_path
 
 def download_cache(config: dict) -> None:
-    cache_path = config.get("gtfs_cache_path", "gtfs_cache.db")
+    cache_path = get_cache_path(config)
     download_gtfs_to_cache(cache_path)
 
 if __name__ == "__main__":

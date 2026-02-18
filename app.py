@@ -2,16 +2,16 @@ from flask import Flask, request, send_file
 import os
 
 from modules.config import load_config
-from modules.gtfs_functions import get_current_positions, get_shape, get_route_info_by_trip, get_stops_on_trip, get_stops, get_trip_details
+from modules.gtfs_functions import get_cache_path, get_current_positions, get_shape, get_route_info_by_trip, get_stops_on_trip, get_stops, get_trip_details
 from download_cache import download_cache
 from modules.utils import get_version
 
 def create_app(config: dict | None = None) -> Flask:
     if config is None:
         config = load_config()
-    cache_path = config.get("gtfs_cache_path", "gtfs_cache.db")
 
-    if not os.path.exists(config.get("gtfs_cache_path", "gtfs_cache.db")):
+    cache_path = get_cache_path(config)
+    if not os.path.exists(cache_path):
         download_cache(config)
 
     app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
