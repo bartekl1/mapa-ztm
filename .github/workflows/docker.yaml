@@ -43,6 +43,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: frontend
 
+    strategy:
+      matrix:
+        include:
+          - base: python:3.14
+            tag_suffix: latest
+          - base: python:3.14-slim
+            tag_suffix: slim
+
     permissions:
       contents: read
       packages: write
@@ -71,6 +79,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ matrix.tag_suffix }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -85,9 +95,11 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64
+          build-args: |
+            BASE_IMAGE=${{ matrix.base }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      
+
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v3
         with:
