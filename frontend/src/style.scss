@@ -36,6 +36,13 @@ $current-stop-background: #26ff26;
 $past-stop-background: var(--sl-color-neutral-500);
 
 
+// $general-stop-color-light: green;
+// $general-stop-bg-light: white;
+
+// $general-stop-color-dark: green;
+// $general-stop-bg-dark: color.adjust(color.mix(black, gray, 80%), $lightness: -5%);
+
+
 $dark-mode-map-filters: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 $loading-filters: brightness(50%);
 
@@ -594,3 +601,36 @@ sl-drawer[placement=bottom] {
         margin-right: 5px;
     }
 }
+
+// .general-stop-icon {
+//     div {
+//         height: 18px;
+//         width: 18px;
+//         padding: 2px;
+
+//         border-radius: 50%;
+
+//         border-style: solid;
+//         border-width: 2px;
+
+//         background-color: $general-stop-bg-light;
+//         color: $general-stop-color-light;
+
+//         svg {
+//             fill: $general-stop-color-light;
+//         }
+//     }
+// }
+
+// .map-dark-theme {
+//     .general-stop-icon {
+//         div {
+//             background-color: $general-stop-bg-dark;
+//             color: $general-stop-color-dark;
+            
+//             svg {
+//                 fill: $general-stop-color-dark;
+//             }
+//         }
+//     }
+// }

@@ -24,6 +24,7 @@ import gpsIcon from "./img/crosshairs-gps.svg?raw";
 import questionMarkIcon from "./img/help.svg?raw";
 import loadingIcon from "./img/loading.svg?raw";
 import arrowIcon from "./img/arrow-up-thin.svg?raw";
+// import stopIcon from "./img/octagon.svg?raw";
 
 import appInfo from "./appInfo";
 
@@ -144,6 +145,21 @@ function createVehicleMarker(vehicle_id, trip_id, route_type, route_id, latitude
     });
     return marker;
 }
+
+// function createStopMarker(latitude, longitude, id, code, name, zone) {
+//     let icon = L.divIcon({
+//         html: `<div>${stopIcon}</div>`,
+//         className: "general-stop-icon",
+//     });
+//     let marker = L.marker([latitude, longitude], {
+//         icon: icon,
+//         id: id,
+//         code: code,
+//         name: name,
+//         zone: zone,
+//     });
+//     return marker;
+// }
 
 function trackVehicle(vehicleMarker, tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer) {
     untrackVehicles(tripsLayer, tripStopsLayer, vehiclesLayer, trackedVehicleLayer);
@@ -358,6 +374,14 @@ async function updateVehicles(vehiclesLayer, tripsLayer, tripStopsLayer, tracked
     addVehiclesToMap(vehiclesLayer, tripsLayer, tripStopsLayer, trackedVehicleLayer, vehicles);
 }
 
+// async function addStopsToMap(stopsLayer) {
+//     const stops = await fetchAllStops();
+//     stops.forEach(stop => {
+//         let marker = createStopMarker(stop.stop_lat, stop.stop_lon, stop.stop_id, stop.stop_code, stop.stop_name, stop.zone_id);
+//         marker.addTo(stopsLayer);
+//     });
+// }
+
 function updateZoom(map) {
     document.querySelector("#map").setAttribute("zoom", map.getZoom());
 }
@@ -567,18 +591,16 @@ async function main() {
     //     disableClusteringAtZoom: 16,
     // });
     // // map.addLayer(stopsLayer);
-    // let stops = await fetchAllStops();
-    // stops.forEach(stop => {
-    //     let marker = L.marker([stop.stop_lat, stop.stop_lon]);
-    //     marker.addTo(stopsLayer);
-    // });
-    // map.on("zoomend", () => {
+    // await addStopsToMap(stopsLayer);
+    // const updateStopsLayerVisibility = () => {
     //     if (map.getZoom() >= 16) {
     //         if (!map.hasLayer(stopsLayer)) map.addLayer(stopsLayer);
     //     } else {
     //         if (map.hasLayer(stopsLayer)) map.removeLayer(stopsLayer);
     //     }
-    // });
+    // };
+    // updateStopsLayerVisibility();
+    // map.on("zoomend", updateStopsLayerVisibility);
 
     L.Control.Settings = L.Control.extend({
         options: {
