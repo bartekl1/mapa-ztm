@@ -42,4 +42,7 @@ docker build -t mapa-ztm .
 > [!NOTE]
 > `mapa-ztm` to nazwa obrazu Docker. Możesz ją zmienić według własnych potrzeb.
 
+> [!NOTE]
+> Domyślnie budowany jest obraz oparty o `python:3.14`. Jeśli chcesz użyć innego (np. inna wersja Pythona lub wersja slim), dodaj argument `--build-arg BASE_IMAGE=nazwa_obrazu` do polecenia (np. `docker build -t mapa-ztm --build-arg BASE_IMAGE=python:3.14-slim .`).
+
 7. Kontener można uruchomić zgodnie z instrukcjami [instalacji na Dockerze](docker_install.md). Należy jednak zmienić nazwę obrazu w pliku `docker-compose.yml` (krok 2-3).
