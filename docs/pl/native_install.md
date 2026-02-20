@@ -36,22 +36,17 @@ npm run build
 cd ..
 ```
 
-6. Zainstaluj zależności backendu
+6. Zainstaluj zależności backendu oraz Gunicorn do uruchomienia serwera produkcyjnego
 ```bash
-poetry install
+poetry install --extras="gunicorn"
 ```
 
-7. Zainstaluj produkcyjny serwer HTTP, np. `gunicorn`
-```bash
-poetry add gunicorn
-```
-
-8. Utwórz plik usługi systemd, np. `mapa-ztm.service`
+7. Utwórz plik usługi systemd, np. `mapa-ztm.service`
 ```bash
 sudo nano /etc/systemd/system/mapa-ztm.service
 ```
 
-Wklej poniższą konfigurację (dostosuj ścieżki i użytkownika):
+Wklej poniższą konfigurację:
 ```ini
 [Unit]
 Description=Mapa pojazdów ZTM Poznań
@@ -67,6 +62,12 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 ```
+
+> [!NOTE]
+> Zamień `<username>` na swoją nazwę użytkownika oraz `<path_to_project_files>` na pełną ścieżkę do katalogu z plikami projektu. \
+> Upewnij się, że ścieżka do `poetry` jest poprawna (może się różnić w zależności od sposobu instalacji). \
+> Możesz dostosować liczbę workerów przez zmianę wartości `--workers`. \
+> Możesz również zmienić wartość `--bind` na inną, jeśli chcesz, aby aplikacja była dostępna na innym porcie lub interfejsie. Zalecane jest, aby aplikacja była dostępna wyłącznie z poziomu `localhost` i użycie serwera reverse proxy (np. Nginx) do dostępu z zewnątrz.
 
 9. Uruchom i aktywuj usługę
 ```bash
@@ -84,7 +85,9 @@ Dodaj poniższą linię:
 5 */6 * * * cd <path_to_project_files> && /home/<username>/.local/bin/poetry run python <path_to_project_files>/download_cache.py
 ```
 
-11. Zalecane jest, aby aplikacja była dostępna wyłącznie z poziomu `localhost`. Do dostępu z zewnątrz zalecane jest użycie serwera reverse proxy (np. Nginx).
+> [!NOTE]
+> Zamień `<username>` na swoją nazwę użytkownika oraz `<path_to_project_files>` na pełną ścieżkę do katalogu z plikami projektu. \
+> Upewnij się, że ścieżka do `poetry` jest poprawna (może się różnić w zależności od sposobu instalacji).
 
 ## Aktualizowanie aplikacji
 

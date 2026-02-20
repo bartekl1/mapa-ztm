@@ -42,4 +42,4 @@ docker build -t mapa-ztm .
 > [!NOTE]
 > `mapa-ztm` to nazwa obrazu Docker. Możesz ją zmienić według własnych potrzeb.
 
-7. Kontener można uruchomić zgodnie z instrukcjami [instalacji na Dockerze](docker_intall.md). Należy jednak zmienić nazwę obrazu w pliku `docker-compose.yml` (krok 2-3).
+7. Kontener można uruchomić zgodnie z instrukcjami [instalacji na Dockerze](docker_install.md). Należy jednak zmienić nazwę obrazu w pliku `docker-compose.yml` (krok 2-3).
