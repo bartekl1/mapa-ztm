@@ -4,7 +4,6 @@ import cachetools.func
 import io
 import os
 import tempfile
-from geojson import LineString, Feature, FeatureCollection
 from bs4 import BeautifulSoup
 import datetime
 import math
