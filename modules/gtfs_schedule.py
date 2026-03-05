@@ -149,10 +149,10 @@ class Feed:
     def close(self) -> None:
         self.db.close()
     
-    def get_shape(self, trip_id: str, reversed: bool = False):
+    def get_shape(self, trip_id: str):
         cur = self.db.cursor()
         cur.execute(f"""
-            SELECT {'shapes.shape_pt_lat, shapes.shape_pt_lon' if not reversed else 'shapes.shape_pt_lon, shapes.shape_pt_lat'}
+            SELECT shapes.shape_pt_lat, shapes.shape_pt_lon
             FROM shapes
             JOIN trips ON shapes.shape_id = trips.shape_id
             WHERE trips.trip_id = ?
