@@ -7,6 +7,8 @@ import tempfile
 from bs4 import BeautifulSoup
 import datetime
 import math
+import time
+import json
 
 from .gtfs_schedule import Feed
 from .consts import GTFS_RT_FEED_URL, GTFS_FEED_URL, GTFS_FILES_LIST_URL
@@ -86,6 +88,11 @@ def get_current_positions(cache_path: str) -> list[dict[str, str | int | float]]
             row["direction"] = None
         res.append(row)
     return res
+
+def positions_sse_stream(cache_path):
+    while True:
+        yield f"data: {json.dumps(get_current_positions(cache_path=cache_path))}\n\n"
+        time.sleep(5)
 
 def get_gtfs_files_list() -> list[str]:
     response = requests.get(GTFS_FILES_LIST_URL, headers=get_request_headers())

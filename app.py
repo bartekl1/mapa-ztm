@@ -1,8 +1,8 @@
-from flask import Flask, request, send_file
+from flask import Flask, send_file, Response
 import os
 
 from modules.config import load_config
-from modules.gtfs_functions import get_cache_path, get_current_positions, get_shape, get_route_info_by_trip, get_stops_on_trip, get_stops, get_trip_details
+from modules.gtfs_functions import get_cache_path, get_current_positions, get_stops, get_trip_details, positions_sse_stream
 from download_cache import download_cache
 from modules.utils import get_version
 
@@ -23,6 +23,10 @@ def create_app(config: dict | None = None) -> Flask:
     @app.route("/api/positions")
     def current_positions():
         return get_current_positions(cache_path=cache_path)
+
+    @app.route("/api/positions/stream")
+    def current_positions_sse():
+        return Response(positions_sse_stream(cache_path=cache_path), mimetype="text/event-stream")
 
     @app.route("/api/trips/<trip_id>")
     def trip_details(trip_id):
