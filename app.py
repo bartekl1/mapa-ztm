@@ -1,4 +1,4 @@
-from flask import Flask, send_file, Response
+from flask import Flask, send_file, request, Response
 import os
 
 from modules.config import load_config
@@ -22,11 +22,13 @@ def create_app(config: dict | None = None) -> Flask:
 
     @app.route("/api/positions")
     def current_positions():
-        return get_current_positions(cache_path=cache_path)
+        as_dict = request.args.get("as_dict") is not None
+        return get_current_positions(cache_path=cache_path, as_dict=as_dict)
 
     @app.route("/api/positions/stream")
     def current_positions_sse():
-        return Response(positions_sse_stream(cache_path=cache_path), mimetype="text/event-stream")
+        as_dict = request.args.get("as_dict") is not None
+        return Response(positions_sse_stream(cache_path=cache_path, as_dict=as_dict), mimetype="text/event-stream")
 
     @app.route("/api/trips/<trip_id>")
     def trip_details(trip_id):

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+        <title>Mapa pojazdów ZTM Poznań</title>
+        <meta name="description" content="Mapa pojazdów ZTM Poznań">
+
+        <link rel="icon" href="/favicon.ico">
+        <link rel="apple-touch-icon" href="/icons/icon_x192.png" sizes="192x192">
+        <meta name="theme-color" content="#004400">
+    </head>
+    <body>
+        <div id="map"></div>
+
+        <sl-drawer id="trip-drawer" contained>
+            <span class="drawer-content d-none">
+                <div id="vehicle-id"><span>Numer taborowy:</span> <span id="vehicle-id-placeholder"></span></div>
+                <div id="vehicle-label"><span>Linia/brygada:</span> <span id="vehicle-label-placeholder"></span></div>
+                <div id="vehicle-trip"><span>Identyfikator kursu:</span> <span id="vehicle-trip-placeholder"></span></div>
+                <div id="vehicle-type"><span>Typ pojazdu:</span> <span id="vehicle-type-placeholder"></span></div>
+                <div id="vehicle-agency"><span>Przewoźnik:</span> <a id="vehicle-agency-link" target="_blank" rel="noopener"></a></div>
+
+                <sl-alert id="vehicle-not-ztm-tariff" class="mt-10" variant="warning">
+                    <sl-icon slot="icon" name="ticket-perforated"></sl-icon>
+                    <span>Na linii nie obowiązuje taryfa ZTM</span>
+                </sl-alert>
+
+                <div id="stop-template" class="d-none">
+                    <div class="stop-template">
+                        <div class="stop-sequence"></div>
+                        <div class="stop-details">
+                            <div class="stop-name"></div>
+                            <div class="stop-more-details">
+                                <div class="stop-code"></div>
+                                <sl-icon name="dot"></sl-icon>
+                                <div class="stop-zone"></div>
+                                <div class="stop-type d-none">
+                                    <sl-icon name="dot"></sl-icon>
+                                    <sl-icon class="request-stop d-none" name="exclamation-square"></sl-icon>
+                                    <sl-icon class="starting-stop d-none" name="box-arrow-in-right"></sl-icon>
+                                    <sl-icon class="final-stop d-none" name="box-arrow-right"></sl-icon>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stop-departure-time"></div>
+                    </div>
+                </div>
+
+                <div id="trip-stops"></div>
+            </span>
+            <span class="drawer-error d-none">
+                <sl-alert variant="danger" open>
+                    <sl-icon slot="icon" name="x-circle"></sl-icon>
+                    <strong>Wystąpił błąd!</strong><br />
+                    Nie można wczytać szczegółów tego kursu
+                </sl-alert>
+            </span>
+            <span class="drawer-loading">
+                <sl-spinner></sl-spinner>
+            </span>
+            <sl-icon-button class="drawer-resizer" name="grip-vertical"></sl-icon-button>
+        </sl-drawer>
+
+        <sl-dialog id="settings-dialog">
+            <span slot="label">Ustawienia</span>
+            <div>
+                <sl-tab-group id="settings-tabs">
+                    <sl-tab slot="nav" panel="general">
+                        <sl-icon name="grid-3x3-gap-fill" class="mr-5"></sl-icon>
+                        Ogólne
+                    </sl-tab>
+                    <sl-tab slot="nav" panel="debugging">
+                        <sl-icon name="bug-fill" class="mr-5"></sl-icon>
+                        Debugowanie
+                    </sl-tab>
+                    <sl-tab slot="nav" panel="about">
+                        <sl-icon name="info-circle-fill" class="mr-5"></sl-icon>
+                        O aplikacji
+                    </sl-tab>
+
+                    <sl-tab-panel name="general">
+                        <div class="mb-20">
+                            <div class="t-24">Motyw</div>
+                            <sl-select id="theme-select" label="Motyw" class="mb-10">
+                                <sl-option value="system">Systemowy</sl-option>
+                                <sl-option value="light">Jasny</sl-option>
+                                <sl-option value="dark">Ciemny</sl-option>
+                            </sl-select>
+                            
+                            <sl-switch id="map-dark-theme-switch">Zastosuj ciemny motyw w mapie</sl-switch>
+                        </div>
+                        <div class="mb-20">
+                            <div class="t-24">Lokalizacja startowa mapy</div>
+                            <div id="map-start-position-coords-settings" class="mb-10">
+                                <sl-input id="map-start-latitude" label="Szerokość" placeholder="Szerokość"></sl-input>
+                                <sl-input id="map-start-longitude" label="Długość" placeholder="Długość"></sl-input>
+                                <sl-input id="map-start-zoom" label="Powiększenie" placeholder="Powiększenie"></sl-input>
+                            </div>
+                            <div class="mb-10">
+                                <sl-button id="load-location-from-map" variant="primary" outline>
+                                    <sl-icon slot="prefix" name="map"></sl-icon>
+                                    Pobierz z mapy
+                                </sl-button>
+                                <sl-button id="reset-map-start-location" variant="danger" outline>
+                                    <sl-icon slot="prefix" name="x-circle"></sl-icon>
+                                    Resetuj
+                                </sl-button>
+                            </div>
+                            <div>
+                                <sl-switch id="map-start-location-tracking">Używaj bieżącej lokalizacji użytkownika, gdy to możliwe</sl-switch>
+                            </div>
+                        </div>
+                    </sl-tab-panel>
+
+                    <sl-tab-panel name="debugging">
+                        <sl-alert variant="warning" open class="mb-10">
+                            <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+                            <strong>Ustawienia przeznaczone do debugowania</strong><br />
+                            Te ustawienia są przeznaczone do debugowania, ich zmiana w produkcyjnej wersji aplikacji może spowodować, że niektóre funkcje przestaną działać lub będą działać nieprawidłowo.
+                        </sl-alert>
+
+                        <sl-alert variant="warning" id="debug-options-changed" class="mb-10">
+                            <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+                            <strong>Ustawienia przeznaczone do debugowania uległy zmianie</strong><br />
+                            Aby zastosować zmianę tych ustawień należy odświeżyć stronę.<br>
+                            <sl-button variant="primary" outline class="refresh-website mt-10">
+                                <sl-icon slot="prefix" name="arrow-clockwise"></sl-icon>
+                                Odśwież
+                            </sl-button>
+                        </sl-alert>
+
+                        <div class="mb-10">
+                            <sl-switch id="disable-vehicle-position-updates-switch" class="debug-option">
+                                Wyłącz aktualizację pozycji pojazdów
+                            </sl-switch>
+                        </div>
+                        <div>
+                            <sl-switch id="do-not-block-map-when-loading-switch" class="debug-option">
+                                Nie blokuj mapy podczas ładowania aplikacji
+                            </sl-switch>
+                        </div>
+                    </sl-tab-panel>
+
+                    <sl-tab-panel name="about">
+                        <div id="app-name" class="t-30"><span id="app-name-placeholder"></span></div>
+                        <div id="app-description"><span id="app-description-placeholder"></span></div>
+                        <div id="app-author"><span>Autor:</span> <a id="app-author-link" target="_blank" rel="noopener"></a></div>
+                        <div id="app-version"><span>Wersja:</span> <span id="app-version-placeholder"></span></div>
+                        <div id="app-commit"><span>Commit hash:</span> <span id="app-commit-placeholder"></span> <span id="app-modified-placeholder"></span></div>
+                        <div id="app-license"><span>Licencja:</span> <a id="app-license-link" target="_blank" rel="noopener"></a></div>
+
+                        <sl-button id="app-repo-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="github"></sl-icon>
+                            Repozytorium GitHub
+                        </sl-button>
+                        <sl-button id="app-issues-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="bug-fill"></sl-icon>
+                            Problemy i sugestie
+                        </sl-button>
+                        <sl-button id="app-changelog-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="clock"></sl-icon>
+                            Rejestr zmian
+                        </sl-button>
+
+                        <div class="t-20 mt-20">API i źródła danych</div>
+                        <ul>
+                            <li><a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/" target="_blank" rel="noopener">ZTM Poznań</a> - GTFS Realtime i GTFS Schedule</li>
+                            <li><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a></li>
+                        </ul>
+
+                        <sl-button id="app-dependency-graph-link" target="_blank" size="small">
+                            <sl-icon slot="prefix" name="diagram-3-fill"></sl-icon>
+                            Zależności projektu
+                        </sl-button>
+                    </sl-tab-panel>
+                </sl-tab-group>
+            </div>
+        </sl-dialog>
+
+        <script type="module" src="/src/main.js"></script>
+    </body>
+</html>

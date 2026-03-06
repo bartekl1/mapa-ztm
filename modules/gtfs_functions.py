@@ -44,11 +44,11 @@ def get_stop_time(time: str) -> str:
     return f"{hour:02}:{minutes:02}"
 
 @cachetools.func.ttl_cache(ttl=1)
-def get_current_positions(cache_path: str) -> list[dict[str, str | int | float]]:
+def get_current_positions(cache_path: str, as_dict: bool = False) -> list[dict[str, str | int | float]]:
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(GTFS_RT_FEED_URL, headers=get_request_headers())
     feed.ParseFromString(response.content)
-    res = []
+    res = [] if not as_dict else {}
     for entity in feed.entity:
         lat, lon = entity.vehicle.position.latitude, entity.vehicle.position.longitude
         row = {
@@ -86,12 +86,15 @@ def get_current_positions(cache_path: str) -> list[dict[str, str | int | float]]
             row["direction"] = round(brng, 2)
         else:
             row["direction"] = None
-        res.append(row)
+        if not as_dict:
+            res.append(row)
+        else:
+            res[row["vehicle"]["id"]] = row
     return res
 
-def positions_sse_stream(cache_path):
+def positions_sse_stream(cache_path, as_dict: bool = False):
     while True:
-        yield f"data: {json.dumps(get_current_positions(cache_path=cache_path))}\n\n"
+        yield f"data: {json.dumps(get_current_positions(cache_path=cache_path, as_dict=as_dict))}\n\n"
         time.sleep(5)
 
 def get_gtfs_files_list() -> list[str]:
