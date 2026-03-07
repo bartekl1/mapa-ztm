@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import { VehiclesLayer } from "./Layers";
+import { VehiclesLayer, GPSLayer } from "./Layers";
+import { SettingsDialog } from "./UIElements";
+import { SettingsButton, TrackLocationButton, ChangeView } from "./MapControls";
 import "./App.scss";
+
+import "@shoelace-style/shoelace/dist/themes/light.css";
+import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
+
+setBasePath("/assets/shoelace");
 
 export default function App() {
     const [vehicles, setVehicles] = useState({});
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const [locationTracking, setLocationTracking] = useState(false);
 
     useEffect(() => {
         const evtSource = new EventSource("/api/positions/stream?as_dict");
@@ -21,18 +30,27 @@ export default function App() {
     }, []);
 
     return (
-        <MapContainer
-            center={[52.4, 16.96]}
-            zoom={13}
-            className="map"
-        >
-            <TileLayer
-                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                minZoom={4}
-                maxZoom={19}
-                attribution="&copy; OpenStreetMap"
-            />
-            <VehiclesLayer vehicles={vehicles} />
-        </MapContainer>
+        <>
+            <MapContainer
+                center={[52.4, 16.96]}
+                zoom={13}
+                className="map"
+            >
+                <TileLayer
+                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    minZoom={4}
+                    maxZoom={19}
+                    attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>'
+                />
+
+                <VehiclesLayer vehicles={vehicles} />
+                {locationTracking && <GPSLayer />}
+
+                <SettingsButton position="topleft" setSettingsOpen={setSettingsOpen} />
+                <TrackLocationButton position="topleft" locationTracking={locationTracking} setLocationTracking={setLocationTracking} />
+            </MapContainer>
+
+            <SettingsDialog isOpen={settingsOpen} setOpen={setSettingsOpen} />
+        </>
     );
 }

@@ -1,6 +1,7 @@
-import { Marker } from "react-leaflet";
+import { Marker, LayerGroup, Circle, CircleMarker } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { createDivIcon, VehicleIcon } from "./Icons";
+import { useEffect, useState } from "react";
 
 export function VehiclesLayer({ vehicles }) {
     return (
@@ -20,4 +21,31 @@ export function VehiclesLayer({ vehicles }) {
             ))}
         </MarkerClusterGroup>
     );
+}
+
+export function GPSLayer() {
+    const [latitude, setLatitude] = useState(null);
+    const [longitude, setLongitude] = useState(null);
+    const [accuracy, setAccuracy] = useState(null);
+    const [ready, setReady] = useState(false);
+
+    useEffect(() => {
+        const watchId = navigator.geolocation.watchPosition((position) => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+            setAccuracy(position.coords.accuracy);
+            setReady(true);
+        });
+
+        return () => {
+            navigator.geolocation.clearWatch(watchId);
+        }
+    }, [])
+
+    return (
+        <LayerGroup>
+            {ready && <Circle center={[latitude, longitude]} radius={accuracy} weight={1} opacity={0.75} />}
+            {ready && <CircleMarker center={[latitude, longitude]} radius={6} fillColor="#4285f2" fillOpacity={1} color="#ffffff" weight={1} />}
+        </LayerGroup>
+    )
 }
