@@ -1,0 +1,58 @@
+$tram-color-light: red;
+$bus-color-light: blue;
+$unknown-color-light: #444444;
+$vehicle-icon-bg-light: white;
+
+.vehicle-icon {
+    display: inline-grid;
+    grid-template-columns: auto auto 1fr;
+    height: 20px;
+    align-items: center;
+    gap: 2px;
+    padding: 1px;
+    padding-right: 4px;
+
+    transform: translate(-40%, -30%);
+
+    background-color: $vehicle-icon-bg-light;
+    
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+
+    .vehicle-icon-icon, .vehicle-icon-arrow {
+        height: 100%;
+
+        svg {
+            height: 100%;
+            width: auto;
+            display: block;
+        }
+    }
+
+    .vehicle-icon-text {
+        font-size: 14px;
+        margin-top: -2px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 700;
+    }
+}
+
+.vehicle-icon.vehicle-tram {
+    border-color: $tram-color-light;
+    color: $tram-color-light;
+}
+
+.vehicle-icon.vehicle-bus {
+    border-color: $bus-color-light;
+    color: $bus-color-light;
+}
+
+.vehicle-icon.vehicle-unknown {
+    border-color: $unknown-color-light;
+    color: $unknown-color-light;
+}
+
+.vehicle-icon-arrow {
+    transform: rotate(calc(var(--rotation) * 1deg));
+}

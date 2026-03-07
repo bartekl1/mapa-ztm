@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import VehiclesLayer from "./VehiclesLayer";
+import { VehiclesLayer } from "./Layers";
 import "./App.scss";
 
 export default function App() {
