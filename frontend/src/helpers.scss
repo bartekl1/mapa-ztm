@@ -25,3 +25,13 @@
         font-weight: #{$i*100};
     }
 }
+
+.fw-bold {
+    font-weight: bold;
+}
+
+@for $i from 10 through 30 {
+    .fs-#{$i} {
+        font-size: #{$i}px;
+    }
+}

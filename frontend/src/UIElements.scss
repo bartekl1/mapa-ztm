@@ -21,3 +21,69 @@ sl-dialog {
         height: calc(100vh - 150px);
     }
 }
+
+sl-drawer {
+    > .drawer-loading {
+        > sl-spinner {
+            font-size: 3rem;
+            --track-width: 5px;
+            position: relative;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+    }
+}
+
+.stop-template {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    margin-bottom: 5px;
+    align-items: center;
+
+    .stop-sequence {
+        font-size: 20px;
+        border-radius: 50%;
+        color: black;
+        font-weight: bold;
+        aspect-ratio: 1;
+        height: 36px;
+        margin-top: 4px;
+        margin-right: 10px;
+        align-content: center;
+        text-align: center;
+    }
+
+    .stop-sequence[stop-sequence-status=past] {
+        background-color: #71717a;
+    }
+
+    .stop-sequence[stop-sequence-status=current] {
+        background-color: #26ff26;
+    }
+
+    .stop-sequence[stop-sequence-status=next] {
+        background-color: #e4e4e7;
+    }
+
+    .stop-name {
+        font-size: 16px;
+        font-weight: 500;
+    }
+
+    .stop-more-details {
+        font-size: 14px;
+        color: var(--sl-color-neutral-800);
+        display: flex;
+        align-items: center;
+
+        .stop-type {
+            font-size: 12px;
+        }
+    }
+
+    .stop-departure-time {
+        font-weight: 500;
+        font-size: 18px;
+    }
+}

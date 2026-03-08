@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { MapContainer, TileLayer } from "react-leaflet";
-import { VehiclesLayer, GPSLayer } from "./Layers";
-import { SettingsDialog } from "./UIElements";
-import { SettingsButton, TrackLocationButton, ChangeView } from "./MapControls";
+import { VehiclesLayer, GPSLayer, TrackedVehicleLayer } from "./Layers";
+import { SettingsDialog, TripDetailsDrawer } from "./UIElements";
+import { SettingsButton, TrackLocationButton } from "./MapControls";
 import "./App.scss";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
@@ -14,6 +14,7 @@ export default function App() {
     const [vehicles, setVehicles] = useState({});
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [locationTracking, setLocationTracking] = useState(false);
+    const [trackedVehicle, setTrackedVehicle] = useState(null);
 
     useEffect(() => {
         const evtSource = new EventSource("/api/positions/stream?as_dict");
@@ -43,14 +44,16 @@ export default function App() {
                     attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>'
                 />
 
-                <VehiclesLayer vehicles={vehicles} />
-                {locationTracking && <GPSLayer />}
-
                 <SettingsButton position="topleft" setSettingsOpen={setSettingsOpen} />
                 <TrackLocationButton position="topleft" locationTracking={locationTracking} setLocationTracking={setLocationTracking} />
+
+                <VehiclesLayer vehicles={vehicles} trackedVehicle={trackedVehicle} setTrackedVehicle={setTrackedVehicle} />
+                {trackedVehicle !== null && <TrackedVehicleLayer vehicles={vehicles} vehicleID={trackedVehicle} />}
+                {locationTracking && <GPSLayer />}
             </MapContainer>
 
             <SettingsDialog isOpen={settingsOpen} setOpen={setSettingsOpen} />
+            <TripDetailsDrawer vehicles={vehicles} trackedVehicle={trackedVehicle} setTrackedVehicle={setTrackedVehicle} />
         </>
     );
 }

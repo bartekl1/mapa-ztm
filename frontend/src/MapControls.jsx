@@ -78,9 +78,3 @@ export function TrackLocationButton({ position, locationTracking, setLocationTra
 
     return null;
 }
-
-export function ChangeView({ center, zoom }) {
-    const map = useMap();
-    map.setView(center, zoom);
-    return null;
-}

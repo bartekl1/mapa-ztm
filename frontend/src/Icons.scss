@@ -3,6 +3,16 @@ $bus-color-light: blue;
 $unknown-color-light: #444444;
 $vehicle-icon-bg-light: white;
 
+$tracked-tram-color-light: red;
+$tracked-bus-color-light: blue;
+$tracked-unknown-color-light: #222222;
+$tracked-vehicle-label-bg-light: yellow;
+
+$stop-color: var(--sl-color-neutral-1000);
+$next-stop-background: var(--sl-color-neutral-200);
+$current-stop-background: #26ff26;
+$past-stop-background: var(--sl-color-neutral-500);
+
 .vehicle-icon {
     display: inline-grid;
     grid-template-columns: auto auto 1fr;
@@ -55,4 +65,64 @@ $vehicle-icon-bg-light: white;
 
 .vehicle-icon-arrow {
     transform: rotate(calc(var(--rotation) * 1deg));
+}
+
+.vehicle-icon.tracked-vehicle-icon {
+    background-color: $tracked-vehicle-label-bg-light;
+}
+
+.vehicle-icon.tracked-vehicle-icon.vehicle-tram {
+    border-color: $tracked-tram-color-light;
+    color: $tracked-tram-color-light;
+}
+
+.vehicle-icon.tracked-vehicle-icon.vehicle-bus {
+    border-color: $tracked-bus-color-light;
+    color: $tracked-bus-color-light;   
+}
+
+.vehicle-icon.tracked-vehicle-icon.vehicle-unknown {
+    border-color: $tracked-unknown-color-light;
+    color: $tracked-unknown-color-light;
+}
+
+
+.trip-stop-icon {
+    .trip-stop-icon-sequence {
+        font-size: 16px;
+        border-radius: 50%;
+        border-width: 1px;
+        border-style: solid;
+        font-weight: bold;
+        aspect-ratio: 1;
+        height: 24px;
+        align-content: center;
+        text-align: center;
+        position: absolute;
+        transform: translate(-20%, -40%);
+    }
+}
+
+.trip-stop-icon.trip-stop-status-next {
+    .trip-stop-icon-sequence {
+        background-color: $next-stop-background;
+        color: $stop-color;
+        border-color: $stop-color;
+    }
+}
+
+.trip-stop-icon.trip-stop-status-current {
+    .trip-stop-icon-sequence {
+        background-color: $current-stop-background;
+        color: $stop-color;
+        border-color: $stop-color;
+    }
+}
+
+.trip-stop-icon.trip-stop-status-past {
+    .trip-stop-icon-sequence {
+        background-color: $past-stop-background;
+        color: $stop-color;
+        border-color: $stop-color;
+    }
 }

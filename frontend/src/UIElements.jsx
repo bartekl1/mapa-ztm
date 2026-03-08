@@ -1,8 +1,11 @@
 import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
 import SlDialog from "@shoelace-style/shoelace/dist/react/dialog/index.js";
+import SlDrawer from "@shoelace-style/shoelace/dist/react/drawer/index.js";
+import SlAlert from "@shoelace-style/shoelace/dist/react/alert/index.js";
 import SlTab from "@shoelace-style/shoelace/dist/react/tab/index.js";
 import SlTabGroup from "@shoelace-style/shoelace/dist/react/tab-group/index.js";
 import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js";
+import SlSpinner from "@shoelace-style/shoelace/dist/react/spinner/index.js";
 import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
 import appInfo from "./appInfo";
 import "./UIElements.scss";
@@ -80,5 +83,70 @@ export function SettingsDialog({ isOpen, setOpen }) {
                 </div>
             </SlDialog>
         </>
+    );
+}
+
+export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle }) {
+    const vehicle = (trackedVehicle !== null && Object.keys(vehicles).includes(trackedVehicle)) ? vehicles[trackedVehicle] : null;
+    const [tripDetails, setTripDetails] = useState(null);
+
+    useEffect(() => {
+        async function loadTripDetails() {
+            const r = await fetch(`/api/trips/${encodeURIComponent(vehicle.trip.id)}`);
+            const json = await r.json();
+            setTripDetails(json);
+        }
+
+        if (vehicle !== null) loadTripDetails();
+    }, [trackedVehicle]);
+
+    function getStopStatus(stopSequence, currentStopSequence) {
+        if (stopSequence === currentStopSequence) return "current";
+        else if (stopSequence > currentStopSequence) return "next";
+        else return "past";
+    }
+
+    return (
+        <SlDrawer open={trackedVehicle !== null} onSlAfterHide={() => setTrackedVehicle(null)} contained>
+            {(tripDetails !== null && vehicle !== null) && <span slot="label">{vehicle.route.id + " - " + tripDetails.trip.headsign}</span>}
+            {(tripDetails !== null && vehicle !== null) && <span>
+                <div className="fs-14"><span className="fw-bold">Numer taborowy:</span> {vehicle.vehicle.id}</div>
+                <div className="fs-14"><span className="fw-bold">Linia/brygada:</span> {vehicle.vehicle.label}</div>
+                <div className="fs-14"><span className="fw-bold">Identyfikator kursu:</span> {vehicle.trip.id}</div>
+                <div className="fs-14"><span className="fw-bold">Typ pojazdu:</span> {vehicle.route.type}</div>
+                <div className="fs-14"><span className="fw-bold">Przewoźnik:</span> <a href={tripDetails.agency.url} target="_blank" rel="noopener">{tripDetails.agency.name}</a></div>
+
+                {tripDetails.route.description.toUpperCase().includes("NA LINII NIE OBOWIĄZUJE TARYFA ZTM") && <SlAlert className="mt-10" variant="warning" open>
+                    <SlIcon slot="icon" name="ticket-perforated"></SlIcon>
+                    <span>Na linii nie obowiązuje taryfa ZTM</span>
+                </SlAlert>}
+
+                <div className="mt-20">
+                    {(tripDetails?.stops ?? []).map((stop) => (
+                        <div className="stop-template" key={`td${tripDetails.trip?.id ?? vehicle?.trip?.id}s${stop.id}`}>
+                            <div className="stop-sequence" stop-sequence-status={getStopStatus(stop.sequence, vehicle.current_stop_sequence)}>{stop.sequence}</div>
+                            <div className="stop-details">
+                                <div className="stop-name">{stop.name}</div>
+                                <div className="stop-more-details">
+                                    <div className="stop-code">{stop.code}</div>
+                                    <SlIcon name="dot"></SlIcon>
+                                    <div className="stop-zone">{stop.zone}</div>
+                                    {stop.type !== "normal" && <div className="stop-type">
+                                        <SlIcon name="dot"></SlIcon>
+                                        {stop.type === "request" && <SlIcon className="request-stop" name="exclamation-square"></SlIcon>}
+                                        {stop.type === "starting" && <SlIcon className="starting-stop" name="box-arrow-in-right"></SlIcon>}
+                                        {stop.type === "stop" && <SlIcon className="final-stop" name="box-arrow-right"></SlIcon>}
+                                    </div>}
+                                </div>
+                            </div>
+                            <div className="stop-departure-time"></div>
+                        </div>
+                    ))}
+                </div>
+            </span>}
+            {tripDetails === null && <span className="drawer-loading">
+                <SlSpinner></SlSpinner>
+            </span>}
+        </SlDrawer>
     );
 }

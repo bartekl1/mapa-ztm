@@ -1,9 +1,10 @@
-import { Marker, LayerGroup, Circle, CircleMarker } from "react-leaflet";
+import { Marker, LayerGroup, Circle, CircleMarker, Polyline, useMapEvents } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import { createDivIcon, VehicleIcon } from "./Icons";
+import { createDivIcon, VehicleIcon, TripStopIcon } from "./Icons";
 import { useEffect, useState } from "react";
+import "./Layers.scss";
 
-export function VehiclesLayer({ vehicles }) {
+export function VehiclesLayer({ vehicles, trackedVehicle, setTrackedVehicle }) {
     return (
         <MarkerClusterGroup maxClusterRadius={(zoom) => {
             if (zoom === 19) return 0;
@@ -12,14 +13,78 @@ export function VehiclesLayer({ vehicles }) {
             if (zoom === 16) return 40;
             return 80;
         }}>
-            {Object.values(vehicles).map((vehicle) => (
+            {Object.values(vehicles).map((vehicle) => vehicle.vehicle.id !== trackedVehicle ? (
                 <Marker
                     key={"v"+vehicle.vehicle.id}
+                    vehicleID={vehicle.vehicle.id}
                     position={vehicle.coordinates}
-                    icon={createDivIcon(<VehicleIcon line={vehicle.route.id} type={vehicle.route.type} direction={vehicle.direction} />)}
+                    icon={createDivIcon(<VehicleIcon line={vehicle?.route?.id ?? vehicle?.vehicle?.label.split("/")[0]} type={vehicle.route.type} direction={vehicle.direction} />)}
+                    eventHandlers={{
+                        click: (e) => {
+                            setTrackedVehicle(e.target.options.vehicleID);
+                        },
+                    }}
+                />
+            ) : null)}
+        </MarkerClusterGroup>
+    );
+}
+
+function useZoom() {
+    const [zoom, setZoom] = useState(null);
+
+    useMapEvents({
+        zoomend(e) {
+            setZoom(e.target.getZoom());
+        }
+    });
+
+    return zoom;
+}
+
+export function TrackedVehicleLayer({ vehicles, vehicleID }) {
+    const zoom = useZoom();
+    const vehicle = (vehicleID !== null && Object.keys(vehicles).includes(vehicleID)) ? vehicles[vehicleID] : null;
+    const [tripDetails, setTripDetails] = useState({});
+
+    useEffect(() => {
+        async function loadTripDetails() {
+            const r = await fetch(`/api/trips/${encodeURIComponent(vehicle.trip.id)}`);
+            const json = await r.json();
+            setTripDetails(json);
+        }
+
+        if (vehicle !== null) loadTripDetails();
+    }, [vehicleID]);
+
+    function getStopStatus(stopSequence, currentStopSequence) {
+        if (stopSequence === currentStopSequence) return "current";
+        else if (stopSequence > currentStopSequence) return "next";
+        else return "past";
+    }
+
+    return (
+        <LayerGroup>
+            {vehicle !== null && <Marker
+                position={vehicle.coordinates}
+                icon={createDivIcon(<VehicleIcon line={vehicle?.route?.id ?? vehicle?.vehicle?.label.split("/")[0]} type={vehicle.route.type} direction={vehicle.direction} tracked={true} />)}
+            />}
+            {(tripDetails?.shape?.shape !== null && tripDetails?.shape?.shape !== undefined) && <Polyline
+                key={`t${tripDetails.trip?.id ?? vehicle?.trip?.id}z${zoom}`}
+                positions={tripDetails.shape.shape}
+                pathOptions={{
+                    weight: 5,
+                    className: `route-path route-${tripDetails?.route?.type ?? "unknown"} map-zoom-${zoom ?? 13}`,
+                }}
+            />}
+            {(tripDetails?.stops ?? []).map((stop) => (
+                <Marker
+                    key={`t${tripDetails.trip?.id ?? vehicle?.trip?.id}s${stop.id}`}
+                    position={stop.coordinates}
+                    icon={createDivIcon(<TripStopIcon sequence={stop.sequence} status={getStopStatus(stop.sequence, vehicle.current_stop_sequence)} />)}
                 />
             ))}
-        </MarkerClusterGroup>
+        </LayerGroup>
     );
 }
 
