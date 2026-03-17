@@ -42,20 +42,9 @@ function useZoom() {
     return zoom;
 }
 
-export function TrackedVehicleLayer({ vehicles, vehicleID }) {
+export function TrackedVehicleLayer({ vehicles, vehicleID, tripDetails }) {
     const zoom = useZoom();
     const vehicle = (vehicleID !== null && Object.keys(vehicles).includes(vehicleID)) ? vehicles[vehicleID] : null;
-    const [tripDetails, setTripDetails] = useState({});
-
-    useEffect(() => {
-        async function loadTripDetails() {
-            const r = await fetch(`/api/trips/${encodeURIComponent(vehicle.trip.id)}`);
-            const json = await r.json();
-            setTripDetails(json);
-        }
-
-        if (vehicle !== null) loadTripDetails();
-    }, [vehicleID]);
 
     function getStopStatus(stopSequence, currentStopSequence) {
         if (stopSequence === currentStopSequence) return "current";
@@ -69,7 +58,7 @@ export function TrackedVehicleLayer({ vehicles, vehicleID }) {
                 position={vehicle.coordinates}
                 icon={createDivIcon(<VehicleIcon line={vehicle?.route?.id ?? vehicle?.vehicle?.label.split("/")[0]} type={vehicle.route.type} direction={vehicle.direction} tracked={true} />)}
             />}
-            {(tripDetails?.shape?.shape !== null && tripDetails?.shape?.shape !== undefined) && <Polyline
+            {tripDetails?.shape?.shape !== undefined && <Polyline
                 key={`t${tripDetails.trip?.id ?? vehicle?.trip?.id}z${zoom}`}
                 positions={tripDetails.shape.shape}
                 pathOptions={{

@@ -10,6 +10,8 @@ import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
 import appInfo from "./appInfo";
 import "./UIElements.scss";
 import { useEffect, useState } from "react";
+import Icon from "@mdi/react";
+import { mdiLoading } from "@mdi/js";
 
 export function SettingsDialog({ isOpen, setOpen }) {
     const [tabsPlacement, setTabsPlacement] = useState("start");
@@ -86,19 +88,8 @@ export function SettingsDialog({ isOpen, setOpen }) {
     );
 }
 
-export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle }) {
+export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle, tripDetails, tripDetailsStatus }) {
     const vehicle = (trackedVehicle !== null && Object.keys(vehicles).includes(trackedVehicle)) ? vehicles[trackedVehicle] : null;
-    const [tripDetails, setTripDetails] = useState(null);
-
-    useEffect(() => {
-        async function loadTripDetails() {
-            const r = await fetch(`/api/trips/${encodeURIComponent(vehicle.trip.id)}`);
-            const json = await r.json();
-            setTripDetails(json);
-        }
-
-        if (vehicle !== null) loadTripDetails();
-    }, [trackedVehicle]);
 
     function getStopStatus(stopSequence, currentStopSequence) {
         if (stopSequence === currentStopSequence) return "current";
@@ -108,8 +99,8 @@ export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle 
 
     return (
         <SlDrawer open={trackedVehicle !== null} onSlAfterHide={() => setTrackedVehicle(null)} contained>
-            {(tripDetails !== null && vehicle !== null) && <span slot="label">{vehicle.route.id + " - " + tripDetails.trip.headsign}</span>}
-            {(tripDetails !== null && vehicle !== null) && <span>
+            {(tripDetailsStatus === "ready" && tripDetails !== null && vehicle !== null) ? <span slot="label">{vehicle.route.id + " - " + tripDetails.trip.headsign}</span> : <span slot="label">{vehicle?.route?.id ?? "Szczegóły kursu"}</span>}
+            {(tripDetailsStatus === "ready" && tripDetails !== null && vehicle !== null) && <span>
                 <div className="fs-14"><span className="fw-bold">Numer taborowy:</span> {vehicle.vehicle.id}</div>
                 <div className="fs-14"><span className="fw-bold">Linia/brygada:</span> {vehicle.vehicle.label}</div>
                 <div className="fs-14"><span className="fw-bold">Identyfikator kursu:</span> {vehicle.trip.id}</div>
@@ -139,14 +130,31 @@ export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle 
                                     </div>}
                                 </div>
                             </div>
-                            <div className="stop-departure-time"></div>
+                            <div className="stop-departure-time">{stop.time}</div>
                         </div>
                     ))}
                 </div>
             </span>}
-            {tripDetails === null && <span className="drawer-loading">
+            {tripDetailsStatus === "loading" && <span className="drawer-loading">
                 <SlSpinner></SlSpinner>
             </span>}
+            {tripDetailsStatus === "error" && <span>
+                <SlAlert variant="danger" open>
+                    <SlIcon slot="icon" name="x-circle"></SlIcon>
+                    <strong>Wystąpił błąd!</strong><br />
+                    Nie można wczytać szczegółów tego kursu
+                </SlAlert>
+            </span>}
         </SlDrawer>
+    );
+}
+
+export function LoadingScreen() {
+    return (
+        <div className="loading-screen">
+            <div>
+                <Icon className="spinner" path={mdiLoading} />
+            </div>
+        </div>
     );
 }
