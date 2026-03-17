@@ -40,6 +40,7 @@ export default function App() {
     useEffect(() => {
         async function loadTripDetails(tripID) {
             setTripDetailsStatus("loading");
+            setTripDetails(null);
             const r = await fetch(`/api/trips/${encodeURIComponent(tripID)}`);
             if (r.ok) {
                 const json = await r.json();
