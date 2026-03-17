@@ -7,6 +7,7 @@ import SlTabGroup from "@shoelace-style/shoelace/dist/react/tab-group/index.js";
 import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js";
 import SlSpinner from "@shoelace-style/shoelace/dist/react/spinner/index.js";
 import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
+import SlIconButton from "@shoelace-style/shoelace/dist/react/icon-button/index.js";
 import appInfo from "./appInfo";
 import "./UIElements.scss";
 import { useEffect, useState } from "react";
@@ -97,8 +98,26 @@ export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle,
         else return "past";
     }
 
+    const [placement, setPlacement] = useState("end");
+
+    useEffect(() => {
+        function onResize() {
+            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            setPlacement(vw >= 800 ? "end" : "bottom");
+        }
+
+        window.addEventListener("resize", onResize);
+        onResize();
+
+        return () => {
+            window.removeEventListener("resize", onResize);
+        };
+    }, []);
+
+    const [size, setSize] = useState(undefined);
+
     return (
-        <SlDrawer open={trackedVehicle !== null} onSlAfterHide={() => setTrackedVehicle(null)} contained>
+        <SlDrawer open={trackedVehicle !== null} onSlAfterHide={() => setTrackedVehicle(null)} contained placement={placement} style={size !== undefined ? {"--size": `${size}px`} : {}}>
             {(tripDetailsStatus === "ready" && tripDetails !== null && vehicle !== null) ? <span slot="label">{vehicle.route.id + " - " + tripDetails.trip.headsign}</span> : <span slot="label">{vehicle?.route?.id ?? "Szczegóły kursu"}</span>}
             {(tripDetailsStatus === "ready" && tripDetails !== null && vehicle !== null) && <span>
                 <div className="fs-14"><span className="fw-bold">Numer taborowy:</span> {vehicle.vehicle.id}</div>
@@ -145,6 +164,7 @@ export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle,
                     Nie można wczytać szczegółów tego kursu
                 </SlAlert>
             </span>}
+            <DrawerResizer setSize={setSize} />
         </SlDrawer>
     );
 }
@@ -156,5 +176,51 @@ export function LoadingScreen() {
                 <Icon className="spinner" path={mdiLoading} />
             </div>
         </div>
+    );
+}
+
+function DrawerResizer({ setSize }) {
+    const [placement, setPlacement] = useState("vertical");
+
+    useEffect(() => {
+        function onResize() {
+            const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+            setPlacement(vw >= 800 ? "vertical" : "horizontal");
+        }
+
+        window.addEventListener("resize", onResize);
+        onResize();
+
+        return () => {
+            window.removeEventListener("resize", onResize);
+        };
+    }, []);
+
+    function downCallback() {
+        document.addEventListener("pointermove", moveCallback);
+        document.addEventListener("pointerup", upCallback);
+    }
+
+    function upCallback() {
+        document.removeEventListener("pointermove", moveCallback);
+        document.removeEventListener("pointerup", upCallback);
+    }
+
+    function moveCallback(evt) {
+        let vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        let vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+        let newSize;
+        if (placement === "vertical") newSize = vw - evt.clientX;
+        else if (placement === "horizontal") newSize = vh - evt.clientY;
+        if (newSize < 50) newSize = 50;
+        setSize(newSize)
+    }
+
+    return (
+        <SlIconButton
+            class={`drawer-resizer drawer-resizer-${placement}`}
+            name={placement === "vertical" ? "grip-vertical" : "grip-horizontal"}
+            onPointerDown={downCallback}
+        />
     );
 }
