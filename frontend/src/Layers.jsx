@@ -1,8 +1,9 @@
-import { Marker, LayerGroup, Circle, CircleMarker, Polyline, useMapEvents } from "react-leaflet";
+import { Marker, LayerGroup, Circle, CircleMarker, Polyline } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import { createDivIcon, VehicleIcon, TripStopIcon } from "./Icons";
 import { useEffect, useState } from "react";
 import "./Layers.scss";
+import { useZoom } from "./utils";
 
 export function VehiclesLayer({ vehicles, trackedVehicle, setTrackedVehicle }) {
     return (
@@ -28,18 +29,6 @@ export function VehiclesLayer({ vehicles, trackedVehicle, setTrackedVehicle }) {
             ) : null)}
         </MarkerClusterGroup>
     );
-}
-
-function useZoom() {
-    const [zoom, setZoom] = useState(null);
-
-    useMapEvents({
-        zoomend(e) {
-            setZoom(e.target.getZoom());
-        }
-    });
-
-    return zoom;
 }
 
 export function TrackedVehicleLayer({ vehicles, vehicleID, tripDetails }) {

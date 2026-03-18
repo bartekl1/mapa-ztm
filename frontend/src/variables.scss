@@ -1,0 +1,39 @@
+// Vehicle icon colors
+$tram-color-light: red;
+$bus-color-light: blue;
+$unknown-color-light: #444444;
+$vehicle-icon-bg-light: white;
+
+$tram-color-dark: #ff1a1a;
+$bus-color-dark: #4d4dff;
+$unknown-color-dark: #bbbbbb;
+$vehicle-icon-bg-dark: #0d0d0d;
+
+// Tracked vehicle icon colors
+$tracked-tram-color-light: red;
+$tracked-bus-color-light: blue;
+$tracked-unknown-color-light: #222222;
+$tracked-vehicle-icon-bg-light: yellow;
+
+$tracked-tram-color-dark: red;
+$tracked-bus-color-dark: blue;
+$tracked-unknown-color-dark: #555555;
+$tracked-vehicle-icon-bg-dark: yellow;
+
+// Route colors
+$tram-route-color-light: red;
+$bus-route-color-light: blue;
+$unknown-route-color-light: black;
+
+$tram-route-color-dark: red;
+$bus-route-color-dark: blue;
+$unknown-route-color-dark: white;
+
+// Stop colors
+$stop-color: var(--sl-color-neutral-1000);
+$next-stop-background: var(--sl-color-neutral-200);
+$current-stop-background: #26ff26;
+$past-stop-background: var(--sl-color-neutral-500);
+
+// Dark theme map filter
+$dark-map-filters: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);

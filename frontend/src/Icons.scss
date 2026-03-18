@@ -1,17 +1,4 @@
-$tram-color-light: red;
-$bus-color-light: blue;
-$unknown-color-light: #444444;
-$vehicle-icon-bg-light: white;
-
-$tracked-tram-color-light: red;
-$tracked-bus-color-light: blue;
-$tracked-unknown-color-light: #222222;
-$tracked-vehicle-label-bg-light: yellow;
-
-$stop-color: var(--sl-color-neutral-1000);
-$next-stop-background: var(--sl-color-neutral-200);
-$current-stop-background: #26ff26;
-$past-stop-background: var(--sl-color-neutral-500);
+@use "variables" as *;
 
 .vehicle-icon {
     display: inline-grid;
@@ -68,7 +55,7 @@ $past-stop-background: var(--sl-color-neutral-500);
 }
 
 .vehicle-icon.tracked-vehicle-icon {
-    background-color: $tracked-vehicle-label-bg-light;
+    background-color: $tracked-vehicle-icon-bg-light;
 }
 
 .vehicle-icon.tracked-vehicle-icon.vehicle-tram {
@@ -86,6 +73,43 @@ $past-stop-background: var(--sl-color-neutral-500);
     color: $tracked-unknown-color-light;
 }
 
+.map.map-dark {
+    .vehicle-icon { background-color: $vehicle-icon-bg-dark; }
+
+    .vehicle-icon.vehicle-tram {
+        border-color: $tram-color-dark;
+        color: $tram-color-dark;
+    }
+
+    .vehicle-icon.vehicle-bus {
+        border-color: $bus-color-dark;
+        color: $bus-color-dark;
+    }
+
+    .vehicle-icon.vehicle-unknown {
+        border-color: $unknown-color-dark;
+        color: $unknown-color-dark;
+    }
+
+    .vehicle-icon.tracked-vehicle-icon {
+        background-color: $tracked-vehicle-icon-bg-dark;
+    }
+
+    .vehicle-icon.tracked-vehicle-icon.vehicle-tram {
+        border-color: $tracked-tram-color-dark;
+        color: $tracked-tram-color-dark;
+    }
+
+    .vehicle-icon.tracked-vehicle-icon.vehicle-bus {
+        border-color: $tracked-bus-color-dark;
+        color: $tracked-bus-color-dark;   
+    }
+
+    .vehicle-icon.tracked-vehicle-icon.vehicle-unknown {
+        border-color: $tracked-unknown-color-dark;
+        color: $tracked-unknown-color-dark;
+    }
+}
 
 .trip-stop-icon {
     .trip-stop-icon-sequence {

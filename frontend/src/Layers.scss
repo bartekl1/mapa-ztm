@@ -1,6 +1,4 @@
-$tram-route-color-light: red;
-$bus-route-color-light: blue;
-$unknown-route-color-light: black;
+@use "variables" as *;
 
 .route-path.route-bus {
     stroke: $bus-route-color-light;
@@ -12,6 +10,20 @@ $unknown-route-color-light: black;
 
 .route-path.route-unknown {
     stroke: $unknown-route-color-light;
+}
+
+.map.map-dark {
+    .route-path.route-bus {
+        stroke: $bus-route-color-dark;
+    }
+
+    .route-path.route-tram {
+        stroke: $tram-route-color-dark;
+    }
+
+    .route-path.route-unknown {
+        stroke: $unknown-route-color-dark;
+    }
 }
 
 @mixin animate-route($dashSize: 50, $gapSize: 10) {

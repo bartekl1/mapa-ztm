@@ -69,6 +69,7 @@ export default function App() {
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                     minZoom={4}
                     maxZoom={19}
+                    className="map-tiles"
                     attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>'
                 />
 

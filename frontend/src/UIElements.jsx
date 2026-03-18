@@ -17,6 +17,7 @@ import "./UIElements.scss";
 import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
 import { mdiLoading } from "@mdi/js";
+import { useLocalStorage } from "./utils";
 
 export function SettingsDialog({ isOpen, setOpen }) {
     const [tabsPlacement, setTabsPlacement] = useState("start");
@@ -35,16 +36,12 @@ export function SettingsDialog({ isOpen, setOpen }) {
         };
     }, []);
 
-    const [theme, setTheme] = useState("system");
-    const [darkMap, setDarkMap] = useState(true);
-    const [startLatitude, setStartLatitude] = useState(null);
-    const [startLongitude, setStartLongitude] = useState(null);
-    const [startZoom, setStartZoom] = useState(null);
-    const [startLocationTracking, setStartLocationTracking] = useState(false);
-
-    useEffect(() => {
-        console.log(theme, darkMap, startLatitude, startLongitude, startZoom, startLocationTracking)
-    }, [theme, darkMap, startLatitude, startLongitude, startZoom, startLocationTracking])
+    const [theme, setTheme] = useLocalStorage("theme", "system");
+    const [darkMap, setDarkMap] = useLocalStorage("dark-map", true);
+    const [startLatitude, setStartLatitude] = useLocalStorage("start-latitude", null);
+    const [startLongitude, setStartLongitude] = useLocalStorage("start-longitude", null);
+    const [startZoom, setStartZoom] = useLocalStorage("start-zoom", null);
+    const [startLocationTracking, setStartLocationTracking] = useLocalStorage("start-location-tracking", false);
 
     return (
         <>
@@ -64,33 +61,37 @@ export function SettingsDialog({ isOpen, setOpen }) {
                         <SlTabPanel name="general">
                             <div className="mb-20">
                                 <div className="t-24">Motyw</div>
-                                <SlSelect label="Motyw" className="mb-10" value={theme} onSlChange={e => setTheme(e.currentTarget.value)}>
+                                <SlSelect label="Motyw" className="mb-10" value={theme} onSlChange={e => setTheme(e.target.value)}>
                                     <SlOption value="system">Systemowy</SlOption>
                                     <SlOption value="light">Jasny</SlOption>
                                     <SlOption value="dark">Ciemny</SlOption>
                                 </SlSelect>
 
-                                <SlSwitch checked={darkMap} onSlChange={e => setDarkMap(e.currentTarget.checked)}>Zastosuj ciemny motyw w mapie</SlSwitch>
+                                <SlSwitch checked={darkMap} onSlChange={e => setDarkMap(e.target.checked)}>Zastosuj ciemny motyw w mapie</SlSwitch>
                             </div>
                             <div className="mb-20">
                                 <div className="t-24">Lokalizacja startowa mapy</div>
                                 <div className="mb-10 map-start-position-coords-settings">
-                                    <SlInput label="Szerokość" placeholder="Szerokość" value={startLatitude} onSlChange={e => setStartLatitude(e.currentTarget.value)}></SlInput>
-                                    <SlInput label="Długość" placeholder="Długość" value={startLongitude} onSlChange={e => setStartLongitude(e.currentTarget.value)}></SlInput>
-                                    <SlInput label="Powiększenie" placeholder="Powiększenie" value={startZoom} onSlChange={e => setStartZoom(e.currentTarget.value)}></SlInput>
+                                    <SlInput label="Szerokość" placeholder="Szerokość" value={startLatitude} onSlChange={e => setStartLatitude(e.target.value)}></SlInput>
+                                    <SlInput label="Długość" placeholder="Długość" value={startLongitude} onSlChange={e => setStartLongitude(e.target.value)}></SlInput>
+                                    <SlInput label="Powiększenie" placeholder="Powiększenie" value={startZoom} onSlChange={e => setStartZoom(e.target.value)}></SlInput>
                                 </div>
                                 <div className="mb-10">
                                     <SlButton className="mr-5" variant="primary" outline>
                                         <SlIcon slot="prefix" name="map"></SlIcon>
                                         Pobierz z mapy
                                     </SlButton>
-                                    <SlButton variant="danger" outline>
+                                    <SlButton variant="danger" outline onClick={() => {
+                                        setStartLatitude(null);
+                                        setStartLongitude(null);
+                                        setStartZoom(null);
+                                    }}>
                                         <SlIcon slot="prefix" name="x-circle"></SlIcon>
                                         Resetuj
                                     </SlButton>
                                 </div>
                                 <div>
-                                    <SlSwitch value={startLocationTracking} onSlChange={e => setStartLocationTracking(e.currentTarget.checked)}>Używaj bieżącej lokalizacji użytkownika, gdy to możliwe</SlSwitch>
+                                    <SlSwitch checked={startLocationTracking} onSlChange={e => setStartLocationTracking(e.target.checked)}>Używaj bieżącej lokalizacji użytkownika, gdy to możliwe</SlSwitch>
                                 </div>
                             </div>
                         </SlTabPanel>
