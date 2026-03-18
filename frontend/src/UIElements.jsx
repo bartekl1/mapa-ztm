@@ -8,6 +8,10 @@ import SlTabPanel from "@shoelace-style/shoelace/dist/react/tab-panel/index.js";
 import SlSpinner from "@shoelace-style/shoelace/dist/react/spinner/index.js";
 import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
 import SlIconButton from "@shoelace-style/shoelace/dist/react/icon-button/index.js";
+import SlSelect from "@shoelace-style/shoelace/dist/react/select/index.js";
+import SlOption from "@shoelace-style/shoelace/dist/react/option/index.js";
+import SlInput from "@shoelace-style/shoelace/dist/react/input/index.js";
+import SlSwitch from "@shoelace-style/shoelace/dist/react/switch/index.js";
 import appInfo from "./appInfo";
 import "./UIElements.scss";
 import { useEffect, useState } from "react";
@@ -31,9 +35,20 @@ export function SettingsDialog({ isOpen, setOpen }) {
         };
     }, []);
 
+    const [theme, setTheme] = useState("system");
+    const [darkMap, setDarkMap] = useState(true);
+    const [startLatitude, setStartLatitude] = useState(null);
+    const [startLongitude, setStartLongitude] = useState(null);
+    const [startZoom, setStartZoom] = useState(null);
+    const [startLocationTracking, setStartLocationTracking] = useState(false);
+
+    useEffect(() => {
+        console.log(theme, darkMap, startLatitude, startLongitude, startZoom, startLocationTracking)
+    }, [theme, darkMap, startLatitude, startLongitude, startZoom, startLocationTracking])
+
     return (
         <>
-            <SlDialog open={isOpen} onSlAfterHide={() => setOpen(false)}>
+            <SlDialog open={isOpen} onSlAfterHide={(e) => { if (e.target.nodeName === "SL-DIALOG") setOpen(false); }}>
                 <span slot="label">Ustawienia</span>
                 <div>
                     <SlTabGroup placement={tabsPlacement}>
@@ -46,7 +61,39 @@ export function SettingsDialog({ isOpen, setOpen }) {
                             O aplikacji
                         </SlTab>
 
-                        <SlTabPanel name="general">This is the general tab panel.</SlTabPanel>
+                        <SlTabPanel name="general">
+                            <div className="mb-20">
+                                <div className="t-24">Motyw</div>
+                                <SlSelect label="Motyw" className="mb-10" value={theme} onSlChange={e => setTheme(e.currentTarget.value)}>
+                                    <SlOption value="system">Systemowy</SlOption>
+                                    <SlOption value="light">Jasny</SlOption>
+                                    <SlOption value="dark">Ciemny</SlOption>
+                                </SlSelect>
+
+                                <SlSwitch checked={darkMap} onSlChange={e => setDarkMap(e.currentTarget.checked)}>Zastosuj ciemny motyw w mapie</SlSwitch>
+                            </div>
+                            <div className="mb-20">
+                                <div className="t-24">Lokalizacja startowa mapy</div>
+                                <div className="mb-10 map-start-position-coords-settings">
+                                    <SlInput label="Szerokość" placeholder="Szerokość" value={startLatitude} onSlChange={e => setStartLatitude(e.currentTarget.value)}></SlInput>
+                                    <SlInput label="Długość" placeholder="Długość" value={startLongitude} onSlChange={e => setStartLongitude(e.currentTarget.value)}></SlInput>
+                                    <SlInput label="Powiększenie" placeholder="Powiększenie" value={startZoom} onSlChange={e => setStartZoom(e.currentTarget.value)}></SlInput>
+                                </div>
+                                <div className="mb-10">
+                                    <SlButton className="mr-5" variant="primary" outline>
+                                        <SlIcon slot="prefix" name="map"></SlIcon>
+                                        Pobierz z mapy
+                                    </SlButton>
+                                    <SlButton variant="danger" outline>
+                                        <SlIcon slot="prefix" name="x-circle"></SlIcon>
+                                        Resetuj
+                                    </SlButton>
+                                </div>
+                                <div>
+                                    <SlSwitch value={startLocationTracking} onSlChange={e => setStartLocationTracking(e.currentTarget.checked)}>Używaj bieżącej lokalizacji użytkownika, gdy to możliwe</SlSwitch>
+                                </div>
+                            </div>
+                        </SlTabPanel>
                         <SlTabPanel name="about">
                             <div className="t-30">{appInfo.name}</div>
                             <div className="mb-20">{appInfo.description}</div>
@@ -218,7 +265,7 @@ function DrawerResizer({ setSize }) {
 
     return (
         <SlIconButton
-            class={`drawer-resizer drawer-resizer-${placement}`}
+            className={`drawer-resizer drawer-resizer-${placement}`}
             name={placement === "vertical" ? "grip-vertical" : "grip-horizontal"}
             onPointerDown={downCallback}
         />

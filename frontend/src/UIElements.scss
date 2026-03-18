@@ -133,3 +133,12 @@ sl-drawer[placement=bottom] {
         }
     }
 }
+
+.map-start-position-coords-settings {
+    display: flex;
+
+    > sl-input {
+        width: 33%;
+        margin-right: 5px;
+    }
+}
