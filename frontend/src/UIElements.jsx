@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import Icon from "@mdi/react";
 import { mdiLoading } from "@mdi/js";
 import { useLocalStorage } from "./utils";
+import { getTheme } from "./utils";
 
 export function SettingsDialog({ isOpen, setOpen }) {
     const [tabsPlacement, setTabsPlacement] = useState("start");
@@ -45,7 +46,7 @@ export function SettingsDialog({ isOpen, setOpen }) {
 
     return (
         <>
-            <SlDialog open={isOpen} onSlAfterHide={(e) => { if (e.target.nodeName === "SL-DIALOG") setOpen(false); }}>
+            <SlDialog className={getTheme() === "dark" ? "sl-theme-dark" : ""} open={isOpen} onSlAfterHide={(e) => { if (e.target.nodeName === "SL-DIALOG") setOpen(false); }}>
                 <span slot="label">Ustawienia</span>
                 <div>
                     <SlTabGroup placement={tabsPlacement}>
@@ -61,6 +62,7 @@ export function SettingsDialog({ isOpen, setOpen }) {
                         <SlTabPanel name="general">
                             <div className="mb-20">
                                 <div className="t-24">Motyw</div>
+
                                 <SlSelect label="Motyw" className="mb-10" value={theme} onSlChange={e => setTheme(e.target.value)}>
                                     <SlOption value="system">Systemowy</SlOption>
                                     <SlOption value="light">Jasny</SlOption>
@@ -165,7 +167,7 @@ export function TripDetailsDrawer({ vehicles, trackedVehicle, setTrackedVehicle,
     const [size, setSize] = useState(undefined);
 
     return (
-        <SlDrawer open={trackedVehicle !== null} onSlAfterHide={() => setTrackedVehicle(null)} contained placement={placement} style={size !== undefined ? {"--size": `${size}px`} : {}}>
+        <SlDrawer className={getTheme() === "dark" ? "sl-theme-dark" : ""} open={trackedVehicle !== null} onSlAfterHide={() => setTrackedVehicle(null)} contained placement={placement} style={size !== undefined ? {"--size": `${size}px`} : {}}>
             {(tripDetailsStatus === "ready" && tripDetails !== null && vehicle !== null) ? <span slot="label">{vehicle.route.id + " - " + tripDetails.trip.headsign}</span> : <span slot="label">{vehicle?.route?.id ?? "Szczegóły kursu"}</span>}
             {(tripDetailsStatus === "ready" && tripDetails !== null && vehicle !== null) && <span>
                 <div className="fs-14"><span className="fw-bold">Numer taborowy:</span> {vehicle.vehicle.id}</div>

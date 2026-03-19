@@ -4,8 +4,10 @@ import { VehiclesLayer, GPSLayer, TrackedVehicleLayer } from "./Layers";
 import { SettingsDialog, TripDetailsDrawer, LoadingScreen } from "./UIElements";
 import { SettingsButton, TrackLocationButton } from "./MapControls";
 import "./App.scss";
+import { getTheme, getMapTheme } from "./utils";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
+import "@shoelace-style/shoelace/dist/themes/dark.css";
 import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
 
 setBasePath("/assets/shoelace");
@@ -63,7 +65,7 @@ export default function App() {
             <MapContainer
                 center={[52.4, 16.96]}
                 zoom={13}
-                className="map"
+                className={"map" + (getMapTheme() === "dark" ? " map-dark" : "")}
             >
                 <TileLayer
                     url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
