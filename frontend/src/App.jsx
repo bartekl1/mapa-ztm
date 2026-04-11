@@ -4,7 +4,7 @@ import { VehiclesLayer, GPSLayer, TrackedVehicleLayer } from "./Layers";
 import { SettingsDialog, TripDetailsDrawer, LoadingScreen } from "./UIElements";
 import { SettingsButton, TrackLocationButton } from "./MapControls";
 import "./App.scss";
-import { getTheme, getMapTheme } from "./utils";
+import { getMapTheme, getMapStartPosition } from "./utils";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import "@shoelace-style/shoelace/dist/themes/dark.css";
@@ -22,6 +22,8 @@ export default function App() {
 
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [locationTracking, setLocationTracking] = useState(false);
+
+    const [startLat, startLon, startZoom] = getMapStartPosition();
 
     useEffect(() => {
         const evtSource = new EventSource("/api/positions/stream?as_dict");
@@ -63,8 +65,8 @@ export default function App() {
     return (
         <>
             <MapContainer
-                center={[52.4, 16.96]}
-                zoom={13}
+                center={[startLat, startLon]}
+                zoom={startZoom}
                 className={"map" + (getMapTheme() === "dark" ? " map-dark" : "")}
             >
                 <TileLayer

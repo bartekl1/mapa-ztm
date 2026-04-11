@@ -29,6 +29,13 @@ export function getMapTheme() {
     return (getFromLocalStorage("dark-map", true) && getTheme() === "dark") ? "dark" : "light";
 }
 
+export function getMapStartPosition() {
+    const lat = getFromLocalStorage("start-latitude", null) ?? 52.4;
+    const lon = getFromLocalStorage("start-longitude", null) ?? 16.96;
+    const zoom = getFromLocalStorage("start-zoom", null) ?? 13;
+    return [lat, lon, zoom];
+}
+
 export function useZoom() {
     const [zoom, setZoom] = useState(null);
 

@@ -59,7 +59,7 @@ export function TrackedVehicleLayer({ vehicles, vehicleID, tripDetails }) {
                 <Marker
                     key={`t${tripDetails.trip?.id ?? vehicle?.trip?.id}s${stop.id}`}
                     position={stop.coordinates}
-                    icon={createDivIcon(<TripStopIcon sequence={stop.sequence} status={getStopStatus(stop.sequence, vehicle.current_stop_sequence)} />)}
+                    icon={createDivIcon(<TripStopIcon sequence={stop.sequence} status={getStopStatus(stop.sequence, vehicle?.current_stop_sequence)} />)}
                 />
             ))}
         </LayerGroup>
