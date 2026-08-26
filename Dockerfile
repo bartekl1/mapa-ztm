@@ -10,7 +10,7 @@ ENV TZ="Europe/Warsaw"
 WORKDIR /app
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade -r requirements.txt
+RUN pip install --no-cache-dir --upgrade --no-deps --requirement requirements.txt
 
 RUN addgroup --gid $GID appgroup \
     && adduser --uid $UID --ingroup appgroup appuser
