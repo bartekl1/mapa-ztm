@@ -4,6 +4,8 @@ config.yaml
 # Cache and temporary files
 *.db
 *.tmp
+# Requirements file (exported from poetry.lock)
+requirements.txt
 
 ## Python
 # Byte-compiled / optimized / DLL files
