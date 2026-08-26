@@ -29,4 +29,4 @@ USER appuser:appgroup
 
 EXPOSE 8080
 
-CMD gunicorn --bind 0.0.0.0:8080 --workers ${GUNICORN_WORKERS} "app:create_app()"
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:8080 --workers $GUNICORN_WORKERS 'app:create_app()'"]
