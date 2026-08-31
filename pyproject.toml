@@ -1,6 +1,6 @@
 [project]
 name = "mapa-ztm"
-version = "1.2.0"
+version = "2.0.0"
 description = "Mapa pojazdów ZTM Poznań"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -10,13 +10,10 @@ authors = [
     {name = "bartekl1"},
 ]
 dependencies = [
-    "flask (>=3.1.2,<4.0.0)",
-    "PyYAML (>=6.0.3,<7.0.0)",
-    "requests (>=2.32.5,<3.0.0)",
-    "gtfs-realtime-bindings (>=2.0.0,<3.0.0)",
-    "cachetools (>=6.2.4,<7.0.0)",
-    "geojson (>=3.2.0,<4.0.0)",
-    "beautifulsoup4 (>=4.14.3,<5.0.0)",
+    "fastapi[standard-no-fastapi-cloud-cli] (>=0.141.1,<0.142.0)",
+    "pyyaml (>=6.0.3,<7.0.0)",
+    "requests (>=2.34.2,<3.0.0)",
+    "gtfs-realtime-bindings (>=2.2.0,<3.0.0)"
 ]
 
 [project.urls]
@@ -25,9 +22,6 @@ source = "https://github.com/bartekl1/mapa-ztm"
 changelog = "https://github.com/bartekl1/mapa-ztm/releases"
 documentation = "https://github.com/bartekl1/mapa-ztm/blob/main/README.md"
 issues = "https://github.com/bartekl1/mapa-ztm/issues"
-
-[project.optional-dependencies]
-gunicorn = ["gunicorn (>=25.0.3,<26.0.0)"]
 
 [tool.poetry]
 package-mode = false
