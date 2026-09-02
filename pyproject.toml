@@ -3,7 +3,7 @@ name = "mapa-ztm"
 version = "2.0.0"
 description = "Mapa pojazdów ZTM Poznań"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "AGPL-3.0-or-later"
 license-files = ["LICENSE"]
 authors = [
@@ -13,7 +13,9 @@ dependencies = [
     "fastapi[standard-no-fastapi-cloud-cli] (>=0.141.1,<0.142.0)",
     "pyyaml (>=6.0.3,<7.0.0)",
     "requests (>=2.34.2,<3.0.0)",
-    "gtfs-realtime-bindings (>=2.2.0,<3.0.0)"
+    "gtfs-realtime-bindings (>=2.2.0,<3.0.0)",
+    "cachetools (>=7.1.7,<8.0.0)",
+    "websockets (>=17.1,<18.0)"
 ]
 
 [project.urls]
