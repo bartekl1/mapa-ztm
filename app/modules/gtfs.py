@@ -1,29 +1,37 @@
-from google.transit import gtfs_realtime_pb2
+from bs4 import BeautifulSoup
 import requests
 
-from .consts import GTFS_REALTIME_FEED_URL
-from .utils import get_request_headers
+import datetime
+import os
 
-def get_vehicles() -> list[dict]:
-    feed = gtfs_realtime_pb2.FeedMessage()
-    response = requests.get(GTFS_REALTIME_FEED_URL, headers=get_request_headers())
-    feed.ParseFromString(response.content)
-    res = []
-    for entity in feed.entity:
-        lat, lon = entity.vehicle.position.latitude, entity.vehicle.position.longitude
-        row = {
-            "trip": {
-                "id": entity.vehicle.trip.trip_id,
-            },
-            "vehicle": {
-                "id": entity.vehicle.vehicle.id,
-                "label": entity.vehicle.vehicle.label,
-            },
-            "coords": {
-                "latitude": lat,
-                "longitude": lon,
-            },
-            "current_stop_sequence": entity.vehicle.current_stop_sequence,
-        }
-        res.append(row)
-    return res
+from .gtfs_realtime import get_vehicles
+from .gtfs_schedule import Feed
+from .utils import get_request_headers
+from .consts import GTFS_SCHEDULE_FILES_LIST_URL, GTFS_SCHEDULE_FEED_URL
+
+def get_gtfs_schedule_files_list() -> list[str]:
+    response = requests.get(GTFS_SCHEDULE_FILES_LIST_URL, headers=get_request_headers())
+    parser = BeautifulSoup(response.content, "html.parser")
+    rows = parser.find_all("table")[1].find("tbody").find_all("tr")
+    filenames = [row.find_all("td")[0].get_text(strip=True) for row in rows]
+    return filenames
+
+def get_current_gtfs_schedule_filename() -> str | None:
+    today = datetime.date.today()
+    for filename in get_gtfs_schedule_files_list():
+        try:
+            start_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d").date()
+            end_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d").date()
+            if start_date <= today <= end_date:
+                return filename
+        except Exception:
+            continue
+
+def get_current_gtfs_schedule_file_url() -> str:
+    try:
+        filename = get_current_gtfs_schedule_filename()
+        if filename is None:
+            raise
+        return GTFS_SCHEDULE_FEED_URL + "?file=" + filename
+    except Exception:
+        return GTFS_SCHEDULE_FEED_URL

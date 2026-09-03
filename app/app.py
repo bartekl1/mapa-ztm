@@ -48,6 +48,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 match msg:
                     case "test":
                         await manager.send_to_client(websocket, {"msg": "test response"})
+                    case "trip":
+                        ...
             except JSONDecodeError:
                 pass
     except WebSocketDisconnect:
