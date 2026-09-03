@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
+from typing import Any
 import datetime
 import os
 
@@ -35,3 +36,28 @@ def get_current_gtfs_schedule_file_url() -> str:
         return GTFS_SCHEDULE_FEED_URL + "?file=" + filename
     except Exception:
         return GTFS_SCHEDULE_FEED_URL
+
+def get_cache_name() -> str:           #### For testing
+    return "cache.db"
+
+def get_trip(trip_id: str) -> dict[str, Any] | None:
+    feed = Feed(get_cache_name())
+    trip = feed.get_trip(trip_id)
+    if trip is None:
+        return None
+    trip = dict(trip)
+    if trip.get("route_id") is not None:
+        route = feed.get_route(trip["route_id"]) # type: ignore
+        trip["route"] = dict(route) if route is not None else None
+        if trip.get("route", {}).get("agency_id") is not None:
+            agency = feed.get_agency(trip["route"]["agency_id"]) # type: ignore
+            trip["route"]["agency"] = dict(agency) if agency is not None else None # type: ignore
+    if trip.get("shape_id") is not None:
+        shape = feed.get_shape(trip["shape_id"])
+        shape = [(a["shape_pt_lat"], a["shape_pt_lon"]) for a in shape]
+        trip["shape"] = shape
+    stops = feed.get_trip_stops(trip_id)
+    stops = [dict(a) for a in stops]
+    trip["stops"] = stops
+    feed.close()
+    return trip

@@ -168,3 +168,34 @@ class Feed:
         vehicle_dict_req = requests.get(VEHICLE_DICTIONARY_URL, headers=get_request_headers())
         feed._load_csv_file("vehicles", io.BytesIO(vehicle_dict_req.content))
         return feed
+
+    def get_trip(self, trip_id: str) -> sqlite3.Row | None:
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM trips WHERE trip_id = ? LIMIT 1;", (trip_id, ))
+        return cur.fetchone()
+
+    def get_route(self, route_id: str) -> sqlite3.Row | None:
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM routes WHERE route_id = ? LIMIT 1;", (route_id, ))
+        return cur.fetchone()
+
+    def get_agency(self, agency_id: str) -> sqlite3.Row | None:
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM agency WHERE agency_id = ? LIMIT 1;", (agency_id, ))
+        return cur.fetchone()
+
+    def get_shape(self, shape_id: str) -> list[sqlite3.Row]:
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM shapes WHERE shape_id = ? ORDER BY shapes.shape_pt_sequence ASC;", (shape_id, ))
+        return cur.fetchall()
+
+    def get_trip_stops(self, trip_id: str) -> list[sqlite3.Row]:
+        cur = self.db.cursor()
+        cur.execute("""
+            SELECT *
+            FROM stop_times
+            JOIN stops ON stops.stop_id = stop_times.stop_id
+            WHERE stop_times.trip_id = ?
+            ORDER BY stop_times.stop_sequence ASC;
+        """, (trip_id, ))
+        return cur.fetchall()

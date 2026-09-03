@@ -32,7 +32,6 @@ class ConnectionManager:
         await websocket.send_json(data)
 
     async def broadcast(self, data: Any) -> None:
-        print(self.clients)
         to_disconnect = []
         for connection, last_ping in self.clients.items():
             if time.monotonic() - last_ping > MAX_PING:

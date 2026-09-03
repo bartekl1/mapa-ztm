@@ -1,6 +1,7 @@
 import requests
 import cachetools.func
 
+from typing import Any
 import tomllib
 
 def get_pyproject() -> dict:
@@ -28,3 +29,6 @@ def get_request_headers() -> dict[str, str]:
     return {
         "User-Agent": get_user_agent()
     }
+
+def get_arg(data: Any, key: str) -> Any:
+    return data.get(key) if isinstance(data, dict) else None

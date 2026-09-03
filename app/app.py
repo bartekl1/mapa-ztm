@@ -2,11 +2,12 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
+from pprint import pprint
 import asyncio
 
 from modules.websocket import ConnectionManager
-from modules.gtfs import get_vehicles
-from modules.utils import get_project_details
+from modules.gtfs import get_vehicles, get_trip
+from modules.utils import get_project_details, get_arg
 
 manager = ConnectionManager()
 
@@ -15,7 +16,7 @@ async def websocket_broadcast():
         try:
             if manager.clients_connected:
                 vehicles = get_vehicles()
-                await manager.broadcast(vehicles)
+                await manager.broadcast({"msg": "vehicles", "vehicles": vehicles})
         except asyncio.CancelledError:
             raise
 
@@ -37,21 +38,32 @@ app = FastAPI(lifespan=lifespan)
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
-    await manager.send_to_client(websocket, get_project_details())
+    welcome_message = get_project_details()
+    welcome_message["msg"] = "welcome"
+    await manager.send_to_client(websocket, welcome_message)
 
     try:
         while True:
             try:
                 data = await websocket.receive_json()
-                msg = data.get("msg") if isinstance(data, dict) else None
+                msg = get_arg(data, "msg")
                 manager.ping(websocket)
                 match msg:
                     case "test":
                         await manager.send_to_client(websocket, {"msg": "test response"})
                     case "trip":
-                        ...
+                        trip_id = get_arg(data, "trip_id")
+                        trip = get_trip(trip_id)
+                        await manager.send_to_client(websocket, {"msg": "trip", "trip_id": trip_id, "trip": trip})
             except JSONDecodeError:
                 pass
+            except RuntimeError as e2:
+                if str(e2) != 'Cannot call "receive" once a disconnect message has been received.':
+                    raise e2
+            except WebSocketDisconnect as e2:
+                raise e2
+            except Exception as e2:
+                print(e2.__class__.__name__, repr(e2), str(e2))
     except WebSocketDisconnect:
         manager.disconnect(websocket)
     except Exception as e:
