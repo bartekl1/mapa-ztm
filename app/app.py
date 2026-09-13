@@ -6,7 +6,7 @@ from pprint import pprint
 import asyncio
 
 from modules.websocket import ConnectionManager
-from modules.gtfs import get_vehicles, get_trip
+from modules.gtfs import get_vehicles, get_trip, get_vehicle_details
 from modules.utils import get_project_details, get_arg
 
 manager = ConnectionManager()
@@ -55,6 +55,10 @@ async def websocket_endpoint(websocket: WebSocket):
                         trip_id = get_arg(data, "trip_id")
                         trip = get_trip(trip_id)
                         await manager.send_to_client(websocket, {"msg": "trip", "trip_id": trip_id, "trip": trip})
+                    case "vehicle":
+                        vehicle_id = get_arg(data, "vehicle_id")
+                        vehicle = get_vehicle_details(vehicle_id)
+                        await manager.send_to_client(websocket, {"msg": "vehicle", "vehicle_id": vehicle_id, "vehicle": vehicle})
             except JSONDecodeError:
                 pass
             except RuntimeError as e2:

@@ -1,14 +1,15 @@
 from bs4 import BeautifulSoup
 import requests
 
-from typing import Any
+from typing import Any, Literal
 import datetime
 import os
 
 from .gtfs_realtime import get_vehicles
 from .gtfs_schedule import Feed
 from .utils import get_request_headers
-from .consts import GTFS_SCHEDULE_FILES_LIST_URL, GTFS_SCHEDULE_FEED_URL
+from .consts import GTFS_SCHEDULE_FILES_LIST_URL, GTFS_SCHEDULE_FEED_URL, VEHICLE_DICTIONARY_BOOL_KEYS, HF_LF_LE_VALUES, \
+                    TRAM_ID_RANGE, BUS_ID_RANGE
 
 def get_gtfs_schedule_files_list() -> list[str]:
     response = requests.get(GTFS_SCHEDULE_FILES_LIST_URL, headers=get_request_headers())
@@ -40,6 +41,13 @@ def get_current_gtfs_schedule_file_url() -> str:
 def get_cache_name() -> str:           #### For testing
     return "cache.db"
 
+def get_vehicle_type(vehicle_id: str | int) -> Literal["tram", "bus", "unknown"]:
+    if TRAM_ID_RANGE[0] <= int(vehicle_id) <= TRAM_ID_RANGE[1]:
+        return "tram"
+    if BUS_ID_RANGE[0] <= int(vehicle_id) <= BUS_ID_RANGE[1]:
+        return "bus"
+    return "unknown"
+
 def get_trip(trip_id: str) -> dict[str, Any] | None:
     feed = Feed(get_cache_name())
     trip = feed.get_trip(trip_id)
@@ -61,3 +69,17 @@ def get_trip(trip_id: str) -> dict[str, Any] | None:
     trip["stops"] = stops
     feed.close()
     return trip
+
+def get_vehicle_details(vehicle_id: str) -> dict[str, Any] | None:
+    feed = Feed(get_cache_name())
+    vehicle = feed.get_vehicle(vehicle_id)
+    feed.close()
+    if vehicle is None:
+        vehicle = {}
+    else:
+        vehicle = dict(vehicle)
+        for key in VEHICLE_DICTIONARY_BOOL_KEYS:
+            vehicle[key] = bool(vehicle[key])
+        vehicle["hf_lf_le"] = HF_LF_LE_VALUES[vehicle["hf_lf_le"]]
+    vehicle["type"] = get_vehicle_type(vehicle_id)
+    return vehicle

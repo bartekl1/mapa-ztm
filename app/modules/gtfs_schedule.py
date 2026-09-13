@@ -199,3 +199,8 @@ class Feed:
             ORDER BY stop_times.stop_sequence ASC;
         """, (trip_id, ))
         return cur.fetchall()
+
+    def get_vehicle(self, vehicle_id: str) -> sqlite3.Row | None:
+        cur = self.db.cursor()
+        cur.execute("SELECT * FROM vehicles WHERE vehicle = ? LIMIT 1;", (vehicle_id, ))
+        return cur.fetchone()
