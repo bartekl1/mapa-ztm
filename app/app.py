@@ -4,27 +4,16 @@ from contextlib import asynccontextmanager
 from json import JSONDecodeError
 import asyncio
 
-from modules.websocket import ConnectionManager
-from modules.gtfs import get_vehicles, get_trip, get_vehicle_details, download_gtfs_cache
+from modules.websocket import ConnectionManager, websocket_broadcast_task
+from modules.gtfs import get_trip, get_vehicle_details, download_gtfs_cache
 from modules.utils import get_project_details, get_arg
 
 manager = ConnectionManager()
 
-async def websocket_broadcast():
-    while True:
-        try:
-            if manager.clients_connected:
-                vehicles = get_vehicles()
-                await manager.broadcast({"msg": "vehicles", "vehicles": vehicles})
-        except asyncio.CancelledError:
-            raise
-
-        await asyncio.sleep(3)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     download_gtfs_cache()
-    broadcast_task = asyncio.create_task(websocket_broadcast())
+    broadcast_task = asyncio.create_task(websocket_broadcast_task(manager))
     yield
     if broadcast_task:
         broadcast_task.cancel()

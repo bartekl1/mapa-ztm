@@ -1,8 +1,10 @@
 from fastapi import WebSocket, WebSocketDisconnect
 
 from typing import Any
+import asyncio
 import time
 
+from .gtfs import get_vehicles
 from .consts import MAX_PING
 
 class ConnectionManager:
@@ -41,3 +43,13 @@ class ConnectionManager:
 
         for connection in to_disconnect:
             self.disconnect(connection)
+
+async def websocket_broadcast_task(manager: ConnectionManager):
+    while True:
+        try:
+            if manager.clients_connected:
+                vehicles = get_vehicles()
+                await manager.broadcast({"msg": "vehicles", "vehicles": vehicles})
+        except asyncio.CancelledError:
+            raise
+        await asyncio.sleep(3)
