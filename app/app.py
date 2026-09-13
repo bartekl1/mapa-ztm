@@ -1,26 +1,52 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 from contextlib import asynccontextmanager
+from zoneinfo import ZoneInfo
 from json import JSONDecodeError
 import asyncio
 
 from modules.websocket import ConnectionManager, websocket_broadcast_task
 from modules.gtfs import get_trip, get_vehicle_details, download_gtfs_cache
 from modules.utils import get_project_details, get_arg
+from modules.consts import TIMEZONE
+
+TZ = ZoneInfo(TIMEZONE)
 
 manager = ConnectionManager()
+scheduler = AsyncIOScheduler(timezone=TZ)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     download_gtfs_cache()
+    scheduler.add_job(
+        download_gtfs_cache,
+        trigger=CronTrigger(
+            hour=0,
+            minute=5,
+            timezone=TZ,
+        ),
+        id="gtfs_update",
+        replace_existing=True,
+        coalesce=True,
+        max_instances=1,
+        misfire_grace_time=3600,
+    )
+    scheduler.start()
+
     broadcast_task = asyncio.create_task(websocket_broadcast_task(manager))
+
     yield
+
     if broadcast_task:
         broadcast_task.cancel()
         try:
             await broadcast_task
         except asyncio.CancelledError:
             pass
+
+    scheduler.shutdown(wait=True)
 
 app = FastAPI(lifespan=lifespan)
 

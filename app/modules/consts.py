@@ -10,6 +10,8 @@ HF_LF_LE_VALUES = {0: "hf", 1: "lf", 2: "le"}
 TRAM_ID_RANGE = (0, 999)
 BUS_ID_RANGE = (1000, 9999)
 
+TIMEZONE = "Europe/Warsaw"
+
 MAX_PING = 120
 
 CACHE_DIRECTORY = "cache"
