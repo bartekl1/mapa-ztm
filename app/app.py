@@ -2,11 +2,10 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 from contextlib import asynccontextmanager
 from json import JSONDecodeError
-from pprint import pprint
 import asyncio
 
 from modules.websocket import ConnectionManager
-from modules.gtfs import get_vehicles, get_trip, get_vehicle_details
+from modules.gtfs import get_vehicles, get_trip, get_vehicle_details, download_gtfs_cache
 from modules.utils import get_project_details, get_arg
 
 manager = ConnectionManager()
@@ -24,12 +23,13 @@ async def websocket_broadcast():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    periodic_task = asyncio.create_task(websocket_broadcast())
+    download_gtfs_cache()
+    broadcast_task = asyncio.create_task(websocket_broadcast())
     yield
-    if periodic_task:
-        periodic_task.cancel()
+    if broadcast_task:
+        broadcast_task.cancel()
         try:
-            await periodic_task
+            await broadcast_task
         except asyncio.CancelledError:
             pass
 

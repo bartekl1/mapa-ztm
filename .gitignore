@@ -2,6 +2,7 @@
 # Configuration
 config.yaml
 # Cache and temporary files
+cache/*
 *.db
 *.tmp
 # Requirements file (exported from poetry.lock)

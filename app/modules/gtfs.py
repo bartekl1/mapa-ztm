@@ -9,18 +9,21 @@ from .gtfs_realtime import get_vehicles
 from .gtfs_schedule import Feed
 from .utils import get_request_headers
 from .consts import GTFS_SCHEDULE_FILES_LIST_URL, GTFS_SCHEDULE_FEED_URL, VEHICLE_DICTIONARY_BOOL_KEYS, HF_LF_LE_VALUES, \
-                    TRAM_ID_RANGE, BUS_ID_RANGE
+                    TRAM_ID_RANGE, BUS_ID_RANGE, CACHE_DIRECTORY
 
-def get_gtfs_schedule_files_list() -> list[str]:
-    response = requests.get(GTFS_SCHEDULE_FILES_LIST_URL, headers=get_request_headers())
-    parser = BeautifulSoup(response.content, "html.parser")
-    rows = parser.find_all("table")[1].find("tbody").find_all("tr")
-    filenames = [row.find_all("td")[0].get_text(strip=True) for row in rows]
-    return filenames
+def fetch_gtfs_schedule_files_list() -> list[str]:
+    try:
+        response = requests.get(GTFS_SCHEDULE_FILES_LIST_URL, headers=get_request_headers())
+        parser = BeautifulSoup(response.content, "html.parser")
+        rows = parser.find_all("table")[1].find("tbody").find_all("tr")
+        filenames = [row.find_all("td")[0].get_text(strip=True) for row in rows]
+        return filenames
+    except Exception:
+        return []
 
-def get_current_gtfs_schedule_filename() -> str | None:
+def get_current_gtfs_schedule_filename(file_list: list[str]) -> str:
     today = datetime.date.today()
-    for filename in get_gtfs_schedule_files_list():
+    for filename in file_list:
         try:
             start_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[0], "%Y%m%d").date()
             end_date = datetime.datetime.strptime(os.path.splitext(filename)[0].split("_")[1], "%Y%m%d").date()
@@ -28,18 +31,36 @@ def get_current_gtfs_schedule_filename() -> str | None:
                 return filename
         except Exception:
             continue
+    return file_list[0]
 
-def get_current_gtfs_schedule_file_url() -> str:
-    try:
-        filename = get_current_gtfs_schedule_filename()
-        if filename is None:
-            raise
-        return GTFS_SCHEDULE_FEED_URL + "?file=" + filename
-    except Exception:
+def get_gtfs_schedule_file_url(filename: str | None) -> str:
+    if filename is None:
         return GTFS_SCHEDULE_FEED_URL
+    return GTFS_SCHEDULE_FEED_URL + "?file=" + filename
 
-def get_cache_name() -> str:           #### For testing
-    return "cache.db"
+def download_gtfs_cache(force: bool = False) -> str | None:
+    if not os.path.isdir(CACHE_DIRECTORY):
+        os.makedirs(CACHE_DIRECTORY)
+
+    files = fetch_gtfs_schedule_files_list()
+    filename = get_current_gtfs_schedule_filename(files).replace(".zip", ".db")
+
+    path = os.path.join(CACHE_DIRECTORY, filename)
+
+    if os.path.isfile(path) and not force:
+        return path
+    elif force:
+        os.remove(path)
+
+    feed = Feed.download(path, get_gtfs_schedule_file_url(filename))
+    feed.close()
+
+    return path
+
+def get_cache_filename() -> str:
+    files = os.listdir(CACHE_DIRECTORY)
+    filename = get_current_gtfs_schedule_filename(files)
+    return os.path.join(CACHE_DIRECTORY, filename)
 
 def get_vehicle_type(vehicle_id: str | int) -> Literal["tram", "bus", "unknown"]:
     if TRAM_ID_RANGE[0] <= int(vehicle_id) <= TRAM_ID_RANGE[1]:
@@ -49,7 +70,7 @@ def get_vehicle_type(vehicle_id: str | int) -> Literal["tram", "bus", "unknown"]
     return "unknown"
 
 def get_trip(trip_id: str) -> dict[str, Any] | None:
-    feed = Feed(get_cache_name())
+    feed = Feed(get_cache_filename())
     trip = feed.get_trip(trip_id)
     if trip is None:
         return None
@@ -71,7 +92,7 @@ def get_trip(trip_id: str) -> dict[str, Any] | None:
     return trip
 
 def get_vehicle_details(vehicle_id: str) -> dict[str, Any] | None:
-    feed = Feed(get_cache_name())
+    feed = Feed(get_cache_filename())
     vehicle = feed.get_vehicle(vehicle_id)
     feed.close()
     if vehicle is None:
