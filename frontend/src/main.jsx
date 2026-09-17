@@ -3,9 +3,10 @@ import { createRoot } from "react-dom/client";
 
 import "./index.css";
 
-import App from "./gui/App.jsx";
-import { initMap } from "./map/map.js";
-import Storage from "./storage.js";
+import App from "./ui/App.jsx";
+import Map from "./map/map.js";
+import Storage from "./utils/storage.js";
+import { getSetting, setSetting, removeSetting, addChangeListener } from "./utils/userSettings.js";
 
 function main() {
     let storage = new Storage();
@@ -22,13 +23,15 @@ function main() {
         if (data.msg === "vehicles") storage.setValue("vehicles", data.vehicles)
     });
 
-    initMap(storage);
+    let map = new Map("map", storage);
 
     createRoot(document.getElementById("react-root")).render(
         <StrictMode>
             <App />
         </StrictMode>,
     );
+
+    addChangeListener("mapType", (e) => console.log(e), true)
 }
 
 main();
