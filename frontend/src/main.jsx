@@ -30,8 +30,6 @@ function main() {
             <App />
         </StrictMode>,
     );
-
-    addChangeListener("mapType", (e) => console.log(e), true)
 }
 
 main();

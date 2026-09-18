@@ -1,0 +1,60 @@
+:root {
+    --vehicle-icon-bg-light: white;
+    --tram-color-light: red;
+    --bus-color-light: blue;
+    --unknown-color-light: #444444;
+}
+
+.vehicle-icon {
+    display: inline-grid;
+    grid-template-columns: auto auto 1fr;
+    height: 20px;
+    align-items: center;
+    gap: 2px;
+    padding: 1px;
+    padding-right: 4px;
+
+    /* transform: translate(-40%, -30%); */
+
+    background-color: var(--vehicle-icon-bg-light);
+
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+
+    .vehicle-icon-type-icon, .vehicle-icon-arrow {
+        height: 100%;
+
+        svg {
+            height: 100%;
+            width: auto;
+            display: block;
+        }
+    }
+
+    .vehicle-icon-arrow {
+        transform: rotate(calc(var(--rotation) * 1deg));
+    }
+
+    .vehicle-icon-label {
+        font-size: 14px;
+        margin-top: -2px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: 700;
+    }
+}
+
+.vehicle-icon.tram {
+    border-color: var(--tram-color-light);
+    color: var(--tram-color-light);
+}
+
+.vehicle-icon.bus {
+    border-color: var(--bus-color-light);
+    color: var(--bus-color-light);
+}
+
+.vehicle-icon.unknown {
+    border-color: var(--unknown-color-light);
+    color: var(--unknown-color-light);
+}

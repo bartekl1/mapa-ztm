@@ -16,7 +16,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 setWorkerUrl(workerUrl);
 
 import "./map.css";
-import { getSetting } from "../utils/userSettings";
+import { getSetting, addChangeListener } from "../utils/userSettings";
+import { renderVehicleIcon } from "./icons";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -34,6 +35,38 @@ export default class Map {
 
         this.map.setView([52.40, 16.96], 13);
 
+        this.setTileLayer();
+        addChangeListener("mapType", () => { this.setTileLayer() });
+        addChangeListener("ofmStyle", () => { this.setTileLayer() });
+        this.map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
+        
+        this.vehiclesLayer = L.markerClusterGroup({
+            maxClusterRadius: (zoom) => {
+                if (zoom === 19) return 0;
+                if (zoom === 18) return 10;
+                if (zoom === 17) return 20;
+                if (zoom === 16) return 40;
+                return 80;
+            },
+        });
+        this.map.addLayer(this.vehiclesLayer);
+
+        storage.addChangeListener("vehicles", (e) => {
+            this.vehiclesLayer.clearLayers()
+            Object.entries(e.newValue).forEach(([id, vehicle]) => {
+                // console.log(id, vehicle)
+                // console.log(vehicle.coords.latitude, vehicle.coords.longitude)
+                const iconHtml = renderVehicleIcon("bus", vehicle.vehicle.label.split("/")[0], 0);
+                const icon = L.divIcon({ html: iconHtml, className: "" });
+                const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon });
+                marker.addTo(this.vehiclesLayer);
+            })
+        })
+    }
+    setTileLayer() {
+        if (this.osmTiles !== undefined) this.osmTiles.remove();
+        if (this.gl !== undefined) this.gl.remove();
+        
         const mapType = getSetting("mapType");
         if (mapType === "openstreetmap") {
             this.osmTiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -47,26 +80,5 @@ export default class Map {
             });
             this.gl.addTo(this.map);
         }
-        this.map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
-        
-        this.vehiclesLayer = L.markerClusterGroup({
-            // maxClusterRadius: (zoom) => {
-            //     if (zoom === 19) return 0;
-            //     if (zoom === 18) return 10;
-            //     if (zoom === 17) return 20;
-            //     if (zoom === 16) return 40;
-            //     return 80;
-            // },
-        });
-        this.map.addLayer(this.vehiclesLayer);
-
-        storage.addChangeListener("vehicles", (e) => {
-            this.vehiclesLayer.clearLayers()
-            Object.entries(e.newValue).forEach(([id, vehicle]) => {
-                // console.log(id, vehicle)
-                // console.log(vehicle.coords.latitude, vehicle.coords.longitude)
-                L.marker([vehicle.coords.latitude, vehicle.coords.longitude]).addTo(this.vehiclesLayer);
-            })
-        })
     }
 }
