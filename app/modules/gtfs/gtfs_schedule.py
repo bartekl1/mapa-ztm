@@ -7,8 +7,8 @@ import csv
 import io
 import os
 
-from .consts import GTFS_SCHEDULE_TABLE_NAMES, VEHICLE_DICTIONARY_URL
-from .utils import get_request_headers
+from ..consts import GTFS_SCHEDULE_TABLE_NAMES, VEHICLE_DICTIONARY_URL
+from ..utils import get_request_headers
 
 class Feed:
     def __init__(self, filename: str) -> None:
@@ -187,6 +187,17 @@ class Feed:
     def get_shape(self, shape_id: str) -> list[sqlite3.Row]:
         cur = self.db.cursor()
         cur.execute("SELECT * FROM shapes WHERE shape_id = ? ORDER BY shapes.shape_pt_sequence ASC;", (shape_id, ))
+        return cur.fetchall()
+
+    def get_shape_points_for_trip(self, trip_id: str):
+        cur = self.db.cursor()
+        cur.execute(f"""
+            SELECT shapes.shape_pt_lat, shapes.shape_pt_lon
+            FROM shapes
+            JOIN trips ON shapes.shape_id = trips.shape_id
+            WHERE trips.trip_id = ?
+            ORDER BY shapes.shape_pt_sequence ASC;
+        """, (trip_id, ))
         return cur.fetchall()
 
     def get_trip_stops(self, trip_id: str) -> list[sqlite3.Row]:

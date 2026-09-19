@@ -56,7 +56,7 @@ export default class Map {
             Object.entries(e.newValue).forEach(([id, vehicle]) => {
                 // console.log(id, vehicle)
                 // console.log(vehicle.coords.latitude, vehicle.coords.longitude)
-                const iconHtml = renderVehicleIcon("bus", vehicle.vehicle.label.split("/")[0], 0);
+                const iconHtml = renderVehicleIcon(vehicle.vehicle.type, vehicle.vehicle.label.split("/")[0], vehicle.coords.bearing);
                 const icon = L.divIcon({ html: iconHtml, className: "" });
                 const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon });
                 marker.addTo(this.vehiclesLayer);
