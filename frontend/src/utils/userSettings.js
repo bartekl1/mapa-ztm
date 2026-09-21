@@ -2,7 +2,13 @@ import settingsConfig from "./settingsConfig";
 
 export function getSetting(key) {
     const lsValue = JSON.parse(localStorage.getItem(key));
-    if (lsValue === null || lsValue === undefined || !(settingsConfig[key]?.validOptions ?? []).includes(lsValue)) return settingsConfig[key]?.default;
+    console.log(settingsConfig[key]?.validOptions)
+    if (lsValue === null || lsValue === undefined) {
+        return settingsConfig[key]?.default;
+    }
+    if (settingsConfig[key]?.validOptions !== undefined && !(settingsConfig[key]?.validOptions ?? []).includes(lsValue)) {
+        return settingsConfig[key]?.default;
+    }
     return lsValue;
 }
 

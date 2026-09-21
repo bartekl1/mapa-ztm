@@ -33,7 +33,8 @@ export default class Map {
             maxZoom: 19,
         });
 
-        this.map.setView([52.40, 16.96], 13);
+        const startPos = getSetting("startPos");
+        this.map.setView([startPos[0], startPos[1]], startPos[2]);
 
         this.setTileLayer();
         addChangeListener("mapType", () => { this.setTileLayer() });
