@@ -6,7 +6,7 @@ import "./index.css";
 import App from "./ui/App.jsx";
 import Map from "./map/map.js";
 import Storage from "./utils/storage.js";
-import { getSetting, setSetting, removeSetting, addChangeListener } from "./utils/userSettings.js";
+import { watchThemeChange } from "./utils/theme.js";
 
 function main() {
     let storage = new Storage();
@@ -22,6 +22,11 @@ function main() {
         const data = JSON.parse(event.data);
         if (data.msg === "vehicles") storage.setValue("vehicles", data.vehicles)
     });
+
+    watchThemeChange((e) => {
+        if (e.mapDarkTheme) document.querySelector("#map").classList.add("map-dark");
+        else document.querySelector("#map").classList.remove("map-dark");
+    }, true);
 
     let map = new Map("map", storage);
 

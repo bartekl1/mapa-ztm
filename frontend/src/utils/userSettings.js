@@ -2,7 +2,6 @@ import settingsConfig from "./settingsConfig";
 
 export function getSetting(key) {
     const lsValue = JSON.parse(localStorage.getItem(key));
-    console.log(settingsConfig[key]?.validOptions)
     if (lsValue === null || lsValue === undefined) {
         return settingsConfig[key]?.default;
     }
@@ -29,7 +28,7 @@ export function addChangeListener(key, handler, start = false) {
             const newValue = getSetting(key);
             handler({key: key, newValue: newValue});
         }
-    }
+    };
     window.addEventListener("settingChange", internalHandler);
     window.addEventListener("storage", internalHandler);
     if (start) internalHandler({type: "manual", key: key});

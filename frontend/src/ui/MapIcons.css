@@ -3,6 +3,11 @@
     --tram-color-light: red;
     --bus-color-light: blue;
     --unknown-color-light: #444444;
+
+    --vehicle-icon-bg-dark: #0d0d0d;
+    --tram-color-dark: #ff1a1a;
+    --bus-color-dark: #4d4dff;
+    --unknown-color-dark: #bbbbbb;
 }
 
 .vehicle-icon {
@@ -57,4 +62,25 @@
 .vehicle-icon.unknown {
     border-color: var(--unknown-color-light);
     color: var(--unknown-color-light);
+}
+
+.map-dark {
+    .vehicle-icon {
+        background-color: var(--vehicle-icon-bg-dark);
+    }
+
+    .vehicle-icon.tram {
+        border-color: var(--tram-color-dark);
+        color: var(--tram-color-dark);
+    }
+
+    .vehicle-icon.bus {
+        border-color: var(--bus-color-dark);
+        color: var(--bus-color-dark);
+    }
+
+    .vehicle-icon.unknown {
+        border-color: var(--unknown-color-dark);
+        color: var(--unknown-color-dark);
+    }
 }

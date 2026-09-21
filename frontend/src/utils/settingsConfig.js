@@ -10,4 +10,11 @@ export default {
     startPos: {
         default: [52.40, 16.96, 13],
     },
+    theme: {
+        default: "auto",
+        validOptions: ["auto", "light", "dark"],
+    },
+    mapDarkTheme: {
+        default: true,
+    },
 };

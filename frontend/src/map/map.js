@@ -55,8 +55,6 @@ export default class Map {
         storage.addChangeListener("vehicles", (e) => {
             this.vehiclesLayer.clearLayers()
             Object.entries(e.newValue).forEach(([id, vehicle]) => {
-                // console.log(id, vehicle)
-                // console.log(vehicle.coords.latitude, vehicle.coords.longitude)
                 const iconHtml = renderVehicleIcon(vehicle.vehicle.type, vehicle.vehicle.label.split("/")[0], vehicle.coords.bearing);
                 const icon = L.divIcon({ html: iconHtml, className: "" });
                 const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon });
@@ -72,12 +70,14 @@ export default class Map {
         if (mapType === "openstreetmap") {
             this.osmTiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                className: "map-tiles",
+                className: "map-tiles openstreetmap",
             });
             this.osmTiles.addTo(this.map);
         } else if (mapType === "openfreemap") {
+            const style = getSetting("ofmStyle")
             this.gl = maplibreGL({
-                style: "https://tiles.openfreemap.org/styles/" + getSetting("ofmStyle"),
+                style: "https://tiles.openfreemap.org/styles/" + style,
+                className: "map-tiles openfreemap " + style,
             });
             this.gl.addTo(this.map);
         }
