@@ -40,9 +40,9 @@ def download_gtfs_cache(force: bool = False) -> str | None:
         os.makedirs(CACHE_DIRECTORY)
 
     files = fetch_gtfs_schedule_files_list()
-    filename = get_current_gtfs_schedule_filename(files).replace(".zip", ".db")
+    filename = get_current_gtfs_schedule_filename(files)
 
-    path = os.path.join(CACHE_DIRECTORY, filename)
+    path = os.path.join(CACHE_DIRECTORY, filename.replace(".zip", ".db"))
 
     if os.path.isfile(path) and not force:
         return path

@@ -19,6 +19,8 @@
     padding: 1px;
     padding-right: 4px;
 
+    box-sizing: content-box;
+
     /* transform: translate(-40%, -30%); */
 
     background-color: var(--vehicle-icon-bg-light);
