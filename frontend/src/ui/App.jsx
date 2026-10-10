@@ -8,11 +8,11 @@ function App({ storage }) {
     const [trip, setTrip] = useState();
 
     useEffect(() => {
-        storage.addChangeListener("trackedVehicleData-vehicle", (e) => { 
-            setVehicle(e.newValue)
+        storage.addChangeListener("trackedVehicleData-vehicle", (e) => {
+            setVehicle(e.newValue);
         });
-        storage.addChangeListener("trackedVehicleData-trip", (e) => { 
-            setTrip(e.newValue)
+        storage.addChangeListener("trackedVehicleData-trip", (e) => {
+            setTrip(e.newValue);
         });
     }, []);
 

@@ -8,7 +8,7 @@ export default function AppProvider({ children }) {
     const [theme, setTheme] = useState(getTheme());
 
     useEffect(() => {
-        watchThemeChange((e) => setTheme(e.theme))
+        watchThemeChange((e) => setTheme(e.theme));
     }, []);
 
     return (

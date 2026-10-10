@@ -1,0 +1,19 @@
+:root {
+    --vehicle-icon-bg-light: white;
+    --tram-color-light: red;
+    --bus-color-light: blue;
+    --unknown-color-light: #444444;
+
+    --tram-route-color-light: red;
+    --bus-route-color-light: blue;
+    --unknown-route-color-light: black;
+
+    --vehicle-icon-bg-dark: #0d0d0d;
+    --tram-color-dark: #ff1a1a;
+    --bus-color-dark: #4d4dff;
+    --unknown-color-dark: #bbbbbb;
+
+    --tram-route-color-dark: red;
+    --bus-route-color-dark: #1818ff;
+    --unknown-route-color-dark: white;
+}

@@ -16,8 +16,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 setWorkerUrl(workerUrl);
 
 import "./map.css";
-import { getSetting, addChangeListener } from "../utils/userSettings";
 import { renderVehicleIcon } from "./icons";
+import { getSetting, addChangeListener } from "../utils/userSettings";
+import { getRouteType } from "../utils/gtfs";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -60,8 +61,23 @@ export default class Map {
                 const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon, vehicleId: vehicle.vehicle.id, tripId: vehicle.trip.id });
                 marker.addTo(this.vehiclesLayer);
                 marker.on("click", (e) => { storage.setValue("trackedVehicle", {vehicle: e.target.options.vehicleId, trip: e.target.options.tripId}) });
-            })
-        })
+            });
+        });
+
+        this.tripLayer = L.layerGroup();
+        this.map.addLayer(this.tripLayer);
+
+        storage.addChangeListener("trackedVehicleData-trip", (e) => {
+            this.tripLayer.clearLayers();
+            const polyline = L.polyline(e.newValue.shape, {
+                weight: 5,
+                className: "trip-route " + getRouteType(e.newValue.route.route_type),
+            });
+            polyline.addTo(this.tripLayer);
+        });
+
+        document.querySelector("#map").setAttribute("zoom", this.map.getZoom());
+        this.map.on("zoomend", () => { document.querySelector("#map").setAttribute("zoom", this.map.getZoom()); });
     }
     setTileLayer() {
         if (this.osmTiles !== undefined) this.osmTiles.remove();

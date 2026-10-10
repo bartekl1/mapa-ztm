@@ -1,15 +1,3 @@
-:root {
-    --vehicle-icon-bg-light: white;
-    --tram-color-light: red;
-    --bus-color-light: blue;
-    --unknown-color-light: #444444;
-
-    --vehicle-icon-bg-dark: #0d0d0d;
-    --tram-color-dark: #ff1a1a;
-    --bus-color-dark: #4d4dff;
-    --unknown-color-dark: #bbbbbb;
-}
-
 .vehicle-icon {
     display: inline-grid;
     grid-template-columns: auto auto 1fr;
@@ -21,7 +9,7 @@
 
     box-sizing: content-box;
 
-    /* transform: translate(-40%, -30%); */
+    transform: translate(-40%, -30%);
 
     background-color: var(--vehicle-icon-bg-light);
 

@@ -4,8 +4,52 @@
     color: initial;
 }
 
+.trip-route.tram {
+    stroke: var(--tram-route-color-light);
+}
+
+.trip-route.bus {
+    stroke: var(--bus-route-color-light);
+}
+
+.trip-route.unknown {
+    stroke: var(--unknown-route-color-light);
+}
+
 .map-dark {
     .map-tiles {
         filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }
+
+    .trip-route.tram {
+        stroke: var(--tram-route-color-dark);
+    }
+
+    .trip-route.bus {
+        stroke: var(--bus-route-color-dark);
+    }
+
+    .trip-route.unknown {
+        stroke: var(--unknown-route-color-dark);
+    }
 }
+
+@keyframes route-animation-100-10 { to { stroke-dashoffset: -110; } }
+@keyframes route-animation-75-10 { to { stroke-dashoffset: -85; } }
+@keyframes route-animation-50-10 { to { stroke-dashoffset: -60; } }
+@keyframes route-animation-25-10 { to { stroke-dashoffset: -35; } }
+@keyframes route-animation-20-10 { to { stroke-dashoffset: -30; } }
+@keyframes route-animation-15-10 { to { stroke-dashoffset: -25; } }
+@keyframes route-animation-10-10 { to { stroke-dashoffset: -20; } }
+@keyframes route-animation-5-10 { to { stroke-dashoffset: -15; } }
+
+#map[zoom="19"] .trip-route { animation: route-animation-100-10 2s linear infinite; stroke-dasharray: 100, 10; }
+#map[zoom="18"] .trip-route { animation: route-animation-75-10 2s linear infinite; stroke-dasharray: 75, 10; }
+#map[zoom="17"] .trip-route { animation: route-animation-50-10 2s linear infinite; stroke-dasharray: 50, 10; }
+#map[zoom="16"] .trip-route { animation: route-animation-50-10 2s linear infinite; stroke-dasharray: 50, 10; }
+#map[zoom="15"] .trip-route { animation: route-animation-25-10 2s linear infinite; stroke-dasharray: 25, 10; }
+#map[zoom="14"] .trip-route { animation: route-animation-20-10 2s linear infinite; stroke-dasharray: 20, 10; }
+#map[zoom="13"] .trip-route { animation: route-animation-15-10 2s linear infinite; stroke-dasharray: 15, 10; }
+#map[zoom="12"] .trip-route { animation: route-animation-10-10 2s linear infinite; stroke-dasharray: 10, 10; }
+#map[zoom="11"] .trip-route { animation: route-animation-10-10 2s linear infinite; stroke-dasharray: 10, 10; }
+#map[zoom="10"] .trip-route { animation: route-animation-5-10 2s linear infinite; stroke-dasharray: 5, 10; }
