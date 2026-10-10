@@ -1,17 +1,29 @@
 :root {
+    /* Light theme */
     --vehicle-icon-bg-light: white;
     --tram-color-light: red;
     --bus-color-light: blue;
     --unknown-color-light: #444444;
 
+    --selected-vehicle-icon-bg-light: yellow;
+    --selected-tram-color-light: red;
+    --selected-bus-color-light: blue;
+    --selected-unknown-color-light: #222222;
+
     --tram-route-color-light: red;
     --bus-route-color-light: blue;
     --unknown-route-color-light: black;
 
+    /* Dark theme */
     --vehicle-icon-bg-dark: #0d0d0d;
     --tram-color-dark: #ff1a1a;
     --bus-color-dark: #4d4dff;
     --unknown-color-dark: #bbbbbb;
+
+    --selected-vehicle-icon-bg-dark: yellow;
+    --selected-tram-color-dark: red;
+    --selected-bus-color-dark: blue;
+    --selected-unknown-color-dark: #555555;
 
     --tram-route-color-dark: red;
     --bus-route-color-dark: #1818ff;

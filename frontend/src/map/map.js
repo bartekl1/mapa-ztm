@@ -53,27 +53,55 @@ export default class Map {
         });
         this.map.addLayer(this.vehiclesLayer);
 
+        this.selectedVehicleLayer = L.layerGroup();
+        this.map.addLayer(this.selectedVehicleLayer);
+
         storage.addChangeListener("vehicles", (e) => {
+            const selectedVehicle = storage.getValue("selectedVehicle")?.vehicle;
+
             this.vehiclesLayer.clearLayers()
+            this.selectedVehicleLayer.clearLayers()
+
             Object.entries(e.newValue).forEach(([id, vehicle]) => {
                 const iconHtml = renderVehicleIcon(vehicle.vehicle.type, vehicle.vehicle.label.split("/")[0], vehicle.coords.bearing);
-                const icon = L.divIcon({ html: iconHtml, className: "" });
+                const icon = L.divIcon({ html: iconHtml, className: id === selectedVehicle ? "selected" : "" });
                 const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon, vehicleId: vehicle.vehicle.id, tripId: vehicle.trip.id });
-                marker.addTo(this.vehiclesLayer);
-                marker.on("click", (e) => { storage.setValue("trackedVehicle", {vehicle: e.target.options.vehicleId, trip: e.target.options.tripId}) });
+                (id === selectedVehicle) ? marker.addTo(this.selectedVehicleLayer) : marker.addTo(this.vehiclesLayer);
+                marker.on("click", (e) => {
+                    storage.setValue("selectedVehicle", {vehicle: e.target.options.vehicleId, trip: e.target.options.tripId});
+                    let marker = e.target;
+                    marker.removeFrom(this.vehiclesLayer);
+                    marker.addTo(this.selectedVehicleLayer);
+                    let icon = marker.getIcon();
+                    icon.options.className = "selected";
+                    marker.setIcon(icon);
+                });
             });
+        });
+
+        storage.addChangeListener("selectedVehicle", (e) => {
+            const marker = this.selectedVehicleLayer.getLayers()[0];
+            if (marker !== undefined) {
+                marker.removeFrom(this.selectedVehicleLayer);
+                marker.addTo(this.vehiclesLayer);
+                let icon = marker.getIcon();
+                icon.options.className = "";
+                marker.setIcon(icon);
+            }
         });
 
         this.tripLayer = L.layerGroup();
         this.map.addLayer(this.tripLayer);
 
-        storage.addChangeListener("trackedVehicleData-trip", (e) => {
+        storage.addChangeListener("selectedVehicleData-trip", (e) => {
             this.tripLayer.clearLayers();
-            const polyline = L.polyline(e.newValue.shape, {
-                weight: 5,
-                className: "trip-route " + getRouteType(e.newValue.route.route_type),
-            });
-            polyline.addTo(this.tripLayer);
+            if (e.newValue !== null && e.newValue !== undefined) {
+                const polyline = L.polyline(e.newValue.shape, {
+                    weight: 5,
+                    className: "trip-route " + getRouteType(e.newValue.route.route_type),
+                });
+                polyline.addTo(this.tripLayer);
+            }
         });
 
         document.querySelector("#map").setAttribute("zoom", this.map.getZoom());

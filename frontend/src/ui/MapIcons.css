@@ -39,6 +39,27 @@
     }
 }
 
+.selected {
+    .vehicle-icon {
+        background-color: var(--selected-vehicle-icon-bg-light);
+    }
+
+    .vehicle-icon.tram {
+        border-color: var(--selected-tram-color-light);
+        color: var(--selected-tram-color-light);
+    }
+
+    .vehicle-icon.bus {
+        border-color: var(--selected-bus-color-light);
+        color: var(--selected-bus-color-light);
+    }
+
+    .vehicle-icon.unknown {
+        border-color: var(--selected-unknown-color-light);
+        color: var(--selected-unknown-color-light);
+    }
+}
+
 .vehicle-icon.tram {
     border-color: var(--tram-color-light);
     color: var(--tram-color-light);
@@ -55,6 +76,27 @@
 }
 
 .map-dark {
+    .selected {
+        .vehicle-icon {
+            background-color: var(--selected-vehicle-icon-bg-dark);
+        }
+
+        .vehicle-icon.tram {
+            border-color: var(--selected-tram-color-dark);
+            color: var(--selected-tram-color-dark);
+        }
+
+        .vehicle-icon.bus {
+            border-color: var(--selected-bus-color-dark);
+            color: var(--selected-bus-color-dark);
+        }
+
+        .vehicle-icon.unknown {
+            border-color: var(--selected-unknown-color-dark);
+            color: var(--selected-unknown-color-dark);
+        }
+    }
+
     .vehicle-icon {
         background-color: var(--vehicle-icon-bg-dark);
     }
