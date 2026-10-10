@@ -57,8 +57,9 @@ export default class Map {
             Object.entries(e.newValue).forEach(([id, vehicle]) => {
                 const iconHtml = renderVehicleIcon(vehicle.vehicle.type, vehicle.vehicle.label.split("/")[0], vehicle.coords.bearing);
                 const icon = L.divIcon({ html: iconHtml, className: "" });
-                const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon });
+                const marker = L.marker([vehicle.coords.latitude, vehicle.coords.longitude], { icon: icon, vehicleId: vehicle.vehicle.id, tripId: vehicle.trip.id });
                 marker.addTo(this.vehiclesLayer);
+                marker.on("click", (e) => { storage.setValue("trackedVehicle", {vehicle: e.target.options.vehicleId, trip: e.target.options.tripId}) });
             })
         })
     }

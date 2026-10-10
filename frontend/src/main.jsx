@@ -11,6 +11,9 @@ import { watchThemeChange } from "./utils/theme.js";
 function main() {
     let storage = new Storage();
     storage.createValue("vehicles");
+    storage.createValue("trackedVehicle");
+    storage.createValue("trackedVehicleData-vehicle");
+    storage.createValue("trackedVehicleData-trip");
 
     const socket = new WebSocket("/ws");
     socket.addEventListener("open", (event) => {
@@ -20,7 +23,13 @@ function main() {
     });
     socket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
-        if (data.msg === "vehicles") storage.setValue("vehicles", data.vehicles)
+        if (data.msg === "vehicles") storage.setValue("vehicles", data.vehicles);
+        if (data.msg === "trip" || data.msg === "vehicle") {
+            const entityType = data.msg;
+            if (storage.getValue("trackedVehicle")[entityType] === data[entityType + "_id"]) {
+                storage.setValue("trackedVehicleData-" + entityType, data[entityType])
+            }
+        }
     });
 
     watchThemeChange((e) => {
@@ -30,9 +39,14 @@ function main() {
 
     let map = new Map("map", storage);
 
+    storage.addChangeListener("trackedVehicle", (e) => {
+        socket.send(JSON.stringify({msg: "trip", trip_id: e.newValue.trip}));
+        socket.send(JSON.stringify({msg: "vehicle", vehicle_id: e.newValue.vehicle}));
+    });
+
     createRoot(document.getElementById("react-root")).render(
         <StrictMode>
-            <App />
+            <App storage={storage} />
         </StrictMode>,
     );
 }

@@ -15,4 +15,7 @@ export default class Storage {
         this.values[key].value = value;
         this.values[key].listeners.forEach(listener => { listener({key: key, newValue: value}); });
     }
+    getValue(key) {
+        return this.values[key].value;
+    }
 }
