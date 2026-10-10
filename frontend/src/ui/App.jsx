@@ -1,16 +1,9 @@
 import { Button, HStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { AppProvider } from "./Provider";
-import { getTheme, watchThemeChange } from "../utils/theme";
+import AppProvider from "./Provider";
 
 function App({ storage }) {
-    const [theme, setTheme] = useState(getTheme());
-
-    useEffect(() => {
-        watchThemeChange((e) => setTheme(e.theme))
-    }, []);
-
     const [vehicle, setVehicle] = useState();
     const [trip, setTrip] = useState();
 
@@ -25,7 +18,7 @@ function App({ storage }) {
 
     return <>
         <div>
-            <AppProvider theme={theme}>
+            <AppProvider>
                 <HStack m="2">
                     <Button>Click me</Button>
                     <div>test</div>
