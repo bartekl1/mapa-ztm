@@ -5,10 +5,14 @@ import AppProvider from "./Provider";
 import Drawer from "./Drawer";
 
 function App({ storage }) {
+    const [selectedVehicle, setSelectedVehicle] = useState();
     const [vehicle, setVehicle] = useState();
     const [trip, setTrip] = useState();
 
     useEffect(() => {
+        storage.addChangeListener("selectedVehicle", (e) => {
+            setSelectedVehicle(e.newValue);
+        });
         storage.addChangeListener("selectedVehicleData-vehicle", (e) => {
             setVehicle(e.newValue);
         });
@@ -17,27 +21,23 @@ function App({ storage }) {
         });
     }, []);
 
-    const [open, setOpen] = useState(true);
+    useEffect(() => {
+        if (selectedVehicle === null) storage.setValue("selectedVehicle", null);
+    }, [selectedVehicle]);
 
     return <>
         <div>
             <AppProvider>
-                <HStack m="2">
-                    <Button>Click me</Button>
-                    <Button onClick={() => { storage.setValue("selectedVehicle", null); }}>deselect</Button>
-                    <div>test</div>
-                </HStack>
-                <HStack m="2">
-                    <div><strong>vehicle: </strong> {JSON.stringify(vehicle)}</div>
-                </HStack>
-                <HStack m="2">
-                    <div><strong>trip: </strong> {JSON.stringify(trip)}</div>
-                </HStack>
-                <Drawer open={open} setOpen={setOpen} title="tytuł">
-                    <p>test test test</p>
-                    <strong>test</strong>
-                    <em>test</em>
-                </Drawer>
+                {selectedVehicle !== null && selectedVehicle !== undefined &&
+                    <Drawer open={true} setOpen={(open) => { if (!open) setSelectedVehicle(null); }} title="tytuł">
+                        <HStack m="2">
+                            <div><strong>vehicle: </strong> {JSON.stringify(vehicle)}</div>
+                        </HStack>
+                        <HStack m="2">
+                            <div><strong>trip: </strong> {JSON.stringify(trip)}</div>
+                        </HStack>
+                    </Drawer>
+                }
             </AppProvider>
         </div>
     </>;
