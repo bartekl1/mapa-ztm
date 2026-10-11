@@ -2,6 +2,7 @@ import { Button, HStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 import AppProvider from "./Provider";
+import Drawer from "./Drawer";
 
 function App({ storage }) {
     const [vehicle, setVehicle] = useState();
@@ -15,6 +16,8 @@ function App({ storage }) {
             setTrip(e.newValue);
         });
     }, []);
+
+    const [open, setOpen] = useState(true);
 
     return <>
         <div>
@@ -30,6 +33,11 @@ function App({ storage }) {
                 <HStack m="2">
                     <div><strong>trip: </strong> {JSON.stringify(trip)}</div>
                 </HStack>
+                <Drawer open={open} setOpen={setOpen} title="tytuł">
+                    <p>test test test</p>
+                    <strong>test</strong>
+                    <em>test</em>
+                </Drawer>
             </AppProvider>
         </div>
     </>;
