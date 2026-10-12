@@ -1,0 +1,36 @@
+.drawer-frame {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    
+    display: grid;
+    grid-template-columns: auto 1fr;
+    
+    background-color: var(--chakra-colors-bg-emphasized);
+
+    .drawer-frame-icon {
+        height: 40px;
+        border-radius: 50%;
+        padding: 6px;
+        margin-right: 6px;
+
+        background-color: var(--chakra-colors-gray-focus-ring);
+        color: var(--chakra-colors-gray-contrast);
+
+        svg {
+            height: 100%;
+        }
+    }
+
+    div:nth-child(2) {
+        div:nth-child(2) {
+            a {
+                svg {
+                    width: 1em;
+                    height: 1em;
+                    display: inline-block;
+                }
+            }
+        }
+    }
+}

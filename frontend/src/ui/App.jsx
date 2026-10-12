@@ -3,6 +3,26 @@ import { useEffect, useState } from "react";
 
 import AppProvider from "./Provider";
 import Drawer from "./Drawer";
+import {
+    FrameVehicleID,
+    FrameVehicleTram,
+    FrameVehicleBus,
+    FrameVehicleUnknown,
+    FrameVehicleHighFloor,
+    FrameVehicleLowFloor,
+    FrameVehicleLowEntry,
+    FrameVehicleRamp,
+    FrameVehicleAirConditioner,
+    FrameVehiclePlaceForBicycles,
+    FrameVehicleVoiceAnnouncements,
+    FrameVehicleTicketMachine,
+    FrameVehicleTicketSalesDriver,
+    FrameVehicleCharger,
+    FrameTripID,
+    FrameTripOperator,
+    FrameTripOtherTickets
+} from "./VehicleTripFeatures";
+import { getRouteType } from "../utils/gtfs";
 
 function App({ storage }) {
     const [selectedVehicle, setSelectedVehicle] = useState();
@@ -38,12 +58,14 @@ function App({ storage }) {
                                 <Tabs.Trigger value="vehicle">
                                     Pojazd
                                 </Tabs.Trigger>
+                                <Tabs.Trigger value="trip">
+                                    Kurs
+                                </Tabs.Trigger>
                                 <Tabs.Trigger value="details">
                                     Szczegóły (JSON)
                                 </Tabs.Trigger>
                             </Tabs.List>
                             <Tabs.Content value="stops">
-                                {trip?.route?.agency?.agency_name && <a href={trip.route.agency.agency_url} target="_blank">{trip.route.agency.agency_name}</a>}
                                 {(trip?.stops ?? []).map((stop) => 
                                 <div>
                                     {stop?.stop_sequence} <br />
@@ -57,23 +79,24 @@ function App({ storage }) {
                                 )}
                             </Tabs.Content>
                             <Tabs.Content value="vehicle">
-                                Numer taborowy: {vehicle?.vehicle} <br />
-                                Typ pojazdu: {{tram: "Tramwaj", bus: "Autobus", unknown: "Nieznany"}[vehicle?.type ?? "unknown"]} <br />
-                                {vehicle?.hf_lf_le && {hf: "Pojazd wysokopodłogowy", lf: "Pojazd niskopodłogowy", le: "Pojazd częściowo niskopodłogowy"}[vehicle.hf_lf_le]} <br />
-                                {vehicle?.ramp && "Rampa"} <br />
-                                {vehicle?.air_conditioner && "Pojazd klimatyzowany"} <br />
-                                {vehicle?.place_for_transp_bicycles && "Miejsce do przewozu rowerów"} <br />
-                                {vehicle?.voice_announcement_sys && "Zapowiedzi głosowe"} <br />
-                                {vehicle?.ticket_machine && "Biletomat"} <br />
-                                {vehicle?.ticket_sales_by_the_driver && "Możliwość zakupu biletu u kierowcy"} <br />
-                                {vehicle?.usb_charger && "Ładowarka USB"} <br />
+                                <FrameVehicleID>{vehicle?.vehicle}</FrameVehicleID>
+                                {{tram: <FrameVehicleTram />, bus: <FrameVehicleBus />, unknown: <FrameVehicleUnknown />}[vehicle?.type ?? "unknown"]}
+                                {vehicle?.hf_lf_le && {hf: <FrameVehicleHighFloor />, lf: <FrameVehicleLowFloor />, le: <FrameVehicleLowEntry />}[vehicle.hf_lf_le]}
+                                {vehicle?.ramp && <FrameVehicleRamp />}
+                                {vehicle?.air_conditioner && <FrameVehicleAirConditioner />}
+                                {vehicle?.place_for_transp_bicycles && <FrameVehiclePlaceForBicycles />}
+                                {vehicle?.voice_announcement_sys && <FrameVehicleVoiceAnnouncements />}
+                                {vehicle?.ticket_machine && <FrameVehicleTicketMachine />}
+                                {vehicle?.ticket_sales_by_the_driver && <FrameVehicleTicketSalesDriver />}
+                                {vehicle?.usb_charger && <FrameVehicleCharger />}
+                            </Tabs.Content>
+                            <Tabs.Content value="trip">
+                                <FrameTripID>{trip?.trip_id}</FrameTripID>
+                                {{tram: <FrameVehicleTram />, bus: <FrameVehicleBus />, unknown: <FrameVehicleUnknown />}[getRouteType(trip?.route?.route_type)]}
+                                {trip?.route?.agency?.agency_name && <FrameTripOperator url={trip.route.agency.agency_url}>{trip.route.agency.agency_name}</FrameTripOperator>}
+                                {(trip?.route?.route_desc ?? "").includes("NA LINII NIE OBOWIĄZUJE TARYFA ZTM") && <FrameTripOtherTickets />}
                             </Tabs.Content>
                             <Tabs.Content value="details">
-                                numer taborowy
-                                identyfikator kursu
-                                typ kursu
-                                przewoźnik
-                                
                                 <HStack m="2">
                                     <div><strong>vehicle: </strong> {JSON.stringify(vehicle)}</div>
                                 </HStack>
