@@ -33,7 +33,7 @@ def get_vehicle_details(vehicle_id: str) -> dict[str, Any] | None:
     vehicle = feed.get_vehicle(vehicle_id)
     feed.close()
     if vehicle is None:
-        vehicle = {}
+        vehicle = {"vehicle": vehicle_id}
     else:
         vehicle = dict(vehicle)
         for key in VEHICLE_DICTIONARY_BOOL_KEYS:
