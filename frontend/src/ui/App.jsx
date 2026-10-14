@@ -66,9 +66,6 @@ function App({ storage }) {
                                 <Tabs.Trigger value="trip">
                                     Kurs
                                 </Tabs.Trigger>
-                                <Tabs.Trigger value="details">
-                                    Szczegóły (JSON)
-                                </Tabs.Trigger>
                             </Tabs.List>
                             <Tabs.Content value="stops">
                                 {(trip?.stops ?? []).map((stop) => 
@@ -101,14 +98,6 @@ function App({ storage }) {
                                 {{tram: <FrameVehicleTram />, bus: <FrameVehicleBus />, unknown: <FrameVehicleUnknown />}[getRouteType(trip?.route?.route_type)]}
                                 {trip?.route?.agency?.agency_name && <FrameTripOperator url={trip.route.agency.agency_url}>{trip.route.agency.agency_name}</FrameTripOperator>}
                                 {(trip?.route?.route_desc ?? "").includes("NA LINII NIE OBOWIĄZUJE TARYFA ZTM") && <FrameTripOtherTickets />}
-                            </Tabs.Content>
-                            <Tabs.Content value="details">
-                                <HStack m="2">
-                                    <div><strong>vehicle: </strong> {JSON.stringify(vehicle)}</div>
-                                </HStack>
-                                <HStack m="2">
-                                    <div><strong>trip: </strong> {JSON.stringify(trip)}</div>
-                                </HStack>
                             </Tabs.Content>
                         </Tabs.Root>
                     </Drawer>
