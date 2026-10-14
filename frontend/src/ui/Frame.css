@@ -34,3 +34,54 @@
         }
     }
 }
+
+.drawer-stop-frame {
+    grid-template-columns: auto 1fr auto;
+
+    .drawer-frame-icon {
+        aspect-ratio: 1;
+
+        font-size: 20px;
+        font-weight: 700;
+
+        text-align: center;
+        align-content: center;
+    }
+
+    .drawer-frame-icon.stop-past {
+        background-color: var(--chakra-colors-gray-700);
+    }
+    .drawer-frame-icon.stop-current {
+        background-color: var(--chakra-colors-green-700);
+    }
+    .drawer-frame-icon.stop-next {
+        background-color: var(--chakra-colors-gray-400);
+    }
+
+    div:nth-child(2) {
+        :nth-child(1) {
+            font-size: 16px;
+        }
+        :nth-child(2) {
+            font-size: 12px;
+            color: var(--chakra-colors-gray-fg);
+
+            svg {
+                width: 0.9em;
+                height: 0.9em;
+                display: inline-block;
+            }
+        }
+    }
+
+    div:nth-child(3) {
+        align-content: center;
+
+        font-size: 18px;
+        margin-right: 5px;
+    }
+}
+
+/* .drawer-stop-frame:hover {
+    background-color: var(--chakra-colors-bg-muted);
+} */

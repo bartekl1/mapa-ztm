@@ -20,7 +20,8 @@ import {
     FrameVehicleCharger,
     FrameTripID,
     FrameTripOperator,
-    FrameTripOtherTickets
+    FrameTripOtherTickets,
+    FrameStop
 } from "./VehicleTripFeatures";
 import { getRouteType } from "../utils/gtfs";
 
@@ -28,6 +29,7 @@ function App({ storage }) {
     const [selectedVehicle, setSelectedVehicle] = useState();
     const [vehicle, setVehicle] = useState();
     const [trip, setTrip] = useState();
+    const [currentStopSequence, setCurrentStopSequence] = useState();
 
     useEffect(() => {
         storage.addChangeListener("selectedVehicle", (e) => {
@@ -38,6 +40,9 @@ function App({ storage }) {
         });
         storage.addChangeListener("selectedVehicleData-trip", (e) => {
             setTrip(e.newValue);
+        });
+        storage.addChangeListener("currentStopSequence", (e) => {
+            setCurrentStopSequence(e.newValue);
         });
     }, []);
 
@@ -67,15 +72,16 @@ function App({ storage }) {
                             </Tabs.List>
                             <Tabs.Content value="stops">
                                 {(trip?.stops ?? []).map((stop) => 
-                                <div>
-                                    {stop?.stop_sequence} <br />
-                                    {stop?.stop_name} <br />
-                                    {stop?.stop_code} <br />
-                                    {stop?.zone_id} <br />
-                                    {stop?.arrival_time} <br />
-                                    {stop?.pickup_type} {stop?.drop_off_type}
-                                    <br /> <br />
-                                </div>
+                                    <FrameStop
+                                        sequence={stop?.stop_sequence}
+                                        name={stop?.stop_name}
+                                        code={stop?.stop_code}
+                                        zone={stop?.zone_id}
+                                        time={stop?.arrival_time}
+                                        pickupType={stop?.pickup_type}
+                                        dropOffType={stop?.drop_off_type}
+                                        currentSequence={currentStopSequence}
+                                    />
                                 )}
                             </Tabs.Content>
                             <Tabs.Content value="vehicle">

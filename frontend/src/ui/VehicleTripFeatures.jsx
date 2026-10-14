@@ -19,7 +19,7 @@ import {
     mdiTicketPercent
 } from "@mdi/js";
 
-import Frame from "./Frame";
+import { Frame, StopFrame } from "./Frame";
 
 export function FrameVehicleID({ children }) {
     return <Frame icon={<Icon path={mdiPound} />}>
@@ -101,4 +101,16 @@ export function FrameTripOperator({ children, url }) {
 
 export function FrameTripOtherTickets() {
     return <Frame icon={<Icon path={mdiTicketPercent} />}>Na linii nie obowiązuje taryfa ZTM</Frame>;
+}
+
+export function FrameStop({ sequence, name, code, zone, time, pickupType, dropOffType, currentSequence }) {
+    return <StopFrame
+                sequence={sequence}
+                name={name}
+                code={code}
+                zone={zone}
+                time={time ? time.split(":").slice(0, 2).join(":") : ""}
+                requestStop={pickupType === 3 && dropOffType === 3}
+                sequenceType={{"-1": "past", "0": "current", "1": "next"}[String(Math.sign(sequence-currentSequence))]}
+            />;
 }
