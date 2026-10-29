@@ -90,25 +90,13 @@
     transform: translate(-20%, -40%);
 }
 
-/* @keyframes highlighted-stop-pulse {
-    0% { scale: 90%; }
-    50% { scale: 110%; }
-    100% { scale: 90%; }
-} */
-
-@keyframes highlighted-stop-pulse {
-    0% { height: calc(0.9 * 24px); font-size: calc(0.9 * 16px); }
-    50% { height: calc(1.1 * 24px); font-size: calc(1.1 * 16px); }
-    100% { height: calc(0.9 * 24px); font-size: calc(0.9 * 16px); }
-}
-
 .trip-stop.trip-stop-highlighted {
     .trip-stop-icon {
-        animation: highlighted-stop-pulse 2s linear infinite;
+        background-color: var(--trip-highlighted-stop-background-light);
     }
 }
 
-.trip-stop.trip-stop-next {
+.trip-stop.trip-stop-next:not(.trip-stop-highlighted) {
     .trip-stop-icon {
         background-color: var(--trip-next-stop-background-light);
         color: var(--trip-stop-color-light);
@@ -116,7 +104,7 @@
     }
 }
 
-.trip-stop.trip-stop-current {
+.trip-stop.trip-stop-current:not(.trip-stop-highlighted) {
     .trip-stop-icon {
         background-color: var(--trip-current-stop-background-light);
         color: var(--trip-stop-color-light);
@@ -124,7 +112,7 @@
     }
 }
 
-.trip-stop.trip-stop-past {
+.trip-stop.trip-stop-past:not(.trip-stop-highlighted) {
     .trip-stop-icon {
         background-color: var(--trip-past-stop-background-light);
         color: var(--trip-stop-color-light);
@@ -173,7 +161,13 @@
         color: var(--unknown-color-dark);
     }
 
-    .trip-stop.trip-stop-next {
+    .trip-stop.trip-stop-highlighted {
+        .trip-stop-icon {
+            background-color: var(--trip-highlighted-stop-background-dark);
+        }
+    }
+
+    .trip-stop.trip-stop-next:not(.trip-stop-highlighted) {
         .trip-stop-icon {
             background-color: var(--trip-next-stop-background-dark);
             color: var(--trip-stop-color-dark);
@@ -181,7 +175,7 @@
         }
     }
 
-    .trip-stop.trip-stop-current {
+    .trip-stop.trip-stop-current:not(.trip-stop-highlighted) {
         .trip-stop-icon {
             background-color: var(--trip-current-stop-background-dark);
             color: var(--trip-stop-color-dark);
@@ -189,7 +183,7 @@
         }
     }
 
-    .trip-stop.trip-stop-past {
+    .trip-stop.trip-stop-past:not(.trip-stop-highlighted) {
         .trip-stop-icon {
             background-color: var(--trip-past-stop-background-dark);
             color: var(--trip-stop-color-dark);

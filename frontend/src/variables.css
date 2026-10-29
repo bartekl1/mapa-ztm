@@ -18,6 +18,7 @@
     --trip-next-stop-background-light: #e4e4e7;
     --trip-current-stop-background-light: #26ff26;
     --trip-past-stop-background-light: #71717a;
+    --trip-highlighted-stop-background-light: #ff3c00;
 
     /* Dark theme */
     --vehicle-icon-bg-dark: #0d0d0d;
@@ -38,4 +39,5 @@
     --trip-next-stop-background-dark: #e4e4e7;
     --trip-current-stop-background-dark: #26ff26;
     --trip-past-stop-background-dark: #71717a;
+    --trip-highlighted-stop-background-dark: #ff3c00;
 }
