@@ -12,9 +12,9 @@ export function Frame({ children, icon }) {
     );
 }
 
-export function StopFrame({ sequence, name, code, zone, time, requestStop, sequenceType }) {
+export function StopFrame({ sequence, name, code, zone, time, requestStop, sequenceType, setHighlightedStop }) {
     return (
-        <div className="drawer-frame drawer-stop-frame">
+        <div className="drawer-frame drawer-stop-frame" onMouseEnter={() => { setHighlightedStop(sequence); }} onMouseLeave={() => { setHighlightedStop(null); }}>
             <div className={`drawer-frame-icon stop-${sequenceType}`}>{sequence}</div>
             <div>
                 <div>{name}</div>

@@ -130,11 +130,21 @@ export default class Map {
                     if (el.options.stopSequence !== undefined) {
                         const status = {"-1": "past", "0": "current", "1": "next"}[String(Math.sign(el.options.stopSequence-currentStopSequence))];
                         let icon = el.getIcon();
-                        icon.options.className = "trip-stop trip-stop-" + status;
+                        icon.options.className = "trip-stop trip-stop-" + status + (storage.getValue("highlightedStop") === el.options.stopSequence ? " trip-stop-highlighted" : "");
                         el.setIcon(icon);
                     }
-                })
+                });
             }
+        });
+        storage.addChangeListener("highlightedStop", (e) => {
+            this.tripLayer.getLayers().forEach(el => {
+                if (el.options.stopSequence !== undefined) {
+                    let icon = el.getIcon();
+                    icon.options.className = icon.options.className.replace(" trip-stop-highlighted", "");
+                    if (el.options.stopSequence === e.newValue) icon.options.className += " trip-stop-highlighted";
+                    el.setIcon(icon);
+                }
+            });
         });
 
         document.querySelector("#map").setAttribute("zoom", this.map.getZoom());

@@ -90,6 +90,24 @@
     transform: translate(-20%, -40%);
 }
 
+/* @keyframes highlighted-stop-pulse {
+    0% { scale: 90%; }
+    50% { scale: 110%; }
+    100% { scale: 90%; }
+} */
+
+@keyframes highlighted-stop-pulse {
+    0% { height: calc(0.9 * 24px); font-size: calc(0.9 * 16px); }
+    50% { height: calc(1.1 * 24px); font-size: calc(1.1 * 16px); }
+    100% { height: calc(0.9 * 24px); font-size: calc(0.9 * 16px); }
+}
+
+.trip-stop.trip-stop-highlighted {
+    .trip-stop-icon {
+        animation: highlighted-stop-pulse 2s linear infinite;
+    }
+}
+
 .trip-stop.trip-stop-next {
     .trip-stop-icon {
         background-color: var(--trip-next-stop-background-light);

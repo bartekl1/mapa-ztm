@@ -82,6 +82,6 @@
     }
 }
 
-/* .drawer-stop-frame:hover {
+.drawer-stop-frame:hover {
     background-color: var(--chakra-colors-bg-muted);
-} */
+}

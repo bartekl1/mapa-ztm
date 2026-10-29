@@ -30,6 +30,7 @@ function App({ storage }) {
     const [vehicle, setVehicle] = useState();
     const [trip, setTrip] = useState();
     const [currentStopSequence, setCurrentStopSequence] = useState();
+    const [highlightedStop, setHighlightedStop] = useState(null);
 
     useEffect(() => {
         storage.addChangeListener("selectedVehicle", (e) => {
@@ -49,6 +50,10 @@ function App({ storage }) {
     useEffect(() => {
         if (selectedVehicle === null) storage.setValue("selectedVehicle", null);
     }, [selectedVehicle]);
+
+    useEffect(() => {
+        storage.setValue("highlightedStop", highlightedStop);
+    }, [highlightedStop]);
 
     return <>
         <div>
@@ -78,6 +83,7 @@ function App({ storage }) {
                                         pickupType={stop?.pickup_type}
                                         dropOffType={stop?.drop_off_type}
                                         currentSequence={currentStopSequence}
+                                        setHighlightedStop={setHighlightedStop}
                                     />
                                 )}
                             </Tabs.Content>

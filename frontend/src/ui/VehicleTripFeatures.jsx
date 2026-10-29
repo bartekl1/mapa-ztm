@@ -103,7 +103,7 @@ export function FrameTripOtherTickets() {
     return <Frame icon={<Icon path={mdiTicketPercent} />}>Na linii nie obowiązuje taryfa ZTM</Frame>;
 }
 
-export function FrameStop({ sequence, name, code, zone, time, pickupType, dropOffType, currentSequence }) {
+export function FrameStop({ sequence, name, code, zone, time, pickupType, dropOffType, currentSequence, setHighlightedStop }) {
     return <StopFrame
                 sequence={sequence}
                 name={name}
@@ -112,5 +112,6 @@ export function FrameStop({ sequence, name, code, zone, time, pickupType, dropOf
                 time={time ? time.split(":").slice(0, 2).join(":") : ""}
                 requestStop={pickupType === 3 && dropOffType === 3}
                 sequenceType={{"-1": "past", "0": "current", "1": "next"}[String(Math.sign(sequence-currentSequence))]}
+                setHighlightedStop={setHighlightedStop}
             />;
 }

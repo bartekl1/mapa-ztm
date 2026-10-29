@@ -16,6 +16,7 @@ function main() {
     storage.createValue("selectedVehicleData-vehicle");
     storage.createValue("selectedVehicleData-trip");
     storage.createValue("currentStopSequence");
+    storage.createValue("highlightedStop");
 
     const socket = new WebSocket("/ws");
     socket.addEventListener("open", (event) => {
