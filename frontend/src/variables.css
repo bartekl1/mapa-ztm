@@ -14,6 +14,11 @@
     --bus-route-color-light: blue;
     --unknown-route-color-light: black;
 
+    --trip-stop-color-light: black;
+    --trip-next-stop-background-light: #e4e4e7;
+    --trip-current-stop-background-light: #26ff26;
+    --trip-past-stop-background-light: #71717a;
+
     /* Dark theme */
     --vehicle-icon-bg-dark: #0d0d0d;
     --tram-color-dark: #ff1a1a;
@@ -28,4 +33,9 @@
     --tram-route-color-dark: red;
     --bus-route-color-dark: #1818ff;
     --unknown-route-color-dark: white;
+
+    --trip-stop-color-dark: black;
+    --trip-next-stop-background-dark: #e4e4e7;
+    --trip-current-stop-background-dark: #26ff26;
+    --trip-past-stop-background-dark: #71717a;
 }

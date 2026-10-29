@@ -9,7 +9,7 @@ const vehicleTypeIcons = {
     unknown: mdiHelp,
 };
 
-export function VehicleIcon({type, label, bearing}) {
+export function VehicleIcon({ type, label, bearing }) {
     return <div className={`vehicle-icon ${type}`}>
         { (bearing !== null && bearing !== undefined) &&
             <div className="vehicle-icon-arrow" style={{"--rotation": Math.round(bearing)}}>
@@ -21,4 +21,8 @@ export function VehicleIcon({type, label, bearing}) {
         </div>
         <div className="vehicle-icon-label">{label}</div>
     </div>;
+}
+
+export function TripStopIcon({ sequence }) {
+    return <div className="trip-stop-icon">{sequence}</div>;
 }

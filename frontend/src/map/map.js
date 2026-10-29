@@ -16,7 +16,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 setWorkerUrl(workerUrl);
 
 import "./map.css";
-import { renderVehicleIcon } from "./icons";
+import { renderVehicleIcon, renderTripStopIcon } from "./icons";
 import { getSetting, addChangeListener } from "../utils/userSettings";
 import { getRouteType } from "../utils/gtfs";
 
@@ -109,6 +109,31 @@ export default class Map {
                     className: "trip-route " + getRouteType(e.newValue.route.route_type),
                 });
                 polyline.addTo(this.tripLayer);
+
+                (e.newValue?.stops ?? []).forEach(stop => {
+                    const currentStopSequence = storage.getValue("currentStopSequence");
+                    const status = {"-1": "past", "0": "current", "1": "next"}[String(Math.sign(stop.stop_sequence-currentStopSequence))];
+                    const iconHtml = renderTripStopIcon(stop.stop_sequence);
+                    const icon = L.divIcon({ html: iconHtml, className: "trip-stop trip-stop-" + status });
+                    const marker = L.marker([stop.stop_lat, stop.stop_lon], {
+                        icon: icon,
+                        stopSequence: stop.stop_sequence,
+                    });
+                    marker.addTo(this.tripLayer);
+                });
+            }
+        });
+        storage.addChangeListener("currentStopSequence", (e) => {
+            if (e.newValue !== null && e.newValue !== undefined) {
+                const currentStopSequence = e.newValue;
+                this.tripLayer.getLayers().forEach(el => {
+                    if (el.options.stopSequence !== undefined) {
+                        const status = {"-1": "past", "0": "current", "1": "next"}[String(Math.sign(el.options.stopSequence-currentStopSequence))];
+                        let icon = el.getIcon();
+                        icon.options.className = "trip-stop trip-stop-" + status;
+                        el.setIcon(icon);
+                    }
+                })
             }
         });
 
