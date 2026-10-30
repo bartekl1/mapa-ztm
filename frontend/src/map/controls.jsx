@@ -12,7 +12,6 @@ export function settingsControl({ setOpen }) {
             position: "topleft",
         },
         onAdd: (map) => {
-            console.log("add");
             let container = L.DomUtil.create("div", "leaflet-bar leaflet-control");
             let button = L.DomUtil.create("a", "leaflet-control-button", container);
             button.innerHTML = renderToStaticMarkup(<Icon path={mdiCog} />);

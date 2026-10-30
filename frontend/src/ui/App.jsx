@@ -1,9 +1,9 @@
-import { Tabs, HStack } from "@chakra-ui/react";
+import { Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 import AppProvider from "./Provider";
 import Drawer from "./Drawer";
-import Dialog from "./Dialog";
+import SettingsDialog from "./Settings";
 import {
     FrameVehicleID,
     FrameVehicleTram,
@@ -113,26 +113,7 @@ function App({ storage }) {
                         </Tabs.Root>
                     </Drawer>
                 }
-                {settingsDialogOpen &&
-                    <Dialog title="Ustawienia" open={settingsDialogOpen} setOpen={(open) => { setSettingsDialogOpen(open) }}>
-                        <Tabs.Root defaultValue="general">
-                            <Tabs.List>
-                                <Tabs.Trigger value="general">
-                                    Ogólne
-                                </Tabs.Trigger>
-                                <Tabs.Trigger value="about">
-                                    O aplikacji
-                                </Tabs.Trigger>
-                            </Tabs.List>
-                            <Tabs.Content value="general">
-                                general
-                            </Tabs.Content>
-                            <Tabs.Content value="about">
-                                about
-                            </Tabs.Content>
-                        </Tabs.Root>
-                    </Dialog>
-                }
+                <SettingsDialog open={settingsDialogOpen} setOpen={setSettingsDialogOpen} />
             </AppProvider>
         </div>
     </>;
