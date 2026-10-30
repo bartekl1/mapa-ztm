@@ -17,6 +17,7 @@ setWorkerUrl(workerUrl);
 
 import "./map.css";
 import { renderVehicleIcon, renderTripStopIcon } from "./icons";
+import { settingsControl } from "./controls";
 import { getSetting, addChangeListener } from "../utils/userSettings";
 import { getRouteType } from "../utils/gtfs";
 
@@ -41,7 +42,9 @@ export default class Map {
         addChangeListener("mapType", () => { this.setTileLayer() });
         addChangeListener("ofmStyle", () => { this.setTileLayer() });
         this.map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
-        
+
+        settingsControl({ setOpen: (open) => { storage.setValue("settingsOpen", open); } }).addTo(this.map);
+
         this.vehiclesLayer = L.markerClusterGroup({
             maxClusterRadius: (zoom) => {
                 if (zoom === 19) return 0;

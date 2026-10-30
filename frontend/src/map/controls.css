@@ -1,0 +1,5 @@
+.leaflet-control-button {
+    svg {
+        padding: 4px;
+    }
+}

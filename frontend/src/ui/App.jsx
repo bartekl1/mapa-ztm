@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 
 import AppProvider from "./Provider";
 import Drawer from "./Drawer";
+import Dialog from "./Dialog";
 import {
     FrameVehicleID,
     FrameVehicleTram,
@@ -31,6 +32,7 @@ function App({ storage }) {
     const [trip, setTrip] = useState();
     const [currentStopSequence, setCurrentStopSequence] = useState();
     const [highlightedStop, setHighlightedStop] = useState(null);
+    const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
 
     useEffect(() => {
         storage.addChangeListener("selectedVehicle", (e) => {
@@ -44,6 +46,9 @@ function App({ storage }) {
         });
         storage.addChangeListener("currentStopSequence", (e) => {
             setCurrentStopSequence(e.newValue);
+        });
+        storage.addChangeListener("settingsOpen", (e) => {
+            setSettingsDialogOpen(e.newValue);
         });
     }, []);
 
@@ -107,6 +112,26 @@ function App({ storage }) {
                             </Tabs.Content>
                         </Tabs.Root>
                     </Drawer>
+                }
+                {settingsDialogOpen &&
+                    <Dialog title="Ustawienia" open={settingsDialogOpen} setOpen={(open) => { setSettingsDialogOpen(open) }}>
+                        <Tabs.Root defaultValue="general">
+                            <Tabs.List>
+                                <Tabs.Trigger value="general">
+                                    Ogólne
+                                </Tabs.Trigger>
+                                <Tabs.Trigger value="about">
+                                    O aplikacji
+                                </Tabs.Trigger>
+                            </Tabs.List>
+                            <Tabs.Content value="general">
+                                general
+                            </Tabs.Content>
+                            <Tabs.Content value="about">
+                                about
+                            </Tabs.Content>
+                        </Tabs.Root>
+                    </Dialog>
                 }
             </AppProvider>
         </div>
