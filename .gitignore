@@ -7,6 +7,8 @@ cache/*
 *.tmp
 # Requirements file (exported from poetry.lock)
 requirements.txt
+# App info (generated during frontend build)
+frontend/src/appInfo.js
 
 ## Python
 # Byte-compiled / optimized / DLL files

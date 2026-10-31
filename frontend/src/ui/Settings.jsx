@@ -1,4 +1,4 @@
-import { Tabs, Listbox, Stack, createListCollection, Switch, Box, NumberInput, Field, Group, Button } from "@chakra-ui/react";
+import { Tabs, Listbox, Stack, createListCollection, Switch, Box, NumberInput, Field, Group, Button, Heading, Text, Link } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 
 import { Icon } from "@mdi/react";
@@ -6,6 +6,7 @@ import { mdiDelete, mdiDotsGrid, mdiInformation, mdiLaptop, mdiMap, mdiWeatherNi
 
 import Dialog from "./Dialog";
 import { addChangeListener, getSetting, removeSetting, setSetting } from "../utils/userSettings";
+import appInfo from "../appInfo";
 
 export default function SettingsDialog({ open, setOpen, storage }) {
     const [mapType, setMapType] = useState();
@@ -176,7 +177,35 @@ export default function SettingsDialog({ open, setOpen, storage }) {
                         </Stack>
                     </Tabs.Content>
                     <Tabs.Content value="about">
-                        about
+                        <Heading size="2xl" marginBottom="2px">{appInfo.name}</Heading>
+                        <Text marginBottom="14px">{appInfo.description}</Text>
+
+                        <Text marginBottom="2px">
+                            Autor:
+                            {" "}
+                            <Link variant="underline" href={`https://github.com/${appInfo.author}`} target="_blank" rel="noopener noreferrer">
+                                {appInfo.author}
+                            </Link>
+                        </Text>
+                        <Text marginBottom="2px">
+                            Wersja:
+                            {" "}
+                            {appInfo.version}
+                            {" "}
+                            ({appInfo.hash}{appInfo.modified ? ", zmodyfikowano" : ""})
+                        </Text>
+                        <Text marginBottom="2px">
+                            Licencja:
+                            {" "}
+                            <Link variant="underline" href={`https://spdx.org/licenses/${appInfo.license}`} target="_blank" rel="noopener noreferrer">
+                                {appInfo.license}
+                            </Link>
+                        </Text>
+                        <Text marginBottom="2px">
+                            <Link variant="underline" href={appInfo.repo} target="_blank" rel="noopener noreferrer">
+                                Repozytorium GitHub
+                            </Link>
+                        </Text>
                     </Tabs.Content>
                 </Tabs.Root>
             </Dialog>
