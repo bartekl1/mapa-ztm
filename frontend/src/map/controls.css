@@ -3,3 +3,24 @@
         padding: 4px;
     }
 }
+
+a.leaflet-control-button.gps-button:not(.loading) {
+    svg:nth-child(2) {
+        display: none;
+    }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+a.leaflet-control-button.gps-button.loading {
+    svg:nth-child(1) {
+        display: none;
+    }
+    svg:nth-child(2) {
+        fill: #444444;
+        animation: rotate 1.75s linear infinite;
+    }
+}

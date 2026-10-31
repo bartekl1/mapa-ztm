@@ -17,7 +17,7 @@ setWorkerUrl(workerUrl);
 
 import "./map.css";
 import { renderVehicleIcon, renderTripStopIcon } from "./icons";
-import { settingsControl } from "./controls";
+import { gpsControl, settingsControl } from "./controls";
 import { getSetting, addChangeListener, setSetting } from "../utils/userSettings";
 import { getRouteType } from "../utils/gtfs";
 
@@ -44,6 +44,12 @@ export default class Map {
         this.map.attributionControl.addAttribution('<a href="https://www.ztm.poznan.pl/otwarte-dane/dla-deweloperow/">API ZTM Poznań</a>');
 
         settingsControl({ setOpen: (open) => { storage.setValue("settingsOpen", open); } }).addTo(this.map);
+
+        if ("geolocation" in navigator) {
+            this.gpsLayer = L.layerGroup();
+            this.gpsLayer.addTo(this.map);
+            gpsControl({ gpsLayer: this.gpsLayer }).addTo(this.map);
+        }
 
         this.vehiclesLayer = L.markerClusterGroup({
             maxClusterRadius: (zoom) => {
