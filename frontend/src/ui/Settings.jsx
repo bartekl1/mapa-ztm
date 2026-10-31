@@ -1,5 +1,8 @@
-import { Tabs, Listbox, Stack, createListCollection, Switch } from "@chakra-ui/react";
+import { Tabs, Listbox, Stack, createListCollection, Switch, Box } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
+
+import { Icon } from "@mdi/react";
+import { mdiDotsGrid, mdiInformation, mdiLaptop, mdiWeatherNight, mdiWhiteBalanceSunny } from "@mdi/js";
 
 import Dialog from "./Dialog";
 import { addChangeListener, getSetting, setSetting } from "../utils/userSettings";
@@ -44,9 +47,9 @@ export default function SettingsDialog({ open, setOpen }) {
     });
     const themes = createListCollection({
         items: [
-            { label: "Systemowy", value: "auto" },
-            { label: "Jasny", value: "light" },
-            { label: "Ciemny", value: "dark" },
+            { label: "Systemowy", value: "auto", icon: <Icon path={mdiLaptop} size="1em" /> },
+            { label: "Jasny", value: "light", icon: <Icon path={mdiWhiteBalanceSunny} size="1em" /> },
+            { label: "Ciemny", value: "dark", icon: <Icon path={mdiWeatherNight} size="1em" /> },
         ],
     });
 
@@ -54,9 +57,11 @@ export default function SettingsDialog({ open, setOpen }) {
                 <Tabs.Root defaultValue="general">
                     <Tabs.List>
                         <Tabs.Trigger value="general">
+                            <Icon path={mdiDotsGrid} size="1em" />
                             Ogólne
                         </Tabs.Trigger>
                         <Tabs.Trigger value="about">
+                            <Icon path={mdiInformation} size="1em" />
                             O aplikacji
                         </Tabs.Trigger>
                     </Tabs.List>
@@ -95,6 +100,9 @@ export default function SettingsDialog({ open, setOpen }) {
                                 <Listbox.Content>
                                     {themes.items.map((item) => (
                                         <Listbox.Item item={item} key={item.value}>
+                                            <Box color="fg.muted" flexShrink="0">
+                                                {item.icon}
+                                            </Box>
                                             <Listbox.ItemText>{item.label}</Listbox.ItemText>
                                             <Listbox.ItemIndicator />
                                         </Listbox.Item>

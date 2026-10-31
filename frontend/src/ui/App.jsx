@@ -1,6 +1,9 @@
 import { Tabs } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
+import { Icon } from "@mdi/react";
+import { mdiBus, mdiBusStopCovered, mdiMap } from "@mdi/js";
+
 import AppProvider from "./Provider";
 import Drawer from "./Drawer";
 import SettingsDialog from "./Settings";
@@ -68,12 +71,15 @@ function App({ storage }) {
                         <Tabs.Root defaultValue="stops">
                             <Tabs.List>
                                 <Tabs.Trigger value="stops">
+                                    <Icon path={mdiBusStopCovered} size="1em" />
                                     Przystanki
                                 </Tabs.Trigger>
                                 <Tabs.Trigger value="vehicle">
+                                    <Icon path={mdiBus} size="1em" />
                                     Pojazd
                                 </Tabs.Trigger>
                                 <Tabs.Trigger value="trip">
+                                    <Icon path={mdiMap} size="1em" />
                                     Kurs
                                 </Tabs.Trigger>
                             </Tabs.List>
