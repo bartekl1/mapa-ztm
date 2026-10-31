@@ -18,7 +18,7 @@ setWorkerUrl(workerUrl);
 import "./map.css";
 import { renderVehicleIcon, renderTripStopIcon } from "./icons";
 import { settingsControl } from "./controls";
-import { getSetting, addChangeListener } from "../utils/userSettings";
+import { getSetting, addChangeListener, setSetting } from "../utils/userSettings";
 import { getRouteType } from "../utils/gtfs";
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -152,6 +152,10 @@ export default class Map {
 
         document.querySelector("#map").setAttribute("zoom", this.map.getZoom());
         this.map.on("zoomend", () => { document.querySelector("#map").setAttribute("zoom", this.map.getZoom()); });
+
+        storage.addChangeListener("setStartPosFromMap", () => {
+            setSetting("startPos", [this.map.getCenter().lat, this.map.getCenter().lng, this.map.getZoom()]);
+        });
     }
     setTileLayer() {
         if (this.osmTiles !== undefined) this.osmTiles.remove();

@@ -119,7 +119,7 @@ function App({ storage }) {
                         </Tabs.Root>
                     </Drawer>
                 }
-                <SettingsDialog open={settingsDialogOpen} setOpen={setSettingsDialogOpen} />
+                <SettingsDialog open={settingsDialogOpen} setOpen={setSettingsDialogOpen} storage={storage} />
             </AppProvider>
         </div>
     </>;

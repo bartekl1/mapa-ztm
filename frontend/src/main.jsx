@@ -18,6 +18,7 @@ function main() {
     storage.createValue("currentStopSequence");
     storage.createValue("highlightedStop");
     storage.createValue("settingsOpen");
+    storage.createValue("setStartPosFromMap");
 
     const socket = new WebSocket("/ws");
     socket.addEventListener("open", (event) => {
