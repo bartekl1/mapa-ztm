@@ -7,6 +7,7 @@ import { mdiBus, mdiBusStopCovered, mdiMap } from "@mdi/js";
 import AppProvider from "./Provider";
 import Drawer from "./Drawer";
 import SettingsDialog from "./Settings";
+import LoadingScreen from "./LoadingScreen";
 import {
     FrameVehicleID,
     FrameVehicleTram,
@@ -36,6 +37,7 @@ function App({ storage }) {
     const [currentStopSequence, setCurrentStopSequence] = useState();
     const [highlightedStop, setHighlightedStop] = useState(null);
     const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
+    const [appReady, setAppReady] = useState(false);
 
     useEffect(() => {
         storage.addChangeListener("selectedVehicle", (e) => {
@@ -53,6 +55,9 @@ function App({ storage }) {
         storage.addChangeListener("settingsOpen", (e) => {
             setSettingsDialogOpen(e.newValue);
         });
+        storage.addChangeListener("appReady", (e) => {
+            setAppReady(e.newValue);
+        });
     }, []);
 
     useEffect(() => {
@@ -66,6 +71,7 @@ function App({ storage }) {
     return <>
         <div>
             <AppProvider>
+                {!appReady && <LoadingScreen />}
                 {selectedVehicle !== null && selectedVehicle !== undefined &&
                     <Drawer open={true} setOpen={(open) => { if (!open) setSelectedVehicle(null); }} title={`${trip?.route_id ?? ""} - ${trip?.trip_headsign ?? ""}`}>
                         <Tabs.Root defaultValue="stops">

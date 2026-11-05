@@ -20,6 +20,9 @@ function main() {
     storage.createValue("settingsOpen");
     storage.createValue("setStartPosFromMap");
 
+    storage.createValue("appReady");
+    storage.setValue("appReady", false);
+
     const socket = new WebSocket("/ws");
     socket.addEventListener("open", (event) => {
         setInterval(() => {
@@ -28,7 +31,10 @@ function main() {
     });
     socket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
-        if (data.msg === "vehicles") storage.setValue("vehicles", data.vehicles);
+        if (data.msg === "vehicles") {
+            storage.setValue("vehicles", data.vehicles);
+            if (!storage.getValue("appReady")) storage.setValue("appReady", true);
+        }
         if (data.msg === "trip" || data.msg === "vehicle") {
             const entityType = data.msg;
             if (storage.getValue("selectedVehicle")[entityType] === data[entityType + "_id"]) {
