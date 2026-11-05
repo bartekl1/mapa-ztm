@@ -1,6 +1,6 @@
 import { Spinner } from "@chakra-ui/react";
 
-import icon from "../../public/icon.svg";
+import icon from "../assets/img/icon.svg"
 import "./LoadingScreen.css";
 
 export default function LoadingScreen({  }) {

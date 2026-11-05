@@ -7,7 +7,7 @@ import { mdiDelete, mdiDotsGrid, mdiInformation, mdiLaptop, mdiMap, mdiWeatherNi
 import Dialog from "./Dialog";
 import { addChangeListener, getSetting, removeSetting, setSetting } from "../utils/userSettings";
 import appInfo from "../appInfo";
-import icon from "../../public/icon.svg";
+import icon from "../assets/img/icon.svg";
 
 export default function SettingsDialog({ open, setOpen, storage }) {
     const [mapType, setMapType] = useState();
