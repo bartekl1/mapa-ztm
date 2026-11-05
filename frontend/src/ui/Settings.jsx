@@ -7,6 +7,7 @@ import { mdiDelete, mdiDotsGrid, mdiInformation, mdiLaptop, mdiMap, mdiWeatherNi
 import Dialog from "./Dialog";
 import { addChangeListener, getSetting, removeSetting, setSetting } from "../utils/userSettings";
 import appInfo from "../appInfo";
+import icon from "../../public/icon.svg";
 
 export default function SettingsDialog({ open, setOpen, storage }) {
     const [mapType, setMapType] = useState();
@@ -177,7 +178,10 @@ export default function SettingsDialog({ open, setOpen, storage }) {
                         </Stack>
                     </Tabs.Content>
                     <Tabs.Content value="about">
-                        <Heading size="2xl" marginBottom="2px">{appInfo.name}</Heading>
+                        <Heading size="2xl" marginBottom="2px" style={{display: "flex"}}>
+                            <img src={icon} style={{height: "1em", marginTop: "2px"}} />
+                            <span style={{marginLeft: "1px"}}>{appInfo.name}</span>
+                        </Heading>
                         <Text marginBottom="14px">{appInfo.description}</Text>
 
                         <Text marginBottom="2px">
