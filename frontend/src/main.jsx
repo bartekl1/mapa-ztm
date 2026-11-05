@@ -7,6 +7,7 @@ import "./variables.css";
 import App from "./ui/App.jsx";
 import Map from "./map/map.js";
 import Storage from "./utils/storage.js";
+import appInfo from "./appInfo";
 import { watchThemeChange } from "./utils/theme.js";
 
 function main() {
@@ -31,6 +32,21 @@ function main() {
     });
     socket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
+        if (data.msg === "welcome") {
+            if (data.version !== appInfo.version) {
+                if (sessionStorage.getItem("updateTargetVersion") !== data.version) {
+                    console.log("updating")
+                    sessionStorage.setItem("updateTargetVersion", data.version);
+                    window.location.reload(true);
+                } else {
+                    console.error("Update failed");
+                }
+            }
+            if (sessionStorage.getItem("updateTargetVersion") === appInfo.version) {
+                console.log("updated")
+                sessionStorage.removeItem("updateTargetVersion");
+            }
+        }
         if (data.msg === "vehicles") {
             storage.setValue("vehicles", data.vehicles);
             if (!storage.getValue("appReady")) storage.setValue("appReady", true);
