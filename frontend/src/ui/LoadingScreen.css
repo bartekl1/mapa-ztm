@@ -16,4 +16,15 @@
     img {
         max-width: 200px;
     }
+
+    .loading-text {
+        color: var(--chakra-colors-fg-muted);
+        font-size: 0.95rem;
+        margin-top: 10px;
+    }
+
+    .error-alert {
+        width: 500px;
+        max-width: calc(100vw - 20px);
+    }
 }

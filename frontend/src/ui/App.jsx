@@ -38,6 +38,7 @@ function App({ storage }) {
     const [highlightedStop, setHighlightedStop] = useState(null);
     const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
     const [appReady, setAppReady] = useState(false);
+    const [loadingError, setLoadingError] = useState();
 
     useEffect(() => {
         storage.addChangeListener("selectedVehicle", (e) => {
@@ -58,6 +59,9 @@ function App({ storage }) {
         storage.addChangeListener("appReady", (e) => {
             setAppReady(e.newValue);
         });
+        storage.addChangeListener("loadingError", (e) => {
+            setLoadingError(e.newValue);
+        }, true);
     }, []);
 
     useEffect(() => {
@@ -71,7 +75,7 @@ function App({ storage }) {
     return <>
         <div>
             <AppProvider>
-                {!appReady && <LoadingScreen />}
+                {!appReady && <LoadingScreen error={loadingError} />}
                 {selectedVehicle !== null && selectedVehicle !== undefined &&
                     <Drawer open={true} setOpen={(open) => { if (!open) setSelectedVehicle(null); }} title={`${trip?.route_id ?? ""} - ${trip?.trip_headsign ?? ""}`}>
                         <Tabs.Root defaultValue="stops">

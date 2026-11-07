@@ -23,16 +23,39 @@ function main() {
 
     storage.createValue("appReady");
     storage.setValue("appReady", false);
+    storage.createValue("loadingError");
+    storage.createValue("receivedWelcomeMessage");
+    storage.setValue("receivedWelcomeMessage", false);
+    storage.createValue("receivedVehiclePositions");
+    storage.setValue("receivedVehiclePositions", false);
+
+    if (!window.navigator.onLine) {
+        storage.setValue("loadingError", "offline");
+        window.addEventListener("online", () => {
+            window.location.reload();
+        });
+    }
+
+    setTimeout(() => {
+        if (!storage.getValue("receivedWelcomeMessage")) storage.setValue("loadingError", "connection");
+    }, 15_000);
+    setTimeout(() => {
+        if (!storage.getValue("receivedVehiclePositions")) storage.setValue("loadingError", "vehicles");
+    }, 90_000);
 
     const socket = new WebSocket("/ws");
     socket.addEventListener("open", (event) => {
         setInterval(() => {
             socket.send(JSON.stringify({"msg": "ping"}));
-        }, 10000);
+        }, 10_000);
+    });
+    socket.addEventListener("error", (event) => {
+        if (!storage.getValue("receivedWelcomeMessage")) storage.setValue("loadingError", "connection");
     });
     socket.addEventListener("message", (event) => {
         const data = JSON.parse(event.data);
         if (data.msg === "welcome") {
+            storage.setValue("receivedWelcomeMessage", true);
             if (data.version !== appInfo.version) {
                 if (sessionStorage.getItem("updateTargetVersion") !== data.version) {
                     console.log("updating")
@@ -48,6 +71,7 @@ function main() {
             }
         }
         if (data.msg === "vehicles") {
+            storage.setValue("receivedVehiclePositions", true);
             storage.setValue("vehicles", data.vehicles);
             if (!storage.getValue("appReady")) storage.setValue("appReady", true);
         }

@@ -8,8 +8,9 @@ export default class Storage {
             listeners: [],
         };
     }
-    addChangeListener(key, func) {
+    addChangeListener(key, func, start = false) {
         this.values[key].listeners.push(func);
+        if (start) func({key: key, newValue: this.values[key].value});
     }
     setValue(key, value) {
         this.values[key].value = value;
