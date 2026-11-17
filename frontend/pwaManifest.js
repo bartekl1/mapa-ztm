@@ -17,4 +17,48 @@ export default {
             type: "image/png",
             purpose: "maskable",
         }; })),
+    screenshots: [
+        {
+            src: "/screenshots/main_desktop.png",
+            sizes: "1920x1080",
+            type: "image/png",
+            formFactor: "wide",
+            label: "Główny widok aplikacji",
+        },
+        {
+            src: "/screenshots/main_alt_desktop.png",
+            sizes: "1920x1080",
+            type: "image/png",
+            formFactor: "wide",
+            label: "Główny widok aplikacji (alternatywny styl mapy)",
+        },
+        {
+            src: "/screenshots/tracking_desktop.png",
+            sizes: "1920x1080",
+            type: "image/png",
+            formFactor: "wide",
+            label: "Śledzenie pojazdu na mapie",
+        },
+        {
+            src: "/screenshots/main_mobile.png",
+            sizes: "400x900",
+            type: "image/png",
+            formFactor: "narrow",
+            label: "Główny widok aplikacji",
+        },
+        {
+            src: "/screenshots/main_alt_mobile.png",
+            sizes: "400x900",
+            type: "image/png",
+            formFactor: "narrow",
+            label: "Główny widok aplikacji (alternatywny styl mapy)",
+        },
+        {
+            src: "/screenshots/tracking_mobile.png",
+            sizes: "400x900",
+            type: "image/png",
+            formFactor: "narrow",
+            label: "Śledzenie pojazdu na mapie",
+        },
+    ],
 };
