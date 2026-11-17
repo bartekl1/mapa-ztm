@@ -19,6 +19,7 @@ def fetch_gtfs_schedule_files_list() -> list[str]:
         return []
 
 def get_current_gtfs_schedule_filename(file_list: list[str]) -> str:
+    sorted_file_list = sorted(file_list, reverse=True)
     today = datetime.date.today()
     for filename in file_list:
         try:
@@ -41,6 +42,10 @@ def download_gtfs_cache(force: bool = False) -> str | None:
 
     files = fetch_gtfs_schedule_files_list()
     filename = get_current_gtfs_schedule_filename(files)
+
+    for file in os.listdir(CACHE_DIRECTORY):
+        if not file == filename.replace(".zip", ".db"):
+            os.remove(os.path.join(CACHE_DIRECTORY, file))
 
     path = os.path.join(CACHE_DIRECTORY, filename.replace(".zip", ".db"))
 
