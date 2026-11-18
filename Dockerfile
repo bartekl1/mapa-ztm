@@ -39,6 +39,8 @@ ARG GID=10001
 
 WORKDIR /app
 
+RUN apt update && apt install -y curl
+
 COPY --from=requirements /build/requirements.txt .
 RUN pip install --no-cache-dir --upgrade --no-deps --requirement requirements.txt
 
