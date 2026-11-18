@@ -18,6 +18,7 @@ export default defineConfig({
                     // /^\/api\//,
                     /^\/assets\//,
                     /^\/favicon.ico$/,
+                    /^\/icon.svg$/,
                 ],
             },
             includeAssets: ["/favicon.ico"],

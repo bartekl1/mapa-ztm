@@ -11,7 +11,10 @@ async function getGitInfo() {
     const status = await git.status();
     const modified = status.files.length > 0;
 
-    return {hash: hash, modified: modified};
+    return {
+        hash: hash,
+        // modified: modified
+    };
 }
 
 function getPyprojectInfo() {

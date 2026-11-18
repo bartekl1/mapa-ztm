@@ -48,7 +48,9 @@ async def lifespan(app: FastAPI):
 
     scheduler.shutdown(wait=True)
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
+
+app.frontend("/", directory="frontend/dist")
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
