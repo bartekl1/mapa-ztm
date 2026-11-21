@@ -134,3 +134,162 @@ Obraz będzie gotowy pod nazwą `mapa-ztm`.
 ### Podman zamiast Dockera
 
 Możliwe jest użycie Podmana zamiast Dockera. Aby to zrobić należy wykonać powyższe polecenia, ale zamiast polecenia `docker` należy użyć `podman`, a zamiast `docker compose` należy użyć `podman-compose`.
+
+## Metoda 2 - usługa systemd
+
+### Wymagania
+
+- [Python 3.9+](https://www.python.org/downloads/)
+- [Node.js 20.19+](https://nodejs.org/en/download/)
+- [Poetry](https://python-poetry.org/docs/#installation)
+- [Git](https://git-scm.com/)
+- systemd
+
+### Instalacja
+
+1. Sklonuj repozytorium
+```bash
+git clone https://github.com/bartekl1/mapa-ztm.git
+cd mapa-ztm
+```
+
+2. Przejdź do plików frontendu
+```bash
+cd frontend
+```
+
+3. Zainstaluj zależności frontendu
+```bash
+npm install
+```
+
+4. Zbuduj frontend
+```bash
+npm run build
+```
+
+5. Wróć do katalogu głównego projektu
+```bash
+cd ..
+```
+
+6. Zainstaluj zależności backendu
+```bash
+poetry install
+```
+
+7. Utwórz plik usługi systemd, np. `mapa-ztm.service`
+```bash
+sudo nano /etc/systemd/system/mapa-ztm.service
+```
+
+Wklej poniższą konfigurację:
+```ini
+[Unit]
+Description=Mapa ZTM
+After=network.target
+
+[Service]
+Type=simple
+User=<username>
+WorkingDirectory=<path_to_project_files>
+ExecStart=/home/<username>/.local/bin/poetry run fastapi run
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+> [!NOTE]
+> Zamień `<username>` na swoją nazwę użytkownika oraz `<path_to_project_files>` na pełną ścieżkę do katalogu z plikami projektu. \
+> Upewnij się, że ścieżka do `poetry` jest poprawna (może się różnić w zależności od sposobu instalacji).
+
+9. Uruchom i aktywuj usługę
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now mapa-ztm
+```
+
+### Aktualizacja
+
+1. Przejdź do katalogu z plikami projektu
+
+2. Pobierz najnowsze zmiany z repozytorium
+```bash
+git pull
+```
+
+3. Zaktualizuj zależności backendu
+```bash
+poetry install
+```
+
+4. Przejdź do plików frontendu, zainstaluj zależności i zbuduj frontend ponownie
+```bash
+cd frontend
+npm install
+npm run build
+```
+
+5. Uruchom ponownie usługę systemd
+```bash
+sudo systemctl restart mapa-ztm
+```
+
+### Usuwanie
+
+1. Zatrzymaj usługę systemd
+```bash
+sudo systemctl disable --now mapa-ztm
+```
+
+2. Usuń plik usługi
+```bash
+sudo rm /etc/systemd/system/mapa-ztm.service
+```
+
+3. Usuń katalog z plikami projektu
+
+## Metoda 3 - uruchomienie deweloperskie
+
+### Wymagania
+
+- [Python 3.9+](https://www.python.org/downloads/)
+- [Node.js 20.19+](https://nodejs.org/en/download/)
+- [Poetry](https://python-poetry.org/docs/#installation)
+- [Git](https://git-scm.com/)
+
+### Uruchomienie
+
+1. Sklonuj repozytorium
+```bash
+git clone https://github.com/bartekl1/mapa-ztm.git
+cd mapa-ztm
+```
+
+2. Zainstaluj zależności backendu
+```bash
+poetry install
+```
+
+3. Uruchom serwer backendu (FastAPI w trybie deweloperskim)
+```bash
+poetry run fastapi dev
+```
+
+4. W osobnym terminalu przejdź do plików frontendu
+```bash
+cd frontend
+```
+
+5. Zainstaluj zależności frontendu
+```bash
+npm install
+```
+
+6. Uruchom serwer frontendu (Vite w trybie deweloperskim)
+```bash
+npm run dev
+```
+
+7. Otwórz przeglądarkę i przejdź pod [http://localhost:5173](http://localhost:5173)
