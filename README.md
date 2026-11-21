@@ -79,7 +79,7 @@ Projekt oraz autor aplikacji nie są w żaden sposób powiązani z Zarządem Tra
 ### Docker (prosty przykład)
 
 ```bash
-docker run -it --rm -p 8000:8000 ghcr.io/bartekl1/mapa-ztm
+docker run --rm -p 8000:8000 ghcr.io/bartekl1/mapa-ztm
 ```
 
 > [!WARNING]  
