@@ -52,4 +52,6 @@ async def websocket_broadcast_task(manager: ConnectionManager):
                 await manager.broadcast({"msg": "vehicles", "vehicles": vehicles})
         except asyncio.CancelledError:
             raise
+        except Exception as e2:
+            print(e2.__class__.__name__, repr(e2), str(e2))
         await asyncio.sleep(3)
