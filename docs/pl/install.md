@@ -293,3 +293,8 @@ npm run dev
 ```
 
 7. Otwórz przeglądarkę i przejdź pod [http://localhost:5173](http://localhost:5173)
+
+## Reverse proxy
+
+W środowisku produkcyjnym zalecane jest uruchomienie aplikacji z poziomu localhosta (brak dostępu z sieci) oraz użycie reverse proxy w celu dostępu z poziomu Internetu.
+Przykładowa konfiguracja nginx dostępna jest w pliku [nginx.conf](../../nginx.conf).
