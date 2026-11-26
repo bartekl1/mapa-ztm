@@ -10,7 +10,9 @@ authors = [
     {name = "bartekl1"},
 ]
 dependencies = [
-    "fastapi[standard-no-fastapi-cloud-cli] (>=0.141.1,<0.142.0)",
+    "fastapi (>=0.141.1,<0.142.0)",
+    "fastapi-cli (>=0.0.34,<0.0.35)",
+    "uvicorn (>=0.54.0,<0.55.0)",
     "pyyaml (>=6.0.3,<7.0.0)",
     "requests (>=2.34.2,<3.0.0)",
     "gtfs-realtime-bindings (>=2.2.0,<3.0.0)",

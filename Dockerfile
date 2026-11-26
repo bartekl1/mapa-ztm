@@ -37,21 +37,26 @@ FROM ${BASE_PYTHON_IMAGE} AS app
 ARG UID=10001
 ARG GID=10001
 
-WORKDIR /app
-
-RUN apt update && apt install -y curl
-
-COPY --from=requirements /build/requirements.txt .
-RUN pip install --no-cache-dir --upgrade --no-deps --requirement requirements.txt
-
-COPY pyproject.toml .
-COPY app app
-COPY --from=frontend /build/frontend/dist frontend/dist
-
-RUN mkdir cache
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN addgroup --gid $GID appgroup && adduser --uid $UID --ingroup appgroup appuser
-RUN chown -R appuser:appgroup /app
+
+WORKDIR /app
+RUN chown appuser:appgroup /app
+
+RUN apt update && apt install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
+
+COPY --from=requirements --chown=appuser:appgroup /build/requirements.txt .
+RUN pip install --no-cache-dir --upgrade --no-deps --requirement requirements.txt
+
+COPY --chown=appuser:appgroup pyproject.toml .
+COPY --chown=appuser:appgroup app app
+COPY --from=frontend --chown=appuser:appgroup /build/frontend/dist frontend/dist
+
+RUN mkdir cache && chown appuser:appgroup cache
+
 USER appuser:appgroup
 
 EXPOSE 8000
